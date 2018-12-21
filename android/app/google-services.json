@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "888178506958",
+    "firebase_url": "https://tempatmagang-d7059.firebaseio.com",
+    "project_id": "tempatmagang-d7059",
+    "storage_bucket": "tempatmagang-d7059.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:888178506958:android:39d5f3ecdc80515f",
+        "android_client_info": {
+          "package_name": "com.magang.tempatmagang"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "888178506958-11seh396ve1ba8e3mik5s1oiphn2jlgf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.magang.tempatmagang",
+            "certificate_hash": "ab973adfbbc6569b26833c785296d84e88e37a2b"
+          }
+        },
+        {
+          "client_id": "888178506958-4iaevtgg7loeuo1tnmhmdmnqhuot5unu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgWp1c_WJ0rkgoQeeJj41AEdQfxGQ552U"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "888178506958-4iaevtgg7loeuo1tnmhmdmnqhuot5unu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
