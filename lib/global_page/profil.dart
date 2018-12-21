@@ -29,8 +29,15 @@ class ProfilState extends State<Profil> {
               color: Colors.white,
             ),
           ),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Icon(Icons.settings, color: Colors.white),
+              onPressed: () {},
+            )
+          ],
         ),
         body: Container(
+          padding: const EdgeInsets.only(left: 5.0, right: 5.0),
           child: new Column(
             children: <Widget>[
               Padding(
@@ -53,7 +60,7 @@ class ProfilState extends State<Profil> {
                         new Container(
                           padding: const EdgeInsets.only(top: 8.0, left: 8.0),
                           child: new Text(
-                            "Muhammad Alfin Nurul Firdaus".toUpperCase(),
+                            "Nama Pemagang".toUpperCase(),
                             style: new TextStyle(
                                 fontSize: 15.0,
                                 fontWeight: FontWeight.bold,
@@ -65,7 +72,7 @@ class ProfilState extends State<Profil> {
                           padding:
                               const EdgeInsets.only(bottom: 8.0, left: 8.0),
                           child: new Text(
-                            "Sekolah Tinggi Teknik PLN".toString(),
+                            "Nama Instansi Terkait".toString(),
                             style: new TextStyle(
                                 color: Colors.grey, fontSize: 13.0),
                             textAlign: TextAlign.center,
@@ -76,7 +83,35 @@ class ProfilState extends State<Profil> {
                   ),
                 ],
               ),
-              Text("data"),
+              Padding(
+                padding: const EdgeInsets.only(top: 10.0),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  new Column(
+                    children: <Widget>[
+                      new Text(
+                        "Status",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      new Text("Tidak Magang"),
+                    ],
+                  ),
+                  new Column(
+                    children: <Widget>[
+                      new Text(
+                        "Jurusan",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      new Text("Informatika"),
+                    ],
+                  ),
+                ],
+              ),
+              new Divider(
+                color: Colors.grey,
+              ),
             ],
           ),
         ));
