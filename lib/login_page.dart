@@ -17,7 +17,8 @@ enum FormType { login, register }
 
 class _LoginPageState extends State<LoginPage> {
   final formKey = new GlobalKey<FormState>();
-
+  var _emailLoginController = TextEditingController();
+  var _passLoginController = TextEditingController();
   String _email, _pass;
   FormType _formType = FormType.login;
 
@@ -30,41 +31,13 @@ class _LoginPageState extends State<LoginPage> {
     return false;
   }
 
-// Future<void> _neverSatisfied() async {
-//   return showDialog<void>(
-//     context: context,
-//     barrierDismissible: false, // user must tap button!
-//     builder: (BuildContext context) {
-//       return AlertDialog(
-//         title: Text('Rewind and remember'),
-//         content: SingleChildScrollView(
-//           child: ListBody(
-//             children: <Widget>[
-//               Text('You will never be satisfied.'),
-//               Text('You\’re like me. I’m never satisfied.'),
-//             ],
-//           ),
-//         ),
-//         actions: <Widget>[
-//           FlatButton(
-//             child: Text('Regret'),
-//             onPressed: () {
-//               Navigator.of(context).pop();
-//             },
-//           ),
-//         ],
-//       );
-//     },
-//   );
-// }
-
-  // void _showAlertWrongUser() {
-  //   AlertDialog dialog = AlertDialog(
-  //     content: new Text("Email / Pass tidak sesuai"),
-  //   );
-
-  //   showDialog(context: context, child: dialog);
-  // }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _emailLoginController = TextEditingController(text: _email);
+    _passLoginController = TextEditingController(text: _pass);
+  }
 
   void _showToast(String pesan) {
     Fluttertoast.showToast(
@@ -91,17 +64,6 @@ class _LoginPageState extends State<LoginPage> {
           //   .signInWithEmailAndPassword(email: _email, password: _pass);
           // _showToast("Selamat datang");
           widget.onSignedIn();
-
-          // if (!userId.isEmailVerified) {
-          //   _showToast("Email belum diverifikasi");
-          // } else {
-
-          // }
-          // if (userId.isEmailVerified) {
-
-          // } else {
-
-          // }
         } else {
           String userId =
               await widget.auth.createUserWithEmailAndPassword(_email, _pass);
@@ -112,15 +74,20 @@ class _LoginPageState extends State<LoginPage> {
       } catch (e) {
         // _showToast(e.toString());
         print(e);
-        // switch (e.code) {
-        //   case '17009':
-
-        //     break;
-        //   default:
-        // }
+        if (e.toString() ==
+            "PlatformException(exception, The email address is badly formatted., null)") {
+          _showToast("Email / Password salah");
+        } else if (e.toString() ==
+            "PlatformException(error, Given String is empty or null, null)") {
+          _showToast("Lengkapi form terlebih dahulu");
+        } else {
+          _showToast(e.toString());
+        }
       }
     }
   }
+
+  void notSubmit() {}
 
   void moveToRegister() {
     formKey.currentState.reset();
@@ -217,7 +184,7 @@ class _LoginPageState extends State<LoginPage> {
       statusBarColor: Color(0xFFef5e2d), //or set color with: Color(0xFF0000FF)
     ));
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      // resizeToAvoidBottomPadding: false,
       body: Container(
         decoration: BoxDecoration(
             image: DecorationImage(
@@ -287,18 +254,27 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                ],
-              ),
-              FlatButton(
-                onPressed: null,
-                child: Text(
-                  "Tempatmagang.com Beta v1.0",
-                  style: TextStyle(
-                      fontSize: 12.0,
+                  Padding(
+                    padding: const EdgeInsets.only(top: 100.0),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+                    child: new Divider(
                       color: Color(0xFF006885),
-                      fontWeight: FontWeight.w300,
-                      letterSpacing: 0.5),
-                ),
+                    ),
+                  ),
+                  FlatButton(
+                    onPressed: () {},
+                    child: Text(
+                      "Tempatmagang.com Beta v1.0",
+                      style: TextStyle(
+                        fontSize: 12.0,
+                        color: Color(0xFF006885),
+                        fontWeight: FontWeight.w300,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -310,9 +286,10 @@ class _LoginPageState extends State<LoginPage> {
   List<Widget> buildInputs() {
     if (_formType == FormType.login) {
       return [
-        new TextFormField(
-          onSaved: (value) => _email = value,
-          validator: (value) => value.isEmpty ? 'Isikan Email dahulu' : null,
+        new TextField(
+          controller: _emailLoginController,
+          onChanged: (value) => value == null ? _email = null : _email = value,
+          // validator: (value) => value.isEmpty ? 'Isikan Email dahulu' : null,
           keyboardType: TextInputType.emailAddress,
           decoration: new InputDecoration(
               labelText: 'Email',
@@ -325,9 +302,10 @@ class _LoginPageState extends State<LoginPage> {
         Padding(
           padding: const EdgeInsets.all(5.0),
         ),
-        new TextFormField(
-          onSaved: (value) => _pass = value,
-          validator: (value) => value.isEmpty ? 'Isikan Password dahulu' : null,
+        new TextField(
+          controller: _passLoginController,
+          onChanged: (value) => value == null ? _pass = null : _pass = value,
+          // validator: (value) => value.isEmpty ? 'Isikan Password dahulu' : null,
           obscureText: true,
           keyboardType: TextInputType.text,
           decoration: new InputDecoration(
@@ -343,7 +321,7 @@ class _LoginPageState extends State<LoginPage> {
       return [
         new TextFormField(
           onSaved: (value) => _email = value,
-          validator: (value) => value.isEmpty ? 'Isikan Email dahulu' : null,
+          // validator: (value) => value.isEmpty ? 'Isikan Email dahulu' : null,
           keyboardType: TextInputType.emailAddress,
           decoration: new InputDecoration(
               labelText: 'Email',
@@ -358,7 +336,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         new TextFormField(
           onSaved: (value) => _pass = value,
-          validator: (value) => value.isEmpty ? 'Isikan Password dahulu' : null,
+          // validator: (value) => value.isEmpty ? 'Isikan Password dahulu' : null,
           obscureText: true,
           keyboardType: TextInputType.text,
           decoration: new InputDecoration(
@@ -386,7 +364,10 @@ class _LoginPageState extends State<LoginPage> {
             color: const Color(0xFFff9977),
             elevation: 4.0,
             splashColor: Colors.blueGrey,
-            onPressed: validateAndSubmit,
+            onPressed: _emailLoginController.text.trim() == "" ||
+                    _passLoginController.text.trim() == ""
+                ? null
+                : validateAndSubmit,
             shape: new RoundedRectangleBorder(
                 borderRadius: new BorderRadius.circular(30.0)),
             padding: const EdgeInsets.only(),
@@ -396,38 +377,38 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-        ),
-        Container(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              FlatButton(
-                onPressed: () {},
-                child: Text(
-                  "lupa password?",
-                  style: TextStyle(
-                      fontSize: 12.0,
-                      color: Color(0xFFEAC324),
-                      fontWeight: FontWeight.w300,
-                      letterSpacing: 0.5),
-                ),
-              ),
-              FlatButton(
-                onPressed: moveToRegister,
-                child: Text(
-                  "buat akun",
-                  style: TextStyle(
-                      fontSize: 12.0,
-                      color: Color(0xFFEAC324),
-                      fontWeight: FontWeight.w300,
-                      letterSpacing: 0.5),
-                ),
-              ),
-            ],
-          ),
-        ),
+        // Padding(
+        //   padding: const EdgeInsets.all(10.0),
+        // ),
+        // Container(
+        //   child: Row(
+        //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        //     children: <Widget>[
+        //       FlatButton(
+        //         onPressed: () {},
+        //         child: Text(
+        //           "lupa password?",
+        //           style: TextStyle(
+        //               fontSize: 12.0,
+        //               color: Color(0xFFEAC324),
+        //               fontWeight: FontWeight.w300,
+        //               letterSpacing: 0.5),
+        //         ),
+        //       ),
+        //       FlatButton(
+        //         onPressed: moveToRegister,
+        //         child: Text(
+        //           "buat akun",
+        //           style: TextStyle(
+        //               fontSize: 12.0,
+        //               color: Color(0xFFEAC324),
+        //               fontWeight: FontWeight.w300,
+        //               letterSpacing: 0.5),
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // ),
       ];
     } else {
       return [
