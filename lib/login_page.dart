@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+// import 'package:flutter_html_view/flutter_html_view.dart';
 
 class LoginPage extends StatefulWidget {
   //construct
@@ -33,7 +34,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _emailLoginController = TextEditingController(text: _email);
     _passLoginController = TextEditingController(text: _pass);
@@ -109,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
       "icon": Icons.info,
       "warna": Color(0xFF006885),
       "isi":
-          "1. Tempatmagang adalah fasilitas yang mempertemukan antara pencari magang dengan penyedia magang.\n2. Tempatmagang merupakan aplikasi yang memfasilitasi peraturan kementerian tenaga kerja dan transmigrasi No. 36 tahun 2016 tentang penyelenggaraan pemagangan dalam negeri."
+          "1. <b>Tempatmagang</b> adalah fasilitas yang mempertemukan antara pencari magang dengan penyedia magang.\n2. Tempatmagang merupakan aplikasi yang memfasilitasi peraturan kementerian tenaga kerja dan transmigrasi No. 36 tahun 2016 tentang penyelenggaraan pemagangan dalam negeri."
     },
     {
       "judul": "Peraturan",
@@ -526,13 +526,8 @@ class Detail extends StatelessWidget {
                 child: Card(
                   margin: const EdgeInsets.all(10.0),
                   child: new Container(
-                    padding: const EdgeInsets.all(10.0),
-                    child: new Text(
-                      isiDetail,
-                      style: TextStyle(fontSize: 15.0),
-                      textAlign: TextAlign.justify,
-                    ),
-                  ),
+                      padding: const EdgeInsets.all(10.0),
+                      child: new Text("wew")),
                 )),
           ),
         ],
