@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:tempat_magang/auth.dart';
 import 'package:tempat_magang/global_page/profil.dart';
 
-import 'auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
@@ -120,8 +120,9 @@ class _DashboardState extends State<Dashboard> {
               defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
           backgroundColor: const Color(0xFFe87c55),
           title: new Center(
-            child:
-                Text("${_statusUser == null ? "" : _statusUser}".toUpperCase()),
+            child: Text(
+                "${_statusUser == null ? "" : _statusUser == "intern" ? "Pemagang" : _statusUser == "agency" ? "Instansi" : _statusUser == "college" ? "Kampus" : _statusUser == "mentor" ? "mentor" : "admin"}"
+                    .toUpperCase()),
           ),
           actions: <Widget>[
             new FlatButton(
@@ -471,7 +472,10 @@ class _ListPageState extends State<ListPage> {
   String _instansiNya;
   Future getLowongan() async {
     var firestore = Firestore.instance;
-    QuerySnapshot qn = await firestore.collection("vacancies").getDocuments();
+    QuerySnapshot qn = await firestore
+        .collection('vacancies')
+        .orderBy("tglUpload", descending: true)
+        .getDocuments();
     return qn.documents;
   }
 

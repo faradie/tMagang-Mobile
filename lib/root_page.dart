@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:tempat_magang/admin_dashboard.dart';
-import 'package:tempat_magang/dashboard.dart';
-import 'package:tempat_magang/dashboard_instansi.dart';
+
+import 'package:tempat_magang/user_page/admin_dashboard.dart';
+import 'package:tempat_magang/user_page/college_dashboard.dart';
+import 'package:tempat_magang/user_page/dashboard.dart';
+import 'package:tempat_magang/user_page/dashboard_instansi.dart';
 import 'login_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,7 +22,6 @@ class _RootPageState extends State<RootPage> {
   AuthStatus authStatus = AuthStatus.notSignedIn;
   String _statusUser, stats;
   void initState() {
-    
     super.initState();
     getUser();
     widget.auth.currentUser().then((userId) {
@@ -71,19 +72,25 @@ class _RootPageState extends State<RootPage> {
         auth: widget.auth,
         onSignedIn: _signedIn,
       );
-    } else if (authStatus == AuthStatus.signedIn && _statusUser == "instansi") {
+    } else if (authStatus == AuthStatus.signedIn && _statusUser == "agency") {
       return new InstansiDashboard(
         auth: widget.auth,
         onSignedOut: _signedOut,
         wew: _statusUser,
       );
-    } else if (authStatus == AuthStatus.signedIn && _statusUser == "pemagang") {
+    } else if (authStatus == AuthStatus.signedIn && _statusUser == "intern") {
       return new Dashboard(
         auth: widget.auth,
         onSignedOut: _signedOut,
       );
     } else if (authStatus == AuthStatus.signedIn && _statusUser == "admin") {
       return new AdminDashboard(
+        auth: widget.auth,
+        onSignedOut: _signedOut,
+        wew: _statusUser,
+      );
+    } else if (authStatus == AuthStatus.signedIn && _statusUser == "college") {
+      return new CollegeDashboard(
         auth: widget.auth,
         onSignedOut: _signedOut,
         wew: _statusUser,

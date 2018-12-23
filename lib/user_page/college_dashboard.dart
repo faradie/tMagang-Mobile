@@ -1,22 +1,24 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:tempat_magang/admin_page/buat_lowongan.dart';
 import 'package:tempat_magang/auth.dart';
 
-class AdminDashboard extends StatefulWidget {
-  AdminDashboard({this.auth, this.onSignedOut, this.wew});
+class CollegeDashboard extends StatefulWidget {
+  CollegeDashboard({this.auth, this.onSignedOut, this.wew});
   final BaseAuth auth;
   final VoidCallback onSignedOut;
   final String wew;
-  @override
-  _AdminDashboardState createState() => _AdminDashboardState();
+  _CollegeDashboardState createState() => _CollegeDashboardState();
 }
 
-class _AdminDashboardState extends State<AdminDashboard> {
+class _CollegeDashboardState extends State<CollegeDashboard> {
   String _currentEmail, _statusUser, _namaUser;
   var name;
+
+  StreamController streamController;
 
   Future getDataUser() async {
     var user = await FirebaseAuth.instance.currentUser();
@@ -85,13 +87,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
           ListTile(
             title: new Text("Buat lowongan"),
             trailing: new Icon(Icons.plus_one),
-            onTap: () {
-              Navigator.of(context).pop();
-              Navigator.of(
-                context,
-              ).push(MaterialPageRoute(
-                  builder: (BuildContext context) => new BuatLowongan()));
-            },
+            onTap: () {},
           ),
           ListTile(
             onTap: () {},
@@ -127,7 +123,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
         elevation: defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
         backgroundColor: const Color(0xFFe87c55),
         title: new Center(
-          child: Text("${widget.wew == null ? "" : widget.wew}".toUpperCase()),
+          child: Text(
+              "${widget.wew == null ? "" : widget.wew == "intern" ? "Pemagang" : widget.wew == "agency" ? "Instansi" : widget.wew == "college" ? "Kampus" : widget.wew == "mentor" ? "mentor" : "admin"}"
+                  .toUpperCase()),
         ),
         actions: <Widget>[
           new FlatButton(
@@ -136,7 +134,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
           )
         ],
       ),
-      body: Center(child: new Text("Admin Dashboard")),
     );
   }
 }

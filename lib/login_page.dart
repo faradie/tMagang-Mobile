@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-// import 'package:flutter_html_view/flutter_html_view.dart';
+import 'package:flutter_html_view/flutter_html_view.dart';
 
 class LoginPage extends StatefulWidget {
   //construct
@@ -109,28 +109,28 @@ class _LoginPageState extends State<LoginPage> {
       "icon": Icons.info,
       "warna": Color(0xFF006885),
       "isi":
-          "1. <b>Tempatmagang</b> adalah fasilitas yang mempertemukan antara pencari magang dengan penyedia magang.\n2. Tempatmagang merupakan aplikasi yang memfasilitasi peraturan kementerian tenaga kerja dan transmigrasi No. 36 tahun 2016 tentang penyelenggaraan pemagangan dalam negeri."
+          "<p>1. <b>Tempatmagang</b> adalah fasilitas yang mempertemukan antara pencari magang dengan penyedia magang.\n2. <b>Tempatmagang</b> merupakan aplikasi yang memfasilitasi <b>peraturan kementerian tenaga kerja dan transmigrasi No. 36 tahun 2016</b> tentang penyelenggaraan pemagangan dalam negeri.</p>"
     },
     {
       "judul": "Peraturan",
       "icon": Icons.power_input,
       "warna": Color(0xFF006885),
       "isi":
-          "1. Untuk dapat menggunakan aplikasi Tempatmagang, institusi Pendidikan anda harus terdaftar di aplikasi Tempatmagang. Untuk keterangan kerjasama dapat menghubungi support@tempatmagang.com\n2. Untuk mendaftar sebagai penyedia magang, silahkan menghubungi client support kami di support@tempatmagang.com"
+          "<p>1. Untuk dapat menggunakan aplikasi <b>Tempatmagang</b>, institusi Pendidikan anda harus terdaftar di aplikasi <b>Tempatmagang</b>. Untuk keterangan kerjasama dapat menghubungi <em>support@tempatmagang.com</em>\n2. Untuk mendaftar sebagai penyedia magang, silahkan menghubungi client support kami di <em>support@tempatmagang.com</em></p>"
     },
     {
       "judul": "Tata Cara",
       "icon": Icons.settings,
       "warna": Color(0xFF006885),
       "isi":
-          "1. Identitas pemagang adalah identitas resmi yang diberikan oleh institusi pendidikan asal calon peserta magang.\n2. Informasi lowongan magang bersifat umum, namun ada beberapa fitur yang kami sediakan untuk dapat mengoptimalkan pencarian tempat magang yang ideal sesuai dengan kompetensi pemagang dan kebutuhan penyedia magang."
+          "<p>1. Identitas pemagang adalah identitas resmi yang diberikan oleh institusi pendidikan asal calon peserta magang.\n2. Informasi lowongan magang bersifat umum, namun ada beberapa fitur yang kami sediakan untuk dapat mengoptimalkan pencarian tempat magang yang ideal sesuai dengan kompetensi pemagang dan kebutuhan penyedia magang.</p>"
     },
     {
       "judul": "Benefit",
       "icon": Icons.file_download,
       "warna": Color(0xFF006885),
       "isi":
-          "1. Dengan menjadi anggota tempat magang, anda akan mendapatkan informasi, memilih dan direkomendasikan untuk lowongan magang yang sesuai dengan kompetensi ataupun kebutuhan dari penyedia magang.\n2. Kemudahan pengelolaan informasi magang bagi penyedia magang.\n3. Kemudahan penelusuran dan pencarian magang bagi institusi pendidikan.\n4. Report dan feedback sebagai pemagang ataupun penyedia magang"
+          "<p>1. Dengan menjadi anggota tempat magang, anda akan mendapatkan informasi, memilih dan direkomendasikan untuk lowongan magang yang sesuai dengan kompetensi ataupun kebutuhan dari penyedia magang.\n2. Kemudahan pengelolaan informasi magang bagi penyedia magang.\n3. Kemudahan penelusuran dan pencarian magang bagi institusi pendidikan.\n4. Report dan feedback sebagai pemagang ataupun penyedia magang</p>"
     },
   ];
 
@@ -527,7 +527,9 @@ class Detail extends StatelessWidget {
                   margin: const EdgeInsets.all(10.0),
                   child: new Container(
                       padding: const EdgeInsets.all(10.0),
-                      child: new Text("wew")),
+                      child: new HtmlView(
+                        data: isiDetail,
+                      )),
                 )),
           ),
         ],

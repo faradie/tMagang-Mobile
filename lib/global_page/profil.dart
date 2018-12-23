@@ -29,10 +29,10 @@ class ProfilState extends State<Profil> {
           name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
           _namaUser = name["displayName"];
           _statusUser = data.documents[0].data['role'];
-          _jurusan = name["jurusan"];
+          _jurusan = name["departement"];
           _isActive = name["isActive"];
           _jenisKel = name["gender"];
-          _kontak = name["contact"];
+          _kontak = name["phone"];
           _alamat = name["address"];
           _requirementNya = List.from(name["skills"]);
         });
@@ -163,8 +163,9 @@ class ProfilState extends State<Profil> {
                             "Jenis kelamin",
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          new Text(
-                              _jenisKel == null ? "Mengambil data" : _jenisKel)
+                          new Text(_jenisKel == null
+                              ? "Mengambil data"
+                              : _jenisKel == "male" ? "Laki-laki" : "Perempuan")
                         ],
                       ),
                     ),
