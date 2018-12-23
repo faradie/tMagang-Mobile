@@ -19,10 +19,8 @@ class AdminDashboard extends StatefulWidget {
 }
 
 class _AdminDashboardState extends State<AdminDashboard> {
-  String _currentEmail, _statusUser, _namaUser;
+  String _currentEmail, _statusUser, _namaUser, _uid;
   var name;
-
-  StreamController streamController;
 
   Future getDataUser() async {
     var user = await FirebaseAuth.instance.currentUser();
@@ -76,12 +74,22 @@ class _AdminDashboardState extends State<AdminDashboard> {
   @override
   Widget build(BuildContext context) {
     var listMenuAdmin = [
-      "Jumlah Lowongan",
+      "Lowongan Aktif",
+      "Lowongan NonAktif",
       "Jumlah Instansi",
-      "Jumlah Pemagang"
+      "Jumlah Pemagang",
+      "Jumlah Admin",
+      "Jumlah Kampus",
     ];
     var iconMenuAdmin = [
-      Firestore.instance.collection('vacancies').snapshots(),
+      Firestore.instance
+          .collection('vacancies')
+          .where('isActiveIntern', isEqualTo: true)
+          .snapshots(),
+      Firestore.instance
+          .collection('vacancies')
+          .where('isActiveIntern', isEqualTo: false)
+          .snapshots(),
       Firestore.instance
           .collection('users')
           .where('role', isEqualTo: 'agency')
@@ -89,6 +97,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
       Firestore.instance
           .collection('users')
           .where('role', isEqualTo: 'intern')
+          .snapshots(),
+      Firestore.instance
+          .collection('users')
+          .where('role', isEqualTo: 'admin')
+          .snapshots(),
+      Firestore.instance
+          .collection('users')
+          .where('role', isEqualTo: 'college')
           .snapshots()
     ];
     var adminGridView = new GridView.builder(
@@ -98,7 +114,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       itemBuilder: (BuildContext context, int index) {
         return new GestureDetector(
           child: new Card(
-            // color: const Color(0xFFff9977),
+            // color: Colors.pinkAccent,
             elevation: 5.0,
             child: new Container(
               alignment: Alignment.center,

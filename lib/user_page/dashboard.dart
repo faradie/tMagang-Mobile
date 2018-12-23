@@ -156,8 +156,12 @@ class _DashboardState extends State<Dashboard> {
             ),
             new Divider(),
             new ListTile(
-              title: new Text("Pengaturan"),
-              trailing: new Icon(Icons.settings),
+              title: new Text("Lamaran"),
+              trailing: new Icon(Icons.find_in_page),
+            ),
+            new ListTile(
+              title: new Text("Rekomendasi"),
+              trailing: new Icon(Icons.star),
             )
           ],
         )),

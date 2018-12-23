@@ -30,7 +30,7 @@ class Auth implements BaseAuth {
 
   Future<String> currentUser() async {
     FirebaseUser user = await _firebaseAuth.currentUser();
-    return user.email;
+    return user.uid;
   }
 
   Future<void> signOut() {

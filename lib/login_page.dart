@@ -76,10 +76,16 @@ class _LoginPageState extends State<LoginPage> {
         print(e);
         if (e.toString() ==
             "PlatformException(exception, The email address is badly formatted., null)") {
+          _showToast("Format Email / Password salah");
+        } else if (e.toString() ==
+            "PlatformException(exception, The password is invalid or the user does not have a password., null)") {
           _showToast("Email / Password salah");
         } else if (e.toString() ==
             "PlatformException(error, Given String is empty or null, null)") {
           _showToast("Lengkapi form terlebih dahulu");
+        } else if (e.toString() ==
+            "PlatformException(exception, There is no user record corresponding to this identifier. The user may have been deleted., null)") {
+          _showToast("Email / Password salah");
         } else {
           _showToast(e.toString());
         }

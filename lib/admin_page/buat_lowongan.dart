@@ -272,6 +272,7 @@ class _BuatLowonganState extends State<BuatLowongan> {
                     } else {
                       if (dataSaveFire()) {
                         var uuid = new Uuid();
+                        bool _isActiveIntern = true;
                         String _idNya = uuid.v4();
                         Map<String, dynamic> data = <String, dynamic>{
                           "judul": _judulLowongan,
@@ -281,6 +282,7 @@ class _BuatLowonganState extends State<BuatLowongan> {
                           "tglUpload": new DateTime.now(),
                           "tglMulai": _tglMulai,
                           "tglBerakhir": _tglAkhir,
+                          "isActiveIntern": _isActiveIntern,
                           "instansiPenyelenggara": _idUser,
                           "deskripsi": _deskripsi,
                           "requirement": _require.split(",")
