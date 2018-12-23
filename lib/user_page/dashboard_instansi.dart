@@ -97,7 +97,8 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
         elevation: defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
         backgroundColor: const Color(0xFFe87c55),
         title: new Center(
-          child: Text("${widget.wew == null ? "" : widget.wew}".toUpperCase()),
+          child:
+              Text("${_statusUser == null ? "" : _statusUser}".toUpperCase()),
         ),
         actions: <Widget>[
           new FlatButton(

@@ -244,7 +244,7 @@ class _DashboardState extends State<Dashboard> {
 
 class Deskrips extends StatelessWidget {
   Deskrips({this.des});
-  String des;
+  final String des;
   @override
   Widget build(BuildContext context) {
     if (des.length >= 100) {
@@ -473,7 +473,6 @@ class ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<ListPage> {
-  String _instansiNya;
   Future getLowongan() async {
     var firestore = Firestore.instance;
     QuerySnapshot qn = await firestore

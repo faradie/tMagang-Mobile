@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/services.dart';
 import 'auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -58,8 +58,7 @@ class _LoginPageState extends State<LoginPage> {
     if (validateAndSave()) {
       try {
         if (_formType == FormType.login) {
-          FirebaseUser userId =
-              await widget.auth.signInWithEmailAndPassword(_email, _pass);
+          await widget.auth.signInWithEmailAndPassword(_email, _pass);
           // FirebaseUser user = await FirebaseAuth.instance
           //   .signInWithEmailAndPassword(email: _email, password: _pass);
           // _showToast("Selamat datang");

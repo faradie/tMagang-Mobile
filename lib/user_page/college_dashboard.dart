@@ -18,8 +18,6 @@ class _CollegeDashboardState extends State<CollegeDashboard> {
   String _currentEmail, _statusUser, _namaUser;
   var name;
 
-  StreamController streamController;
-
   Future getDataUser() async {
     var user = await FirebaseAuth.instance.currentUser();
     var firestore = Firestore.instance;
@@ -124,7 +122,7 @@ class _CollegeDashboardState extends State<CollegeDashboard> {
         backgroundColor: const Color(0xFFe87c55),
         title: new Center(
           child: Text(
-              "${widget.wew == null ? "" : widget.wew == "intern" ? "Pemagang" : widget.wew == "agency" ? "Instansi" : widget.wew == "college" ? "Kampus" : widget.wew == "mentor" ? "mentor" : "admin"}"
+              "${_statusUser == null ? "" : _statusUser == "intern" ? "Pemagang" : _statusUser == "agency" ? "Instansi" : _statusUser == "college" ? "Kampus" : _statusUser == "mentor" ? "mentor" : "admin"}"
                   .toUpperCase()),
         ),
         actions: <Widget>[

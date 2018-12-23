@@ -1,13 +1,13 @@
 import 'dart:async';
 
-import 'package:async/async.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:tempat_magang/admin_page/buat_lowongan.dart';
+
 import 'package:tempat_magang/auth.dart';
+import 'package:tempat_magang/interact_page/buat_lowongan.dart';
+import 'package:tempat_magang/interact_page/data_instansi.dart';
 
 class AdminDashboard extends StatefulWidget {
   AdminDashboard({this.auth, this.onSignedOut, this.wew});
@@ -19,7 +19,7 @@ class AdminDashboard extends StatefulWidget {
 }
 
 class _AdminDashboardState extends State<AdminDashboard> {
-  String _currentEmail, _statusUser, _namaUser, _uid;
+  String _currentEmail, _statusUser, _namaUser;
   var name;
 
   Future getDataUser() async {
@@ -209,6 +209,17 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 ListTile(
                   title: Text("Data Instansi"),
                   leading: new Icon(Icons.star),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(
+                      context,
+                    ).push(MaterialPageRoute(
+                        builder: (BuildContext context) => new InstansiData()));
+                  },
+                ),
+                ListTile(
+                  title: Text("Data Kampus"),
+                  leading: new Icon(Icons.star_border),
                 ),
                 ListTile(
                   title: Text("Data Pemagang"),
@@ -224,7 +235,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
           backgroundColor: const Color(0xFFe87c55),
           title: new Center(
             child:
-                Text("${widget.wew == null ? "" : widget.wew}".toUpperCase()),
+                Text("${_statusUser == null ? "" : _statusUser}".toUpperCase()),
           ),
           actions: <Widget>[
             new FlatButton(
