@@ -115,22 +115,6 @@ class _DashboardState extends State<Dashboard> {
             child: new Icon(Icons.chat),
           ),
         ),
-        appBar: AppBar(
-          elevation:
-              defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
-          backgroundColor: const Color(0xFFe87c55),
-          title: new Center(
-            child: Text(
-                "${_statusUser == null ? "" : _statusUser == "intern" ? "Pemagang" : _statusUser == "agency" ? "Instansi" : _statusUser == "college" ? "Kampus" : _statusUser == "mentor" ? "mentor" : "admin"}"
-                    .toUpperCase()),
-          ),
-          actions: <Widget>[
-            new FlatButton(
-              child: new Icon(Icons.input, color: Colors.white),
-              onPressed: _signOut,
-            )
-          ],
-        ),
         drawer: Drawer(
             child: ListView(
           children: <Widget>[
@@ -165,38 +149,71 @@ class _DashboardState extends State<Dashboard> {
             )
           ],
         )),
-        body: new Column(
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            new Column(
-              children: <Widget>[
-                new Container(
-                  color: const Color(0xFFff9977),
-                  child: new Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: new Card(
-                      child: new ListTile(
-                        leading: new Icon(Icons.search),
-                        title: new TextField(
-                          // controller: controllerSearch,
-                          decoration: new InputDecoration(
-                              hintText: 'Search', border: InputBorder.none),
-                          // onChanged: ,
-                        ),
-                        trailing: new IconButton(
-                          icon: new Icon(Icons.cancel),
-                          onPressed: () {},
+        body: DefaultTabController(
+          length: 2,
+          child: NestedScrollView(
+              headerSliverBuilder:
+                  (BuildContext context, bool innerBoxIsScrolled) {
+                return <Widget>[
+                  SliverAppBar(
+                      actions: <Widget>[
+                        new FlatButton(
+                          child: new Icon(Icons.input, color: Colors.white),
+                          onPressed: _signOut,
+                        )
+                      ],
+                      expandedHeight: 200.0,
+                      elevation: defaultTargetPlatform == TargetPlatform.android
+                          ? 5.0
+                          : 0.0,
+                      backgroundColor: const Color(0xFFe87c55),
+                      floating: false,
+                      pinned: true,
+                      flexibleSpace: FlexibleSpaceBar(
+                          centerTitle: true,
+                          title: Text(
+                              "${_statusUser == null ? "" : _statusUser == "intern" ? "Pemagang" : _statusUser == "agency" ? "Instansi" : _statusUser == "college" ? "Kampus" : _statusUser == "mentor" ? "mentor" : "admin"}"
+                                  .toUpperCase(),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20.0,
+                              )),
+                          background: Image.asset(
+                            "img/selamatdatang.png",
+                            fit: BoxFit.cover,
+                          ))),
+                  SliverPersistentHeader(
+                    delegate: _SliverAppBarDelegate(
+                      Container(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Card(
+                              child: new ListTile(
+                                  trailing: new IconButton(
+                                    icon: new Icon(Icons.cancel),
+                                    onPressed: () {},
+                                  ),
+                                  leading: new Icon(Icons.search),
+                                  title: new TextField(
+                                    decoration: new InputDecoration(
+                                        hintText: 'Cari Magangmu',
+                                        border: InputBorder.none),
+                                  ))),
                         ),
                       ),
                     ),
+                    pinned: true,
+                  )
+                ];
+              },
+              body: new Column(
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  new Expanded(
+                    child: ListPage(),
                   ),
-                ),
-              ],
-            ),
-            new Expanded(
-              child: ListPage(),
-            )
-          ],
+                ],
+              )),
         ));
   }
 
@@ -744,5 +761,29 @@ class DetailLowongan extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  _SliverAppBarDelegate(this._tabBar);
+
+  final Container _tabBar;
+
+  @override
+  double get minExtent => 0.0;
+  @override
+  double get maxExtent => 80.0;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return new Container(
+      child: _tabBar,
+    );
+  }
+
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
+    return false;
   }
 }

@@ -1,10 +1,11 @@
 import 'dart:async';
-
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tempat_magang/auth.dart';
+import 'package:tempat_magang/interact_page/tambah_pemagang.dart';
 
 class CollegeDashboard extends StatefulWidget {
   CollegeDashboard({this.auth, this.onSignedOut, this.wew});
@@ -83,37 +84,24 @@ class _CollegeDashboardState extends State<CollegeDashboard> {
             ),
           ),
           ListTile(
-            title: new Text("Buat lowongan"),
-            trailing: new Icon(Icons.plus_one),
-            onTap: () {},
+            title: new Text("Tambah Pemagang"),
+            trailing: new Icon(Icons.person_add),
+            onTap: () {
+              Navigator.of(context).pop();
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(
+                  builder: (BuildContext context) => new CreateIntern()));
+            },
           ),
           ListTile(
-            onTap: () {},
-            title: new Text("Manajemen Kontrak"),
-            trailing: new Icon(Icons.card_membership),
-          ),
-          ListTile(
-            title: new Text("Backup"),
-            trailing: new Icon(Icons.backup),
-          ),
+              onTap: () {},
+              title: new Text("Pengelolaan Pemagang"),
+              trailing: new Icon(Icons.card_travel)),
           new Divider(),
-          ExpansionTile(
-            title: new Text("Manajemen Data"),
-            trailing: new Icon(Icons.book),
-            children: <Widget>[
-              ListTile(
-                title: Text("Data Lowongan"),
-                leading: new Icon(Icons.local_activity),
-              ),
-              ListTile(
-                title: Text("Data Instansi"),
-                leading: new Icon(Icons.star),
-              ),
-              ListTile(
-                title: Text("Data Pemagang"),
-                leading: new Icon(Icons.code),
-              ),
-            ],
+          ListTile(
+            title: new Text("Profil"),
+            trailing: new Icon(Icons.person_outline),
           ),
         ],
       )),
@@ -129,6 +117,26 @@ class _CollegeDashboardState extends State<CollegeDashboard> {
           new FlatButton(
             child: new Icon(Icons.input, color: Colors.white),
             onPressed: _signOut,
+          )
+        ],
+      ),
+      body: new ListView(
+        children: <Widget>[
+          new Container(
+            child: new Card(
+              child: Container(
+                  margin: const EdgeInsets.all(10.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      new Text(
+                        "Informasi kontrak",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.grey),
+                      ),
+                    ],
+                  )),
+            ),
           )
         ],
       ),

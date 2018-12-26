@@ -295,6 +295,7 @@ class _BuatLowonganState extends State<BuatLowongan> {
                             .whenComplete(() {
                           _showToast(
                               "Berhasil buat Lowongan", Colors.greenAccent);
+                          print("ini data lowongan $data");
                           Navigator.of(context).pop();
                         }).catchError((e) {
                           print(e);
