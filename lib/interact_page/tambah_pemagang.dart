@@ -4,6 +4,7 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:tempat_magang/auth.dart';
 
 class CreateIntern extends StatefulWidget {
   @override
@@ -112,6 +113,21 @@ class _CreateInternState extends State<CreateIntern> {
             ));
   }
 
+  void callCloudFunction() async {
+    try {
+      final result = await CloudFunctions.instance
+          .call(functionName: 'createUser', parameters: <String, dynamic>{
+        'password': '12345678987',
+        'email': 'm.alfin04@gmail.com',
+        'phoneNumber': '08623184123',
+        'displayName': 'andaGad',
+      });
+      print('Result: $result');
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
   bool dataSaveFire() {
     final form = formKeySave.currentState;
     if (form.validate()) {
@@ -212,14 +228,9 @@ class _CreateInternState extends State<CreateIntern> {
                 color: const Color(0xFFff9977),
                 splashColor: Colors.blueGrey,
                 onPressed: () {
-                  CloudFunctions.instance.call(
-                      functionName: "createUser",
-                      parameters: <String, dynamic>{
-                        "password": _pass,
-                        "email": _email,
-                        "phoneNumber": _noTelp,
-                        "displayName": _namaPemagang,
-                      });
+                  if (dataSaveFire()) {
+                    callCloudFunction();
+                  }
                 },
                 padding: const EdgeInsets.only(),
                 child: new Text(

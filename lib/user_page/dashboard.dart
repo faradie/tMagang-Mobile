@@ -490,12 +490,18 @@ class ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<ListPage> {
+  DateTime dateNow = DateTime.now();
+
+  Future getDate() async {}
+
   Future getLowongan() async {
     var firestore = Firestore.instance;
     QuerySnapshot qn = await firestore
         .collection('vacancies')
-        .orderBy("tglUpload", descending: true)
+        .where("validUntil", isGreaterThanOrEqualTo: dateNow)
+        .orderBy("validUntil", descending: true)
         .getDocuments();
+
     return qn.documents;
   }
 
@@ -518,23 +524,24 @@ class _ListPageState extends State<ListPage> {
               itemCount: snapshot.data.length,
               itemBuilder: (_, index) {
                 String uploadTglBaru = formatDate(
-                    snapshot.data[index].data["tglUpload"],
+                    snapshot.data[index].data["timeUpload"],
                     [dd, ' ', MM, ' ', yyyy]);
                 String mulaiTglBaru = formatDate(
-                    snapshot.data[index].data["tglMulai"],
+                    snapshot.data[index].data["timeStartIntern"],
                     [dd, ' ', MM, ' ', yyyy]);
                 String akhirTglBaru = formatDate(
-                    snapshot.data[index].data["tglBerakhir"],
+                    snapshot.data[index].data["timeEndIntern"],
                     [dd, ' ', MM, ' ', yyyy]);
+
                 return new CustomCard(
-                  instansi: snapshot.data[index].data["instansiPenyelenggara"],
-                  kuota: snapshot.data[index].data["kuota"],
+                  instansi: snapshot.data[index].data["ownerAgency"],
+                  kuota: snapshot.data[index].data["quota"],
                   idNya: snapshot.data[index].data["id"],
-                  judulNya: snapshot.data[index].data["judul"],
+                  judulNya: snapshot.data[index].data["title"],
                   tglUpload: uploadTglBaru,
                   tglAkhir: akhirTglBaru,
                   tglMulai: mulaiTglBaru,
-                  deskripsiNya: snapshot.data[index].data["deskripsi"],
+                  deskripsiNya: snapshot.data[index].data["description"],
                   requirementNya:
                       List.from(snapshot.data[index].data["requirement"]),
                 );

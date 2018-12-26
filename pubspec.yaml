@@ -12,6 +12,13 @@ version: 1.0.0+1
 environment:
   sdk: ">=2.0.0-dev.68.0 <3.0.0"
 
+dependency_overrides:
+  cloud_functions:
+    git:
+      url: https://github.com/beardo01/plugins.git
+      ref: f80bb100b208cb07ea3a097c5c3f7cde393d33cb
+      path: packages/cloud_functions
+
 dependencies:
   flutter:
     sdk: flutter

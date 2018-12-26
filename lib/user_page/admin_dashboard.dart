@@ -21,6 +21,7 @@ class AdminDashboard extends StatefulWidget {
 class _AdminDashboardState extends State<AdminDashboard> {
   String _currentEmail, _statusUser, _namaUser;
   var name;
+  DateTime dateNow = DateTime.now();
 
   Future getDataUser() async {
     var user = await FirebaseAuth.instance.currentUser();
@@ -84,11 +85,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
     var iconMenuAdmin = [
       Firestore.instance
           .collection('vacancies')
-          .where('isActiveIntern', isEqualTo: true)
+          .where("validUntil", isGreaterThanOrEqualTo: dateNow)
           .snapshots(),
       Firestore.instance
           .collection('vacancies')
-          .where('isActiveIntern', isEqualTo: false)
+          .where("validUntil", isLessThan: dateNow)
           .snapshots(),
       Firestore.instance
           .collection('users')

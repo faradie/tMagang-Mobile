@@ -16,6 +16,7 @@ class BuatLowongan extends StatefulWidget {
 class _BuatLowonganState extends State<BuatLowongan> {
   String _judulLowongan, _jurusanLowongan, _require, _deskripsi, _idUser;
   int _kuota;
+  bool tekan = true;
   DateTime _tglMulai, _tglAkhir;
 
   final _controlJudul = new TextEditingController();
@@ -34,6 +35,52 @@ class _BuatLowonganState extends State<BuatLowongan> {
       return true;
     }
     return false;
+  }
+
+  void _inPressed() {
+    if (_setuju == false) {
+      _showToast("Gagal buat Lowongan, No SLA", Colors.red);
+    } else {
+      if (dataSaveFire()) {
+        setState(() {
+          tekan = false;
+        });
+        var uuid = new Uuid();
+        bool _isActiveIntern = true;
+        String _idNya = uuid.v4();
+        var today = new DateTime.now();
+        var _validUntil = today.add(new Duration(days: 6));
+        Map<String, dynamic> data = <String, dynamic>{
+          "title": _judulLowongan,
+          "departement": _jurusanLowongan,
+          "quota": _kuota,
+          "id": _idNya,
+          "timeUpload": new DateTime.now(),
+          "timeStartIntern": _tglMulai,
+          "timeEndIntern": _tglAkhir,
+          "isActiveIntern": _isActiveIntern,
+          "ownerAgency": _idUser,
+          "description": _deskripsi,
+          "requirement": _require.split(","),
+          "validUntil": _validUntil
+        };
+
+        Firestore.instance
+            .collection("vacancies")
+            .document("$_idNya")
+            .setData(data)
+            .whenComplete(() {
+          _showToast("Berhasil buat Lowongan", Colors.greenAccent);
+          print("ini data lowongan $data");
+          setState(() {
+            tekan = true;
+          });
+          Navigator.of(context).pop();
+        }).catchError((e) {
+          print(e);
+        });
+      }
+    }
   }
 
   @override
@@ -266,43 +313,7 @@ class _BuatLowonganState extends State<BuatLowongan> {
                   color: const Color(0xFFff9977),
                   elevation: 4.0,
                   splashColor: Colors.blueGrey,
-                  onPressed: () {
-                    if (_setuju == false) {
-                      _showToast("Gagal buat Lowongan, No SLA", Colors.red);
-                    } else {
-                      if (dataSaveFire()) {
-                        var uuid = new Uuid();
-                        bool _isActiveIntern = true;
-                        String _idNya = uuid.v4();
-                        Map<String, dynamic> data = <String, dynamic>{
-                          "judul": _judulLowongan,
-                          "jurusan": _jurusanLowongan,
-                          "kuota": _kuota,
-                          "id": _idNya,
-                          "tglUpload": new DateTime.now(),
-                          "tglMulai": _tglMulai,
-                          "tglBerakhir": _tglAkhir,
-                          "isActiveIntern": _isActiveIntern,
-                          "instansiPenyelenggara": _idUser,
-                          "deskripsi": _deskripsi,
-                          "requirement": _require.split(",")
-                        };
-
-                        Firestore.instance
-                            .collection("vacancies")
-                            .document("$_idNya")
-                            .setData(data)
-                            .whenComplete(() {
-                          _showToast(
-                              "Berhasil buat Lowongan", Colors.greenAccent);
-                          print("ini data lowongan $data");
-                          Navigator.of(context).pop();
-                        }).catchError((e) {
-                          print(e);
-                        });
-                      }
-                    }
-                  },
+                  onPressed: tekan == true ? _inPressed : null,
                   padding: const EdgeInsets.only(),
                   child: new Text(
                     'Terbitkan'.toUpperCase(),
