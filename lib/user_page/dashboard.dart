@@ -492,8 +492,6 @@ class ListPage extends StatefulWidget {
 class _ListPageState extends State<ListPage> {
   DateTime dateNow = DateTime.now();
 
-  Future getDate() async {}
-
   Future getLowongan() async {
     var firestore = Firestore.instance;
     QuerySnapshot qn = await firestore

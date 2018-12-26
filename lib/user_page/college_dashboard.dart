@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tempat_magang/auth.dart';
-import 'package:tempat_magang/interact_page/tambah_pemagang.dart';
 
 class CollegeDashboard extends StatefulWidget {
   CollegeDashboard({this.auth, this.onSignedOut, this.wew});
@@ -83,17 +82,17 @@ class _CollegeDashboardState extends State<CollegeDashboard> {
               child: new Text("A"),
             ),
           ),
-          ListTile(
-            title: new Text("Tambah Pemagang"),
-            trailing: new Icon(Icons.person_add),
-            onTap: () {
-              Navigator.of(context).pop();
-              Navigator.of(
-                context,
-              ).push(MaterialPageRoute(
-                  builder: (BuildContext context) => new CreateIntern()));
-            },
-          ),
+          // ListTile(
+          //   title: new Text("Tambah Pemagang"),
+          //   trailing: new Icon(Icons.person_add),
+          //   onTap: () {
+          //     Navigator.of(context).pop();
+          //     Navigator.of(
+          //       context,
+          //     ).push(MaterialPageRoute(
+          //         builder: (BuildContext context) => new CreateIntern()));
+          //   },
+          // ),
           ListTile(
               onTap: () {},
               title: new Text("Pengelolaan Pemagang"),
