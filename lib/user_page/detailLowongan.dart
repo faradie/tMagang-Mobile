@@ -38,7 +38,7 @@ class _DetailLowonganState extends State<DetailLowongan> {
   bool _terDaftar = false;
   var name;
   String _idUser;
-  bool tekan = true;
+  bool tekan = false;
 
   void _showToast(String pesan, Color warna) {
     Fluttertoast.showToast(
@@ -68,22 +68,17 @@ class _DetailLowonganState extends State<DetailLowongan> {
         });
       }
     });
-  }
 
-  Future isRegistratOrNot() async {
-    var user = await FirebaseAuth.instance.currentUser();
-    var firestore = Firestore.instance;
-    var userQuery = firestore
+    var userQuery2 = firestore
         .collection('registerIntern')
-        .where('idUser', isEqualTo: user.uid)
-        .where('idVacancies', isEqualTo: widget.idNya)
-        .limit(1);
-
-    userQuery.getDocuments().then((data) {
-      if (data.documents.length > 0) {
+        .document('${user.uid}_${widget.idNya}');
+    userQuery2.get().then((data) {
+      if (data.exists) {
         setState(() {
           _terDaftar = true;
         });
+      } else {
+        tekan = true;
       }
     });
   }
@@ -95,16 +90,13 @@ class _DetailLowonganState extends State<DetailLowongan> {
     if (_idUser == null) {
       _showToast("Harap bersabar", Colors.red);
     } else {
-      var uuid = new Uuid();
-
-      String _idRegister = uuid.v4();
+      String _idRegister = "${_idUser}_${widget.idNya}";
       var today = new DateTime.now();
 
       Map<String, dynamic> data = <String, dynamic>{
-        "idRegister": _idRegister,
-        "idVacancies": widget.idNya,
-        "timeRegister": today,
-        "idUser": _idUser,
+        "userId": _idUser,
+        "vacanciesId": widget.idNya,
+        "registerAt": today,
         "requirement": widget.requirementNya,
         "skills": _skills,
         "ownerAgency": widget.instansi
@@ -133,7 +125,6 @@ class _DetailLowonganState extends State<DetailLowongan> {
   void initState() {
     super.initState();
     getDataUser();
-    isRegistratOrNot();
   }
 
   @override

@@ -9,6 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
 import 'package:tempat_magang/user_page/detailLowongan.dart';
+import 'package:tempat_magang/user_page/lamaran_pemagang.dart';
 import 'package:uuid/uuid.dart';
 
 class Dashboard extends StatefulWidget {
@@ -147,6 +148,13 @@ class _DashboardState extends State<Dashboard> {
             new ListTile(
               title: new Text("Lamaran"),
               trailing: new Icon(Icons.find_in_page),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(
+                    builder: (BuildContext context) => new LamaranPemagang()));
+              },
             ),
             new ListTile(
               title: new Text("Rekomendasi"),
@@ -501,8 +509,8 @@ class _ListPageState extends State<ListPage> {
     var firestore = Firestore.instance;
     QuerySnapshot qn = await firestore
         .collection('vacancies')
-        .where("validUntil", isGreaterThanOrEqualTo: dateNow)
-        .orderBy("validUntil", descending: false)
+        .where("expiredAt", isGreaterThanOrEqualTo: dateNow)
+        .orderBy("expiredAt", descending: false)
         .getDocuments();
 
     return qn.documents;
@@ -528,33 +536,37 @@ class _ListPageState extends State<ListPage> {
               ),
             );
           } else {
-            return ListView.builder(
-              itemCount: snapshot.data.length,
-              itemBuilder: (_, index) {
-                String uploadTglBaru = formatDate(
-                    snapshot.data[index].data["timeUpload"],
-                    [dd, ' ', MM, ' ', yyyy]);
-                String mulaiTglBaru = formatDate(
-                    snapshot.data[index].data["timeStartIntern"],
-                    [dd, ' ', MM, ' ', yyyy]);
-                String akhirTglBaru = formatDate(
-                    snapshot.data[index].data["timeEndIntern"],
-                    [dd, ' ', MM, ' ', yyyy]);
+            if (snapshot.data.length == 0) {
+              return Center(child: new Text("Yah.. Belum ada lowongan"));
+            } else {
+              return ListView.builder(
+                itemCount: snapshot.data.length,
+                itemBuilder: (_, index) {
+                  String uploadTglBaru = formatDate(
+                      snapshot.data[index].data["createdAt"],
+                      [dd, ' ', MM, ' ', yyyy]);
+                  String mulaiTglBaru = formatDate(
+                      snapshot.data[index].data["timeStartIntern"],
+                      [dd, ' ', MM, ' ', yyyy]);
+                  String akhirTglBaru = formatDate(
+                      snapshot.data[index].data["timeEndIntern"],
+                      [dd, ' ', MM, ' ', yyyy]);
 
-                return new CustomCard(
-                  instansi: snapshot.data[index].data["ownerAgency"],
-                  kuota: snapshot.data[index].data["quota"],
-                  idNya: snapshot.data[index].data["id"],
-                  judulNya: snapshot.data[index].data["title"],
-                  tglUpload: uploadTglBaru,
-                  tglAkhir: akhirTglBaru,
-                  tglMulai: mulaiTglBaru,
-                  deskripsiNya: snapshot.data[index].data["description"],
-                  requirementNya:
-                      List.from(snapshot.data[index].data["requirement"]),
-                );
-              },
-            );
+                  return new CustomCard(
+                    instansi: snapshot.data[index].data["ownerAgency"],
+                    kuota: snapshot.data[index].data["quota"],
+                    idNya: snapshot.data[index].data["id"],
+                    judulNya: snapshot.data[index].data["title"],
+                    tglUpload: uploadTglBaru,
+                    tglAkhir: akhirTglBaru,
+                    tglMulai: mulaiTglBaru,
+                    deskripsiNya: snapshot.data[index].data["description"],
+                    requirementNya:
+                        List.from(snapshot.data[index].data["requirement"]),
+                  );
+                },
+              );
+            }
           }
         },
       ),

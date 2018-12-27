@@ -57,14 +57,14 @@ class _BuatLowonganState extends State<BuatLowongan> {
           "departement": _controlJurusan.text,
           "quota": int.parse(_controlKuota.text),
           "id": _idNya,
-          "timeUpload": new DateTime.now(),
+          "createdAt": new DateTime.now(),
           "timeStartIntern": _tglMulai,
           "timeEndIntern": _tglAkhir,
           "isActiveIntern": _isActiveIntern,
           "ownerAgency": _idUser,
           "description": _controlDeskrip.text,
           "requirement": _controlRequir.text.split(","),
-          "validUntil": _validUntil
+          "expiredAt": _validUntil
         };
 
         Firestore.instance

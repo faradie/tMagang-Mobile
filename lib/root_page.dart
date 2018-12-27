@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tempat_magang/admin_page/admin_dashboard.dart';
 
-import 'package:tempat_magang/user_page/admin_dashboard.dart';
 import 'package:tempat_magang/user_page/college_dashboard.dart';
 import 'package:tempat_magang/user_page/dashboard.dart';
 import 'package:tempat_magang/user_page/dashboard_instansi.dart';

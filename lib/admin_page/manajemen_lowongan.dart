@@ -156,26 +156,33 @@ class ListLowonganState extends State<ListLowongan> {
               ),
             );
           } else {
-            return ListView.builder(
-              itemCount: snapshot.data.length,
-              itemBuilder: (_, index) {
-                DateTime _validUntil = snapshot.data[index].data["validUntil"];
-                final difference = dateNow.difference(_validUntil).inDays;
-                if (difference >= 0) {
-                  _icon = Icons.warning;
-                  _colors = Colors.red;
-                } else {
-                  _icon = Icons.check;
-                  _colors = Colors.blue;
-                }
-                return new TileLowongan(
-                  judul: snapshot.data[index].data["title"],
-                  penyelenggara: snapshot.data[index].data["ownerAgency"],
-                  iconData: _icon,
-                  warna: _colors,
-                );
-              },
-            );
+            if (snapshot.data.length == 0) {
+              return new Center(
+                child: new Text("Belum ada lowongan"),
+              );
+            } else {
+              return ListView.builder(
+                itemCount: snapshot.data.length,
+                itemBuilder: (_, index) {
+                  DateTime _validUntil =
+                      snapshot.data[index].data["validUntil"];
+                  final difference = dateNow.difference(_validUntil).inDays;
+                  if (difference >= 0) {
+                    _icon = Icons.warning;
+                    _colors = Colors.red;
+                  } else {
+                    _icon = Icons.check;
+                    _colors = Colors.blue;
+                  }
+                  return new TileLowongan(
+                    judul: snapshot.data[index].data["title"],
+                    penyelenggara: snapshot.data[index].data["ownerAgency"],
+                    iconData: _icon,
+                    warna: _colors,
+                  );
+                },
+              );
+            }
           }
         },
       ),

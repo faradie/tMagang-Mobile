@@ -86,11 +86,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
     var iconMenuAdmin = [
       Firestore.instance
           .collection('vacancies')
-          .where("validUntil", isGreaterThanOrEqualTo: dateNow)
+          .where("expiredAt", isGreaterThanOrEqualTo: dateNow)
           .snapshots(),
       Firestore.instance
           .collection('vacancies')
-          .where("validUntil", isLessThan: dateNow)
+          .where("expiredAt", isLessThan: dateNow)
           .snapshots(),
       Firestore.instance
           .collection('users')
