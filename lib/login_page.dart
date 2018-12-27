@@ -71,7 +71,6 @@ class _LoginPageState extends State<LoginPage> {
           print(userId);
         }
       } catch (e) {
-        // _showToast(e.toString());
         print(e);
         if (e.toString() ==
             "PlatformException(exception, The email address is badly formatted., null)") {
@@ -85,6 +84,9 @@ class _LoginPageState extends State<LoginPage> {
         } else if (e.toString() ==
             "PlatformException(exception, There is no user record corresponding to this identifier. The user may have been deleted., null)") {
           _showToast("Email / Password salah");
+        } else if (e.toString() ==
+            "PlatformException(exception, A network error (such as timeout, interrupted connection or unreachable host) has occurred., null)") {
+          _showToast("Koneksi bermasalah");
         } else {
           _showToast(e.toString());
         }
@@ -190,7 +192,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(
-      statusBarColor: Color(0xFFef5e2d), //or set color with: Color(0xFF0000FF)
+      statusBarColor: Color(0xFFbf6041), //or set color with: Color(0xFF0000FF)
     ));
     return Scaffold(
       // resizeToAvoidBottomPadding: false,

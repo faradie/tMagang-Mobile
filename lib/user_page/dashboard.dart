@@ -1,12 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:tempat_magang/auth.dart';
 import 'package:tempat_magang/global_page/profil.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
+import 'package:tempat_magang/user_page/detailLowongan.dart';
+import 'package:uuid/uuid.dart';
 
 class Dashboard extends StatefulWidget {
   Dashboard({this.auth, this.onSignedOut});
@@ -85,6 +88,7 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
     getData();
     getDataUser();
+
     // _isVisible = true;
     // _hideButtonController = new ScrollController();
     // _hideButtonController.addListener(() {
@@ -553,245 +557,6 @@ class _ListPageState extends State<ListPage> {
             );
           }
         },
-      ),
-    );
-  }
-}
-
-class DetailLowongan extends StatelessWidget {
-  DetailLowongan(
-      {this.judulNya,
-      this.kuota,
-      this.tglUpload,
-      this.instansi,
-      this.tglAkhir,
-      this.tglAwal,
-      this.deskripsiNya,
-      this.requirementNya,
-      this.idNya});
-  final String judulNya,
-      deskripsiNya,
-      idNya,
-      tglUpload,
-      tglAwal,
-      tglAkhir,
-      instansi;
-
-  final int kuota;
-
-  final List<String> requirementNya;
-
-  @override
-  Widget build(BuildContext context) {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-    return new Scaffold(
-      appBar: AppBar(
-        elevation: defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
-        leading: InkWell(
-          onTap: () {
-            Navigator.of(context).pop();
-          },
-          child: new Icon(
-            Icons.chevron_left,
-            color: Colors.white,
-          ),
-        ),
-        title: new Text("Detail"),
-        backgroundColor: const Color(0xFFe87c55),
-        actions: <Widget>[
-          new FlatButton(
-            child: new Icon(Icons.share, color: Colors.white),
-            onPressed: () {},
-          )
-        ],
-      ),
-      body: new ListView(
-        children: <Widget>[
-          new Card(
-            color: Colors.white,
-            child: new Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                new Container(
-                  child: new Center(
-                    child: new Text("Foto"),
-                  ),
-                  height: 110.0,
-                  width: 110.0,
-                  // color: Colors.red,
-                  decoration: new BoxDecoration(
-                      color: Color(0xFFe87c55),
-                      borderRadius: new BorderRadius.only(
-                          bottomLeft: Radius.circular(5.0),
-                          topLeft: Radius.circular(5.0))),
-                ),
-                Expanded(
-                  child: new Container(
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          new Text("$judulNya",
-                              style: new TextStyle(
-                                  fontSize: 15.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey[800])),
-                          new Text("Kuota $kuota"),
-                          Padding(
-                            padding: const EdgeInsets.all(5.0),
-                          ),
-                          Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: <Widget>[
-                              Expanded(
-                                child: ButtonTheme(
-                                  minWidth: 200.0,
-                                  height: 40.0,
-                                  child: new RaisedButton(
-                                    color: const Color(0xFFff9977),
-                                    elevation: 4.0,
-                                    splashColor: Colors.blueGrey,
-                                    onPressed: () {},
-                                    child: new Text(
-                                      'Gabung'.toUpperCase(),
-                                      style: TextStyle(
-                                          fontSize: 20.0, color: Colors.white),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 5.0),
-          Container(
-            decoration: new BoxDecoration(
-                border:
-                    new Border.all(color: const Color(0xFFe87c55), width: 1.0),
-                borderRadius: new BorderRadius.all(Radius.circular(20.0))),
-            margin: const EdgeInsets.only(left: 5.0, right: 5.0),
-            padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-            child: Column(
-              children: <Widget>[
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    new Text(
-                      "Periode".toUpperCase(),
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    )
-                  ],
-                ),
-                SizedBox(height: 16.0),
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    Container(
-                        child: Column(
-                      children: <Widget>[
-                        new Text("Mulai",
-                            style: new TextStyle(
-                                fontSize: 15.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey[800])),
-                        new Text("$tglAwal"),
-                      ],
-                    )),
-                    new Divider(),
-                    Container(
-                        child: Column(
-                      children: <Widget>[
-                        new Text("Akhir",
-                            style: new TextStyle(
-                                fontSize: 15.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey[800])),
-                        new Text("$tglAkhir"),
-                      ],
-                    ))
-                  ],
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 5.0),
-          new Card(
-            child: new Container(
-              margin: const EdgeInsets.all(10.0),
-              child: new Row(
-                children: <Widget>[
-                  new Expanded(
-                    child: new Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        new Text(
-                          "Diupload pada $tglUpload",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        new Text(
-                          deskripsiNya,
-                          textAlign: TextAlign.justify,
-                        ),
-                        new Padding(
-                          padding: const EdgeInsets.all(8.0),
-                        ),
-                        new Text(
-                          "Requirement :",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Container(
-                              height: 25.0,
-                              color: Colors.transparent,
-                              child: Requir(
-                                req: requirementNya,
-                              )),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
-          new Container(
-            margin: const EdgeInsets.all(5.0),
-            child: new Text(
-              "Pertanyaan terkait",
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
-            ),
-          ),
-          new Container(
-            margin: const EdgeInsets.all(5.0),
-            child: Card(
-              child: Container(
-                margin: const EdgeInsets.all(10.0),
-                child: new Text(
-                  "Coming Soon...",
-                ),
-              ),
-            ),
-          )
-        ],
       ),
     );
   }

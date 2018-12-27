@@ -17,11 +17,13 @@ class ProfilState extends State<Profil> {
       _collegeId,
       _jurusan,
       _jenisKel,
+      _nim,
       _kontak,
       _alamat,
       _statusUser;
   List<String> _requirementNya;
   bool _isActive;
+
   Future getDataUser() async {
     var user = await FirebaseAuth.instance.currentUser();
     var firestore = Firestore.instance;
@@ -39,13 +41,15 @@ class ProfilState extends State<Profil> {
           _jurusan = name["departement"];
           _isActive = name["isActive"];
           _jenisKel = name["gender"];
-          _kontak = name["phone"];
+          _nim = name["studentIDNumber"];
+          _kontak = name["phoneNumber"];
           _collegeId = name["collegeId"];
           _alamat = name["address"];
           _requirementNya = List.from(name["skills"]);
         });
       }
     });
+    print("ini nimNya : $_nim");
   }
 
   Future getCollegeName() async {
@@ -181,6 +185,20 @@ class ProfilState extends State<Profil> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    Container(
+                      margin: const EdgeInsets.only(
+                          top: 10.0, left: 10.0, right: 10.0),
+                      child: new Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          new Text(
+                            "NIM",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          new Text(_nim == null ? "Mengambil data" : _nim)
+                        ],
+                      ),
+                    ),
                     Container(
                       margin: const EdgeInsets.only(
                           top: 10.0, left: 10.0, right: 10.0),
