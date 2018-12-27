@@ -24,6 +24,8 @@ class _BuatLowonganState extends State<BuatLowongan> {
   final _controlKuota = new TextEditingController();
   final _controlRequir = new TextEditingController();
   final _controlDeskrip = new TextEditingController();
+  final _controlTglMulai = new TextEditingController();
+  final _controlTglAkhir = new TextEditingController();
 
   bool _setuju = false;
   final formKeySave = new GlobalKey<FormState>();
@@ -51,17 +53,17 @@ class _BuatLowonganState extends State<BuatLowongan> {
         var today = new DateTime.now();
         var _validUntil = today.add(new Duration(days: 6));
         Map<String, dynamic> data = <String, dynamic>{
-          "title": _judulLowongan,
-          "departement": _jurusanLowongan,
-          "quota": _kuota,
+          "title": _controlJudul.text,
+          "departement": _controlJurusan.text,
+          "quota": int.parse(_controlKuota.text),
           "id": _idNya,
           "timeUpload": new DateTime.now(),
           "timeStartIntern": _tglMulai,
           "timeEndIntern": _tglAkhir,
           "isActiveIntern": _isActiveIntern,
           "ownerAgency": _idUser,
-          "description": _deskripsi,
-          "requirement": _require.split(","),
+          "description": _controlDeskrip.text,
+          "requirement": _controlRequir.text.split(","),
           "validUntil": _validUntil
         };
 
@@ -250,12 +252,14 @@ class _BuatLowonganState extends State<BuatLowongan> {
               SizedBox(height: 16.0),
               new Text("Periode :"),
               DateTimePickerFormField(
+                controller: _controlTglMulai,
                 onChanged: (mli) => setState(() => _tglMulai = mli),
                 format: DateFormat("EEEE, d MMMM yyyy - h:mm a"),
                 keyboardType: TextInputType.datetime,
                 decoration: InputDecoration(labelText: 'Tanggal Mulai'),
               ),
               DateTimePickerFormField(
+                controller: _controlTglAkhir,
                 onChanged: (akhr) => setState(() => _tglAkhir = akhr),
                 format: DateFormat("EEEE, d MMMM yyyy - h:mm a"),
                 keyboardType: TextInputType.datetime,

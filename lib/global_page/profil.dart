@@ -12,7 +12,14 @@ class Profil extends StatefulWidget {
 
 class ProfilState extends State<Profil> {
   var name;
-  String _namaUser, _statusUser, _jurusan, _jenisKel, _kontak, _alamat;
+  String _namaUser,
+      _collegeName,
+      _collegeId,
+      _jurusan,
+      _jenisKel,
+      _kontak,
+      _alamat,
+      _statusUser;
   List<String> _requirementNya;
   bool _isActive;
   Future getDataUser() async {
@@ -33,8 +40,26 @@ class ProfilState extends State<Profil> {
           _isActive = name["isActive"];
           _jenisKel = name["gender"];
           _kontak = name["phone"];
+          _collegeId = name["collegeId"];
           _alamat = name["address"];
           _requirementNya = List.from(name["skills"]);
+        });
+      }
+    });
+  }
+
+  Future getCollegeName() async {
+    var firestore = Firestore.instance;
+    var userQuery = firestore
+        .collection('users')
+        .where('uid', isEqualTo: _collegeId)
+        .limit(1);
+
+    userQuery.getDocuments().then((data) {
+      if (data.documents.length > 0) {
+        setState(() {
+          name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
+          _collegeName = name["displayName"];
         });
       }
     });
@@ -44,6 +69,7 @@ class ProfilState extends State<Profil> {
   void initState() {
     super.initState();
     getDataUser();
+    getCollegeName();
   }
 
   @override
@@ -107,7 +133,9 @@ class ProfilState extends State<Profil> {
                           padding:
                               const EdgeInsets.only(bottom: 8.0, left: 8.0),
                           child: new Text(
-                            "Nama Instansi Terkait".toString(),
+                            _collegeName == null
+                                ? "Mengambil data"
+                                : _collegeName,
                             style: new TextStyle(
                                 color: Colors.grey, fontSize: 13.0),
                             textAlign: TextAlign.center,

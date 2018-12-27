@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:tempat_magang/auth.dart';
 import 'package:tempat_magang/global_page/profil.dart';
 
@@ -497,7 +498,7 @@ class _ListPageState extends State<ListPage> {
     QuerySnapshot qn = await firestore
         .collection('vacancies')
         .where("validUntil", isGreaterThanOrEqualTo: dateNow)
-        .orderBy("validUntil", descending: true)
+        .orderBy("validUntil", descending: false)
         .getDocuments();
 
     return qn.documents;
@@ -515,7 +516,12 @@ class _ListPageState extends State<ListPage> {
         builder: (_, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
-              child: Text("Loading Data.."),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[loadingLoad, Text("Loading Data..")],
+              ),
             );
           } else {
             return ListView.builder(
@@ -577,6 +583,10 @@ class DetailLowongan extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return new Scaffold(
       appBar: AppBar(
         elevation: defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
@@ -760,6 +770,24 @@ class DetailLowongan extends StatelessWidget {
                     ),
                   )
                 ],
+              ),
+            ),
+          ),
+          new Container(
+            margin: const EdgeInsets.all(5.0),
+            child: new Text(
+              "Pertanyaan terkait",
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+            ),
+          ),
+          new Container(
+            margin: const EdgeInsets.all(5.0),
+            child: Card(
+              child: Container(
+                margin: const EdgeInsets.all(10.0),
+                child: new Text(
+                  "Coming Soon...",
+                ),
               ),
             ),
           )

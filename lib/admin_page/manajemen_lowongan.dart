@@ -148,7 +148,12 @@ class ListLowonganState extends State<ListLowongan> {
         builder: (_, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
-              child: Text("Loading Data.."),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[loadingLoad, Text("Loading Data..")],
+              ),
             );
           } else {
             return ListView.builder(
@@ -212,7 +217,6 @@ class TileLowonganState extends State<TileLowongan> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getDataUser();
   }
@@ -223,7 +227,7 @@ class TileLowonganState extends State<TileLowongan> {
       child: new ListTile(
         leading: new Icon(widget.iconData, color: widget.warna),
         title: new Text(
-          widget.judul,
+          widget.judul == null ? "" : widget.judul,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle:
