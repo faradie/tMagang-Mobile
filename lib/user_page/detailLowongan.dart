@@ -40,6 +40,75 @@ class _DetailLowonganState extends State<DetailLowongan> {
   String _idUser;
   bool tekan = false;
 
+  showAlertPersetujuan() {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(32.0))),
+              contentPadding: EdgeInsets.only(top: 10.0),
+              content: Container(
+                width: 300.0,
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    new Text(
+                      "Perhatian",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 16.0),
+                    new Text(
+                      "Apakah anda yakin dengan pengajuan ini?",
+                    ),
+                    SizedBox(height: 16.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        ButtonTheme(
+                          height: 50.0,
+                          child: new RaisedButton(
+                            color: const Color(0xFFff9977),
+                            elevation: 4.0,
+                            splashColor: Colors.blueGrey,
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            padding: const EdgeInsets.only(),
+                            child: new Text(
+                              'Tidak'.toUpperCase(),
+                              style: TextStyle(
+                                  fontSize: 15.0, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                        ButtonTheme(
+                          height: 50.0,
+                          child: new RaisedButton(
+                            color: const Color(0xFFff9977),
+                            elevation: 4.0,
+                            splashColor: Colors.blueGrey,
+                            onPressed: _inPressed,
+                            padding: const EdgeInsets.only(),
+                            child: new Text(
+                              'Yakin'.toUpperCase(),
+                              style: TextStyle(
+                                  fontSize: 15.0, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ));
+  }
+
   void _showToast(String pesan, Color warna) {
     Fluttertoast.showToast(
       msg: pesan,
@@ -208,7 +277,7 @@ class _DetailLowonganState extends State<DetailLowongan> {
                                               ? null
                                               : tekan == false
                                                   ? null
-                                                  : _inPressed,
+                                                  : showAlertPersetujuan,
                                       child: _idUser == null
                                           ? loadingLoad
                                           : new Text(

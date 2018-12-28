@@ -63,7 +63,7 @@ class _BuatLowonganState extends State<BuatLowongan> {
           "isActiveIntern": _isActiveIntern,
           "ownerAgency": _idUser,
           "description": _controlDeskrip.text,
-          "requirement": _controlRequir.text.split(","),
+          "requirement": _controlRequir.text.toLowerCase().split(","),
           "expiredAt": _validUntil
         };
 

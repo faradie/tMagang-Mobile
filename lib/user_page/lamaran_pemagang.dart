@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:date_format/date_format.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,7 @@ class LamaranPemagang extends StatefulWidget {
 }
 
 class LamaranPemagangState extends State<LamaranPemagang> {
-  String _userId;
+  String _userId, _internName;
 
   Future getDataUser() async {
     var user = await FirebaseAuth.instance.currentUser();
@@ -108,7 +109,8 @@ class TileLowongan extends StatefulWidget {
 
 class TileLowonganState extends State<TileLowongan> {
   var name;
-  String _namaUser;
+  String _nameLamaran;
+  String regAt;
   // Future getDataUser() async {
   //   var firestore = Firestore.instance;
   //   var userQuery = firestore
@@ -126,10 +128,25 @@ class TileLowonganState extends State<TileLowongan> {
   //   });
   // }
 
+  Future getDataUser() async {
+    var firestore = Firestore.instance;
+    var userQuery2 =
+        firestore.collection('vacancies').document(widget.vacanciesId);
+    userQuery2.get().then((doc) {
+      if (doc.exists) {
+        setState(() {
+          _nameLamaran = doc.data["title"];
+          regAt = formatDate(
+              widget.registeAt, [HH, ':', nn, '  ', dd, ' ', MM, ' ', yyyy]);
+        });
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    // getDataUser();
+    getDataUser();
   }
 
   @override
@@ -138,11 +155,11 @@ class TileLowonganState extends State<TileLowongan> {
       child: new ListTile(
         leading: new Icon(Icons.check, color: Colors.blue),
         title: new Text(
-          widget.vacanciesId == null ? "" : widget.vacanciesId,
+          _nameLamaran == null ? "Mengambil data" : _nameLamaran,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: new Text(
-            "Diajukan pada : ${widget.registeAt == null ? "" : widget.registeAt}"),
+            "Diajukan pada : ${regAt == null ? "Mengambil data" : regAt}"),
       ),
     );
   }

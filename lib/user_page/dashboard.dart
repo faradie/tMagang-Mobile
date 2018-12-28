@@ -50,6 +50,17 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
+  void _showToast(String pesan, MaterialColor warna) {
+    Fluttertoast.showToast(
+      msg: pesan,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIos: 1,
+      backgroundColor: warna,
+      textColor: Colors.white,
+    );
+  }
+
   void _signedOut() {
     setState(() {
       authStatus = AuthStatus.notSignedIn;
@@ -159,6 +170,10 @@ class _DashboardState extends State<Dashboard> {
             new ListTile(
               title: new Text("Rekomendasi"),
               trailing: new Icon(Icons.star),
+              onTap: () {
+                Navigator.of(context).pop();
+                _showToast("Comingsoon", Colors.orange);
+              },
             )
           ],
         )),

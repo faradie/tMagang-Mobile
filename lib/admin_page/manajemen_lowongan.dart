@@ -62,7 +62,7 @@ class _InternManageState extends State<InternManage> {
               StreamBuilder(
                 stream: Firestore.instance
                     .collection('vacancies')
-                    .where("validUntil", isGreaterThanOrEqualTo: dateNow)
+                    .where("expiredAt", isGreaterThanOrEqualTo: dateNow)
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData)
@@ -85,7 +85,7 @@ class _InternManageState extends State<InternManage> {
               StreamBuilder(
                 stream: Firestore.instance
                     .collection('vacancies')
-                    .where("validUntil", isLessThan: dateNow)
+                    .where("expiredAt", isLessThan: dateNow)
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData)
@@ -129,7 +129,7 @@ class ListLowonganState extends State<ListLowongan> {
     var firestore = Firestore.instance;
     QuerySnapshot qn = await firestore
         .collection('vacancies')
-        .orderBy("validUntil", descending: true)
+        .orderBy("expiredAt", descending: true)
         .getDocuments();
 
     return qn.documents;
@@ -164,8 +164,7 @@ class ListLowonganState extends State<ListLowongan> {
               return ListView.builder(
                 itemCount: snapshot.data.length,
                 itemBuilder: (_, index) {
-                  DateTime _validUntil =
-                      snapshot.data[index].data["validUntil"];
+                  DateTime _validUntil = snapshot.data[index].data["expiredAt"];
                   final difference = dateNow.difference(_validUntil).inDays;
                   if (difference >= 0) {
                     _icon = Icons.warning;
