@@ -12,7 +12,7 @@ class LamaranPemagang extends StatefulWidget {
 }
 
 class LamaranPemagangState extends State<LamaranPemagang> {
-  String _userId, _internName;
+  String _userId;
 
   Future getDataUser() async {
     var user = await FirebaseAuth.instance.currentUser();

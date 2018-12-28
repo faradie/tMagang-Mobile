@@ -1,16 +1,16 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:tempat_magang/auth.dart';
-import 'package:tempat_magang/global_page/profil.dart';
 
+import 'dart:ui' as ui;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
 import 'package:tempat_magang/user_page/detailLowongan.dart';
+import 'package:tempat_magang/user_page/internprofil.dart';
 import 'package:tempat_magang/user_page/lamaran_pemagang.dart';
-import 'package:uuid/uuid.dart';
 
 class Dashboard extends StatefulWidget {
   Dashboard({this.auth, this.onSignedOut});
@@ -98,6 +98,7 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
+
     getData();
     getDataUser();
 
@@ -136,6 +137,12 @@ class _DashboardState extends State<Dashboard> {
             child: ListView(
           children: <Widget>[
             new UserAccountsDrawerHeader(
+              otherAccountsPictures: <Widget>[
+                new FlatButton(
+                  child: new Icon(Icons.input, color: Colors.white),
+                  onPressed: _signOut,
+                )
+              ],
               accountEmail:
                   new Text('${_currentEmail == null ? "" : _currentEmail}'),
               accountName: new Text('$_namaUser'),
@@ -152,7 +159,7 @@ class _DashboardState extends State<Dashboard> {
                 Navigator.of(
                   context,
                 ).push(MaterialPageRoute(
-                    builder: (BuildContext context) => new Profil()));
+                    builder: (BuildContext context) => new InternProfil()));
               },
             ),
             new Divider(),
@@ -186,8 +193,8 @@ class _DashboardState extends State<Dashboard> {
                   SliverAppBar(
                       actions: <Widget>[
                         new FlatButton(
-                          child: new Icon(Icons.input, color: Colors.white),
-                          onPressed: _signOut,
+                          child: new Icon(Icons.search, color: Colors.white),
+                          onPressed: () {},
                         )
                       ],
                       expandedHeight: 200.0,
@@ -206,37 +213,63 @@ class _DashboardState extends State<Dashboard> {
                                 color: Colors.white,
                                 fontSize: 20.0,
                               )),
-                          background: Image.asset(
-                            "img/selamatdatang.png",
-                            fit: BoxFit.cover,
-                          ))),
-                  SliverPersistentHeader(
-                    delegate: _SliverAppBarDelegate(
-                      Container(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Card(
-                              child: new ListTile(
-                                  trailing: new IconButton(
-                                    icon: new Icon(Icons.cancel),
-                                    onPressed: () {},
+                          background: new Stack(
+                            fit: StackFit.expand,
+                            children: <Widget>[
+                              Image.asset(
+                                "img/graduate.jpg",
+                                fit: BoxFit.cover,
+                              ),
+                              new BackdropFilter(
+                                child: new Container(
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFf78842)
+                                        .withOpacity(0.3),
                                   ),
-                                  leading: new Icon(Icons.search),
-                                  title: new TextField(
-                                    decoration: new InputDecoration(
-                                        hintText: 'Cari Magangmu',
-                                        border: InputBorder.none),
-                                  ))),
-                        ),
-                      ),
-                    ),
-                    pinned: true,
-                  )
+                                ),
+                                filter: new ui.ImageFilter.blur(
+                                  sigmaX: 2.0,
+                                  sigmaY: 2.0,
+                                ),
+                              )
+                            ],
+                          ))),
+                  // SliverPersistentHeader(
+                  //   delegate: _SliverAppBarDelegate(
+                  //     Container(
+                  //       child: Padding(
+                  //         padding: const EdgeInsets.all(8.0),
+                  //         child: Card(
+                  //             child: new ListTile(
+                  //                 trailing: new IconButton(
+                  //                   icon: new Icon(Icons.cancel),
+                  //                   onPressed: () {},
+                  //                 ),
+                  //                 leading: new Icon(Icons.search),
+                  //                 title: new TextField(
+                  //                   decoration: new InputDecoration(
+                  //                       hintText: 'Cari Magangmu',
+                  //                       border: InputBorder.none),
+                  //                 ))),
+                  //       ),
+                  //     ),
+                  //   ),
+                  //   pinned: true,
+                  // )
                 ];
               },
               body: new Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
+                  // new Container(
+                  //   margin: const EdgeInsets.all(10.0),
+                  //   child: new Text(
+                  //     "Segera temukan magangmu",
+                  //     style: TextStyle(
+                  //         fontWeight: FontWeight.bold, color: Colors.grey),
+                  //   ),
+                  // ),
                   new Expanded(
                     child: ListPage(),
                   ),
@@ -521,11 +554,12 @@ class _ListPageState extends State<ListPage> {
   DateTime dateNow = DateTime.now();
 
   Future getLowongan() async {
-    var firestore = Firestore.instance;
+    final Firestore firestore = Firestore();
+
     QuerySnapshot qn = await firestore
         .collection('vacancies')
         .where("expiredAt", isGreaterThanOrEqualTo: dateNow)
-        .orderBy("expiredAt", descending: false)
+        // .orderBy('createdAt', descending: true)
         .getDocuments();
 
     return qn.documents;

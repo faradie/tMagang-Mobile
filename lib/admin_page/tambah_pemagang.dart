@@ -1,10 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:tempat_magang/auth.dart';
 
 class CreateIntern extends StatefulWidget {
   @override
@@ -23,16 +21,6 @@ class _CreateInternState extends State<CreateIntern> {
   final _controlNamaPemagang = new TextEditingController();
   final formKeySave = new GlobalKey<FormState>();
   bool _setuju = false;
-  void _showToast(String pesan, Color warna) {
-    Fluttertoast.showToast(
-      msg: pesan,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.CENTER,
-      timeInSecForIos: 1,
-      backgroundColor: warna,
-      textColor: Colors.white,
-    );
-  }
 
   void showAlert(BuildContext context) {
     showDialog(

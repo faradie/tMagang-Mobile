@@ -3,14 +3,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class Profil extends StatefulWidget {
+class InternProfil extends StatefulWidget {
   @override
-  ProfilState createState() {
-    return new ProfilState();
+  InternProfilState createState() {
+    return new InternProfilState();
   }
 }
 
-class ProfilState extends State<Profil> {
+class InternProfilState extends State<InternProfil> {
   var name;
   String _namaUser,
       _collegeName,
@@ -19,8 +19,7 @@ class ProfilState extends State<Profil> {
       _jenisKel,
       _nim,
       _kontak,
-      _alamat,
-      _statusUser;
+      _alamat;
   List<String> _requirementNya;
   bool _isActive;
 
@@ -37,7 +36,7 @@ class ProfilState extends State<Profil> {
         setState(() {
           name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
           _namaUser = name["displayName"];
-          _statusUser = data.documents[0].data['role'];
+
           _jurusan = name["departement"];
           _isActive = name["isActive"];
           _jenisKel = name["gender"];
@@ -47,23 +46,18 @@ class ProfilState extends State<Profil> {
           _alamat = name["address"];
           _requirementNya = List.from(name["skills"]);
         });
-      }
-    });
-    print("ini nimNya : $_nim");
-  }
+        var getCollegeNameQuery = firestore
+            .collection('users')
+            .where('uid', isEqualTo: _collegeId)
+            .limit(1);
 
-  Future getCollegeName() async {
-    var firestore = Firestore.instance;
-    var userQuery = firestore
-        .collection('users')
-        .where('uid', isEqualTo: _collegeId)
-        .limit(1);
-
-    userQuery.getDocuments().then((data) {
-      if (data.documents.length > 0) {
-        setState(() {
-          name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
-          _collegeName = name["displayName"];
+        getCollegeNameQuery.getDocuments().then((data) {
+          if (data.documents.length > 0) {
+            setState(() {
+              name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
+              _collegeName = name["displayName"];
+            });
+          }
         });
       }
     });
@@ -73,7 +67,6 @@ class ProfilState extends State<Profil> {
   void initState() {
     super.initState();
     getDataUser();
-    getCollegeName();
   }
 
   @override
@@ -96,7 +89,11 @@ class ProfilState extends State<Profil> {
           actions: <Widget>[
             new FlatButton(
               child: new Icon(Icons.settings, color: Colors.white),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).push(new MaterialPageRoute(
+                  builder: (BuildContext context) => new EditProfil(),
+                ));
+              },
             )
           ],
         ),
@@ -338,5 +335,32 @@ class KompetensiUser extends StatelessWidget {
                 fontWeight: FontWeight.bold),
           ),
         ));
+  }
+}
+
+class EditProfil extends StatefulWidget {
+  _EditProfilState createState() => _EditProfilState();
+}
+
+class _EditProfilState extends State<EditProfil> {
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: AppBar(
+        elevation: defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
+        backgroundColor: const Color(0xFFe87c55),
+        title: new Text("Edit Profil"),
+        leading: InkWell(
+          onTap: () {
+            Navigator.of(context).pop();
+          },
+          child: new Icon(
+            Icons.chevron_left,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      body: new Text("data"),
+    );
   }
 }

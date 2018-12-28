@@ -22,7 +22,7 @@ class _LoginPageState extends State<LoginPage> {
   var _passLoginController = TextEditingController();
   String _email, _pass;
   FormType _formType = FormType.login;
-
+  bool tekan = true;
   bool validateAndSave() {
     final form = formKey.currentState;
     if (form.validate()) {
@@ -58,6 +58,9 @@ class _LoginPageState extends State<LoginPage> {
     if (validateAndSave()) {
       try {
         if (_formType == FormType.login) {
+          setState(() {
+            tekan = false;
+          });
           await widget.auth.signInWithEmailAndPassword(_email, _pass);
           // FirebaseUser user = await FirebaseAuth.instance
           //   .signInWithEmailAndPassword(email: _email, password: _pass);
@@ -140,7 +143,10 @@ class _LoginPageState extends State<LoginPage> {
           "<p>1. Dengan menjadi anggota tempat magang, anda akan mendapatkan informasi, memilih dan direkomendasikan untuk lowongan magang yang sesuai dengan kompetensi ataupun kebutuhan dari penyedia magang.\n2. Kemudahan pengelolaan informasi magang bagi penyedia magang.\n3. Kemudahan penelusuran dan pencarian magang bagi institusi pendidikan.\n4. Report dan feedback sebagai pemagang ataupun penyedia magang</p>"
     },
   ];
-
+  final loadingLoad = CircularProgressIndicator(
+    backgroundColor: Colors.deepOrange,
+    strokeWidth: 1.5,
+  );
   List<Container> listMyWidgets() {
     List<Container> list = new List();
     for (var i = 0; i < iconicon.length; i++) {
@@ -375,51 +381,23 @@ class _LoginPageState extends State<LoginPage> {
             color: const Color(0xFFff9977),
             elevation: 4.0,
             splashColor: Colors.blueGrey,
-            onPressed: _emailLoginController.text.trim() == "" ||
-                    _passLoginController.text.trim() == ""
+            onPressed: tekan == false
                 ? null
-                : validateAndSubmit,
+                : _emailLoginController.text.trim() == "" ||
+                        _passLoginController.text.trim() == ""
+                    ? null
+                    : validateAndSubmit,
             shape: new RoundedRectangleBorder(
                 borderRadius: new BorderRadius.circular(30.0)),
             padding: const EdgeInsets.only(),
-            child: new Text(
-              'Masuk'.toUpperCase(),
-              style: TextStyle(fontSize: 20.0, color: Colors.white),
-            ),
+            child: tekan == false
+                ? loadingLoad
+                : new Text(
+                    'Masuk'.toUpperCase(),
+                    style: TextStyle(fontSize: 20.0, color: Colors.white),
+                  ),
           ),
         ),
-        // Padding(
-        //   padding: const EdgeInsets.all(10.0),
-        // ),
-        // Container(
-        //   child: Row(
-        //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        //     children: <Widget>[
-        //       FlatButton(
-        //         onPressed: () {},
-        //         child: Text(
-        //           "lupa password?",
-        //           style: TextStyle(
-        //               fontSize: 12.0,
-        //               color: Color(0xFFEAC324),
-        //               fontWeight: FontWeight.w300,
-        //               letterSpacing: 0.5),
-        //         ),
-        //       ),
-        //       FlatButton(
-        //         onPressed: moveToRegister,
-        //         child: Text(
-        //           "buat akun",
-        //           style: TextStyle(
-        //               fontSize: 12.0,
-        //               color: Color(0xFFEAC324),
-        //               fontWeight: FontWeight.w300,
-        //               letterSpacing: 0.5),
-        //         ),
-        //       ),
-        //     ],
-        //   ),
-        // ),
       ];
     } else {
       return [

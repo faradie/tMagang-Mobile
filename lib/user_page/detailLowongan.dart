@@ -4,9 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:tempat_magang/auth.dart';
-import 'package:uuid/uuid.dart';
-import 'dashboard.dart' as dashboard;
 
 class DetailLowongan extends StatefulWidget {
   DetailLowongan(
@@ -57,7 +54,7 @@ class _DetailLowonganState extends State<DetailLowongan> {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     new Text(
-                      "Perhatian",
+                      "Perhatian".toUpperCase(),
                       textAlign: TextAlign.center,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
