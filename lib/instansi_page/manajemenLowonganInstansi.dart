@@ -1,14 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:date_format/date_format.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class InternManage extends StatefulWidget {
-  _InternManageState createState() => _InternManageState();
+class ManajemenLowonganInstansi extends StatefulWidget {
+  ManajemenLowonganInstansi({this.idAgency});
+  final String idAgency;
+  _ManajemenLowonganInstansiState createState() =>
+      _ManajemenLowonganInstansiState();
 }
 
-class _InternManageState extends State<InternManage> {
+class _ManajemenLowonganInstansiState extends State<ManajemenLowonganInstansi> {
   DateTime dateNow = DateTime.now();
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -29,7 +37,10 @@ class _InternManageState extends State<InternManage> {
           actions: <Widget>[
             new FlatButton(
               child: StreamBuilder(
-                stream: Firestore.instance.collection('vacancies').snapshots(),
+                stream: Firestore.instance
+                    .collection('vacancies')
+                    .where('ownerAgency', isEqualTo: widget.idAgency)
+                    .snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData)
                     return new Text(
@@ -62,18 +73,19 @@ class _InternManageState extends State<InternManage> {
                 stream: Firestore.instance
                     .collection('vacancies')
                     .where("expiredAt", isGreaterThanOrEqualTo: dateNow)
+                    .where('ownerAgency', isEqualTo: widget.idAgency)
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData)
                     return new Text(
-                      "Lowongan Aktif : 0",
+                      "Lowongan Aktif Anda: 0",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.grey,
                           fontSize: 15.0),
                     );
                   return new Text(
-                    "Lowongan Aktif : ${snapshot.data.documents.length.toString()}",
+                    "Lowongan Aktif Anda: ${snapshot.data.documents.length.toString()}",
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.grey,
@@ -85,18 +97,19 @@ class _InternManageState extends State<InternManage> {
                 stream: Firestore.instance
                     .collection('vacancies')
                     .where("expiredAt", isLessThan: dateNow)
+                    .where('ownerAgency', isEqualTo: widget.idAgency)
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData)
                     return new Text(
-                      "Lowongan NonAktif : 0",
+                      "Lowongan NonAktif Anda: 0",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.grey,
                           fontSize: 15.0),
                     );
                   return new Text(
-                    "Lowongan NonAktif : ${snapshot.data.documents.length.toString()}",
+                    "Lowongan NonAktif Anda: ${snapshot.data.documents.length.toString()}",
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.grey,
@@ -105,7 +118,9 @@ class _InternManageState extends State<InternManage> {
                 },
               ),
               new Expanded(
-                child: ListLowongan(),
+                child: ListLowongan(
+                  id: widget.idAgency,
+                ),
               ),
             ],
           ),
@@ -114,6 +129,8 @@ class _InternManageState extends State<InternManage> {
 }
 
 class ListLowongan extends StatefulWidget {
+  ListLowongan({this.id});
+  final String id;
   @override
   ListLowonganState createState() {
     return new ListLowonganState();
@@ -128,7 +145,7 @@ class ListLowonganState extends State<ListLowongan> {
     var firestore = Firestore.instance;
     QuerySnapshot qn = await firestore
         .collection('vacancies')
-        .orderBy("expiredAt", descending: true)
+        .where('ownerAgency', isEqualTo: widget.id)
         .getDocuments();
 
     return qn.documents;
@@ -175,7 +192,7 @@ class ListLowonganState extends State<ListLowongan> {
                   return new TileLowongan(
                     no: (index + 1).toString(),
                     judul: snapshot.data[index].data["title"],
-                    penyelenggara: snapshot.data[index].data["ownerAgency"],
+                    created: snapshot.data[index].data["createdAt"],
                     iconData: _icon,
                     warna: _colors,
                   );
@@ -190,9 +207,9 @@ class ListLowonganState extends State<ListLowongan> {
 }
 
 class TileLowongan extends StatefulWidget {
-  TileLowongan(
-      {this.judul, this.penyelenggara, this.iconData, this.no, this.warna});
-  final String judul, penyelenggara, no;
+  TileLowongan({this.judul, this.created, this.iconData, this.no, this.warna});
+  final String judul, no;
+  final DateTime created;
   final IconData iconData;
   final MaterialColor warna;
 
@@ -204,30 +221,6 @@ class TileLowongan extends StatefulWidget {
 
 class TileLowonganState extends State<TileLowongan> {
   var name;
-  String _namaUser;
-  Future getDataUser() async {
-    var firestore = Firestore.instance;
-    var userQuery = firestore
-        .collection('users')
-        .where('uid', isEqualTo: widget.penyelenggara)
-        .limit(1);
-
-    userQuery.getDocuments().then((data2) {
-      if (data2.documents.length > 0) {
-        setState(() {
-          name = data2.documents[0].data['data'] as Map<dynamic, dynamic>;
-          _namaUser = name["displayName"];
-        });
-      }
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getDataUser();
-  }
-
   @override
   Widget build(BuildContext context) {
     return new Container(
@@ -243,8 +236,8 @@ class TileLowonganState extends State<TileLowongan> {
             widget.judul == null ? "" : widget.judul,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          subtitle:
-              new Text("Dibuat oleh : ${_namaUser == null ? "" : _namaUser}"),
+          subtitle: new Text(
+              "Dibuat pada : ${widget.created == null ? "" : widget.created}"),
           trailing: new Icon(widget.iconData, color: widget.warna),
         ),
       ],

@@ -137,12 +137,12 @@ class _DashboardState extends State<Dashboard> {
             child: ListView(
           children: <Widget>[
             new UserAccountsDrawerHeader(
-              otherAccountsPictures: <Widget>[
-                new FlatButton(
-                  child: new Icon(Icons.input, color: Colors.white),
-                  onPressed: _signOut,
-                )
-              ],
+              decoration: BoxDecoration(color: const Color(0xFFe87c55)
+                  //     image: DecorationImage(
+                  //   image: ExactAssetImage('img/selamatdatang.png'),
+                  //   fit: BoxFit.cover,
+                  // )
+                  ),
               accountEmail:
                   new Text('${_currentEmail == null ? "" : _currentEmail}'),
               accountName: new Text('$_namaUser'),
@@ -181,6 +181,12 @@ class _DashboardState extends State<Dashboard> {
                 Navigator.of(context).pop();
                 _showToast("Comingsoon", Colors.orange);
               },
+            ),
+            new Divider(),
+            new ListTile(
+              leading: Icon(Icons.input),
+              title: new Text("Keluar"),
+              onTap: _signOut,
             )
           ],
         )),
@@ -217,21 +223,24 @@ class _DashboardState extends State<Dashboard> {
                             fit: StackFit.expand,
                             children: <Widget>[
                               Image.asset(
-                                "img/graduate.jpg",
+                                "img/graduate2.png",
                                 fit: BoxFit.cover,
                               ),
-                              new BackdropFilter(
-                                child: new Container(
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFf78842)
-                                        .withOpacity(0.3),
-                                  ),
-                                ),
-                                filter: new ui.ImageFilter.blur(
-                                  sigmaX: 2.0,
-                                  sigmaY: 2.0,
-                                ),
+                              new Container(
+                                color: Color.fromRGBO(232, 124, 85, 0.5),
                               )
+                              // new BackdropFilter(
+                              //   child: new Container(
+                              //     decoration: BoxDecoration(
+                              //       color: const Color(0xFFf78842)
+                              //           .withOpacity(0.3),
+                              //     ),
+                              //   ),
+                              //   filter: new ui.ImageFilter.blur(
+                              //     sigmaX: 2.0,
+                              //     sigmaY: 2.0,
+                              //   ),
+                              // )
                             ],
                           ))),
                   // SliverPersistentHeader(
@@ -390,6 +399,7 @@ class CustomCard extends StatelessWidget {
       this.kuota,
       this.instansi,
       this.tglAkhir,
+      this.jurusan,
       this.tglMulai,
       this.deskripsiNya,
       this.requirementNya,
@@ -400,7 +410,8 @@ class CustomCard extends StatelessWidget {
       tglUpload,
       tglMulai,
       tglAkhir,
-      instansi;
+      instansi,
+      jurusan;
 
   final int kuota;
   final List<String> requirementNya;
@@ -421,6 +432,7 @@ class CustomCard extends StatelessWidget {
                       deskripsiNya: deskripsiNya,
                       idNya: idNya,
                       judulNya: judulNya,
+                      jurusan: jurusan,
                     ),
               )),
           child: new Card(
@@ -565,6 +577,7 @@ class _ListPageState extends State<ListPage> {
     return qn.documents;
   }
 
+  //composite expiredAt and createdAt
   final loadingLoad = CircularProgressIndicator(
     backgroundColor: Colors.deepOrange,
     strokeWidth: 1.5,
@@ -572,9 +585,14 @@ class _ListPageState extends State<ListPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: FutureBuilder(
-        future: getLowongan(),
-        builder: (_, snapshot) {
+      child: StreamBuilder(
+        stream: Firestore.instance
+            .collection('vacancies')
+            .where("expiredAt", isGreaterThanOrEqualTo: dateNow)
+            .orderBy('expiredAt', descending: true)
+            .orderBy('createdAt', descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: Column(
@@ -584,38 +602,37 @@ class _ListPageState extends State<ListPage> {
                 children: <Widget>[loadingLoad, Text("Loading Data..")],
               ),
             );
+          } else if (!snapshot.hasData) {
+            return Center(child: new Text("Yah.. Belum ada lowongan.."));
+          } else if (snapshot.hasError) {
+            return Center(child: new Text("Yah.. ada yang salah nih.."));
           } else {
-            if (snapshot.data.length == 0) {
-              return Center(child: new Text("Yah.. Belum ada lowongan"));
-            } else {
-              return ListView.builder(
-                itemCount: snapshot.data.length,
-                itemBuilder: (_, index) {
-                  String uploadTglBaru = formatDate(
-                      snapshot.data[index].data["createdAt"],
-                      [dd, ' ', MM, ' ', yyyy]);
-                  String mulaiTglBaru = formatDate(
-                      snapshot.data[index].data["timeStartIntern"],
-                      [dd, ' ', MM, ' ', yyyy]);
-                  String akhirTglBaru = formatDate(
-                      snapshot.data[index].data["timeEndIntern"],
-                      [dd, ' ', MM, ' ', yyyy]);
+            // print("ini jumlahnyaaaaaaaaa ${snapshot.data.documents.length}");
+            return ListView.builder(
+              itemCount: snapshot.data.documents.length,
+              itemBuilder: (_, index) {
+                DocumentSnapshot ds = snapshot.data.documents[index];
+                String uploadTglBaru =
+                    formatDate(ds["createdAt"], [dd, ' ', MM, ' ', yyyy]);
+                String mulaiTglBaru =
+                    formatDate(ds["timeStartIntern"], [dd, ' ', MM, ' ', yyyy]);
+                String akhirTglBaru =
+                    formatDate(ds["timeEndIntern"], [dd, ' ', MM, ' ', yyyy]);
 
-                  return new CustomCard(
-                    instansi: snapshot.data[index].data["ownerAgency"],
-                    kuota: snapshot.data[index].data["quota"],
-                    idNya: snapshot.data[index].data["id"],
-                    judulNya: snapshot.data[index].data["title"],
-                    tglUpload: uploadTglBaru,
-                    tglAkhir: akhirTglBaru,
-                    tglMulai: mulaiTglBaru,
-                    deskripsiNya: snapshot.data[index].data["description"],
-                    requirementNya:
-                        List.from(snapshot.data[index].data["requirement"]),
-                  );
-                },
-              );
-            }
+                return new CustomCard(
+                  jurusan: ds["departement"],
+                  instansi: ds["ownerAgency"],
+                  kuota: ds["quota"],
+                  idNya: ds["id"],
+                  judulNya: ds["title"],
+                  tglUpload: uploadTglBaru,
+                  tglAkhir: akhirTglBaru,
+                  tglMulai: mulaiTglBaru,
+                  deskripsiNya: ds["description"],
+                  requirementNya: List.from(ds["requirement"]),
+                );
+              },
+            );
           }
         },
       ),

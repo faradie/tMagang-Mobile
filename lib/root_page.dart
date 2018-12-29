@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:tempat_magang/admin_page/admin_dashboard.dart';
+import 'package:tempat_magang/instansi_page/dashboard_instansi.dart';
 
 import 'package:tempat_magang/user_page/college_dashboard.dart';
 import 'package:tempat_magang/user_page/dashboard.dart';
-import 'package:tempat_magang/user_page/dashboard_instansi.dart';
+
 import 'login_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,7 +21,8 @@ enum AuthStatus { notSignedIn, signedIn }
 
 class _RootPageState extends State<RootPage> {
   AuthStatus authStatus = AuthStatus.notSignedIn;
-  String _statusUser, stats;
+  String _statusUser = null;
+
   void initState() {
     super.initState();
     getUser();
@@ -62,6 +64,7 @@ class _RootPageState extends State<RootPage> {
   void _signedOut() {
     setState(() {
       authStatus = AuthStatus.notSignedIn;
+      _statusUser = null;
     });
   }
 

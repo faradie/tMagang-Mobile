@@ -12,6 +12,7 @@ class DetailLowongan extends StatefulWidget {
       this.tglUpload,
       this.instansi,
       this.tglAkhir,
+      this.jurusan,
       this.tglAwal,
       this.deskripsiNya,
       this.requirementNya,
@@ -22,6 +23,7 @@ class DetailLowongan extends StatefulWidget {
       tglUpload,
       tglAwal,
       tglAkhir,
+      jurusan,
       instansi;
 
   final int kuota;
@@ -32,7 +34,7 @@ class DetailLowongan extends StatefulWidget {
 
 class _DetailLowonganState extends State<DetailLowongan> {
   List<String> _skills;
-  bool _terDaftar = false;
+  bool _terDaftar = null;
   var name;
   String _idUser;
   bool tekan = false;
@@ -144,6 +146,7 @@ class _DetailLowonganState extends State<DetailLowongan> {
           _terDaftar = true;
         });
       } else {
+        _terDaftar = false;
         tekan = true;
       }
     });
@@ -277,15 +280,17 @@ class _DetailLowonganState extends State<DetailLowongan> {
                                                   : showAlertPersetujuan,
                                       child: _idUser == null
                                           ? loadingLoad
-                                          : new Text(
-                                              _terDaftar == false
-                                                  ? 'Ajukan'.toUpperCase()
-                                                  : 'Proses Review'
-                                                      .toUpperCase(),
-                                              style: TextStyle(
-                                                  fontSize: 15.0,
-                                                  color: Colors.white),
-                                            )),
+                                          : _terDaftar == null
+                                              ? loadingLoad
+                                              : new Text(
+                                                  _terDaftar == false
+                                                      ? 'Ajukan'.toUpperCase()
+                                                      : 'Proses Review'
+                                                          .toUpperCase(),
+                                                  style: TextStyle(
+                                                      fontSize: 15.0,
+                                                      color: Colors.white),
+                                                )),
                                 ),
                               ),
                             ],
@@ -374,6 +379,13 @@ class _DetailLowonganState extends State<DetailLowongan> {
                         new Padding(
                           padding: const EdgeInsets.all(8.0),
                         ),
+                        new Text(
+                          "Jurusan : ${widget.jurusan}",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 10.0),
                         new Text(
                           "Requirement :",
                           style: TextStyle(

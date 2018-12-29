@@ -4,11 +4,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:tempat_magang/admin_page/buat_lowongan.dart';
+
 import 'package:tempat_magang/admin_page/data_instansi.dart';
 import 'package:tempat_magang/admin_page/manajemen_lowongan.dart';
 
 import 'package:tempat_magang/auth.dart';
+import 'package:tempat_magang/instansi_page/instansi_buat_lowongan.dart';
 
 class AdminDashboard extends StatefulWidget {
   AdminDashboard({this.auth, this.onSignedOut, this.wew});
@@ -187,7 +188,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 Navigator.of(
                   context,
                 ).push(MaterialPageRoute(
-                    builder: (BuildContext context) => new BuatLowongan()));
+                    builder: (BuildContext context) =>
+                        new InstansiBuatLowongan()));
               },
             ),
             ListTile(

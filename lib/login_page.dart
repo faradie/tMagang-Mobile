@@ -74,6 +74,9 @@ class _LoginPageState extends State<LoginPage> {
           print(userId);
         }
       } catch (e) {
+        setState(() {
+            tekan = true;
+          });
         print(e);
         if (e.toString() ==
             "PlatformException(exception, The email address is badly formatted., null)") {
