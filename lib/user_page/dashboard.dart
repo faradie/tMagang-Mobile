@@ -31,7 +31,7 @@ enum AuthStatus { notSignedIn, signedIn }
 
 class _DashboardState extends State<Dashboard> {
   AuthStatus authStatus = AuthStatus.notSignedIn;
-  String _currentEmail, _namaUser, _statusUser;
+  String _currentEmail, _namaUser, _statusUser, _idUser;
   ScrollController _hideButtonController;
   var name;
 
@@ -88,6 +88,7 @@ class _DashboardState extends State<Dashboard> {
         setState(() {
           name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
           _namaUser = name["displayName"];
+          _idUser = data.documents[0].data['uid'];
           _statusUser = data.documents[0].data['role'];
         });
       }
@@ -159,7 +160,8 @@ class _DashboardState extends State<Dashboard> {
                 Navigator.of(
                   context,
                 ).push(MaterialPageRoute(
-                    builder: (BuildContext context) => new InternProfil()));
+                    builder: (BuildContext context) =>
+                        new InternProfil(id: _idUser)));
               },
             ),
             new Divider(),
@@ -564,18 +566,6 @@ class ListPage extends StatefulWidget {
 
 class _ListPageState extends State<ListPage> {
   DateTime dateNow = DateTime.now();
-
-  Future getLowongan() async {
-    final Firestore firestore = Firestore();
-
-    QuerySnapshot qn = await firestore
-        .collection('vacancies')
-        .where("expiredAt", isGreaterThanOrEqualTo: dateNow)
-        // .orderBy('createdAt', descending: true)
-        .getDocuments();
-
-    return qn.documents;
-  }
 
   //composite expiredAt and createdAt
   final loadingLoad = CircularProgressIndicator(

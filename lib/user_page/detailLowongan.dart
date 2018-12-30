@@ -120,6 +120,7 @@ class _DetailLowonganState extends State<DetailLowongan> {
   }
 
   Future getDataUser() async {
+    List<dynamic> dummy = ["Skill belum diatur"];
     var user = await FirebaseAuth.instance.currentUser();
     var firestore = Firestore.instance;
     var userQuery = firestore
@@ -131,7 +132,7 @@ class _DetailLowonganState extends State<DetailLowongan> {
       if (data.documents.length > 0) {
         setState(() {
           name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
-          _skills = List.from(name["skills"]);
+          _skills = List.from(name["skills"] == null ? dummy : name["skills"]);
           _idUser = data.documents[0].data['uid'];
         });
       }
@@ -140,8 +141,8 @@ class _DetailLowonganState extends State<DetailLowongan> {
     var userQuery2 = firestore
         .collection('registerIntern')
         .document('${user.uid}_${widget.idNya}');
-    userQuery2.get().then((data) {
-      if (data.exists) {
+    userQuery2.get().then((dataDaff) {
+      if (dataDaff.exists) {
         setState(() {
           _terDaftar = true;
         });
@@ -153,35 +154,39 @@ class _DetailLowonganState extends State<DetailLowongan> {
   }
 
   void _inPressed() {
-    setState(() {
-      tekan = false;
-    });
-    if (_idUser == null) {
-      _showToast("Harap bersabar", Colors.red);
+    if (_skills[0] == "Skill belum diatur") {
+      _showToast("Atur skill anda terlebih dahulu", Colors.red);
     } else {
-      String _idRegister = "${_idUser}_${widget.idNya}";
-      var today = new DateTime.now();
-
-      Map<String, dynamic> data = <String, dynamic>{
-        "userId": _idUser,
-        "vacanciesId": widget.idNya,
-        "registerAt": today,
-        "requirement": widget.requirementNya,
-        "skills": _skills,
-        "ownerAgency": widget.instansi
-      };
-
-      Firestore.instance
-          .collection("registerIntern")
-          .document("$_idRegister")
-          .setData(data)
-          .whenComplete(() {
-        _showToast("Berhasil Mengajukan", Color(0xFFe87c55));
-
-        Navigator.of(context).pop();
-      }).catchError((e) {
-        print(e);
+      setState(() {
+        tekan = false;
       });
+      if (_idUser == null) {
+        _showToast("Harap bersabar", Colors.red);
+      } else {
+        String _idRegister = "${_idUser}_${widget.idNya}";
+        var today = new DateTime.now();
+
+        Map<String, dynamic> data = <String, dynamic>{
+          "userId": _idUser,
+          "vacanciesId": widget.idNya,
+          "registerAt": today,
+          "requirement": widget.requirementNya,
+          "skills": _skills,
+          "ownerAgency": widget.instansi
+        };
+
+        Firestore.instance
+            .collection("registerIntern")
+            .document("$_idRegister")
+            .setData(data)
+            .whenComplete(() {
+          _showToast("Berhasil Mengajukan", Color(0xFFe87c55));
+          Navigator.of(context).pop();
+          Navigator.of(context).pop();
+        }).catchError((e) {
+          print(e);
+        });
+      }
     }
   }
 

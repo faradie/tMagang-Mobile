@@ -195,7 +195,7 @@ class _InstansiBuatLowonganState extends State<InstansiBuatLowongan> {
                                                   MainAxisAlignment.start,
                                               children: <Widget>[
                                                 new Text(
-                                                  "Lama terlihat lowongan adalah dihitung sejak lowongan itu diterbitkan.",
+                                                  "Lama terlihat lowongan adalah dihitung sejak lowongan itu diterbitkan. Minimal 1 hari dan maksimal 60 hari.",
                                                   textAlign: TextAlign.justify,
                                                 )
                                               ],
@@ -448,8 +448,11 @@ class _InstansiBuatLowonganState extends State<InstansiBuatLowongan> {
               new TextFormField(
                 controller: _controlExpiredAt,
                 onSaved: (value) => _expiredAt = int.parse(value),
-                validator: (value) =>
-                    value.isEmpty ? 'Isikan Masa Lowongan dahulu' : null,
+                validator: (value) => value.isEmpty
+                    ? 'Isikan Masa Lowongan dahulu'
+                    : int.parse(value) < 1
+                        ? 'Batasan 1-60'
+                        : int.parse(value) > 60 ? 'Batasan 1-60' : null,
                 keyboardType: TextInputType.number,
                 decoration: new InputDecoration(
                     labelText: 'Berapa hari Lowongan dapat diakses?',
