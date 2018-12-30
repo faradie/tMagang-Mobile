@@ -12,6 +12,7 @@ class DetailLowongan extends StatefulWidget {
       this.tglUpload,
       this.instansi,
       this.tglAkhir,
+      this.linkPhoto,
       this.jurusan,
       this.tglAwal,
       this.deskripsiNya,
@@ -20,6 +21,7 @@ class DetailLowongan extends StatefulWidget {
   final String judulNya,
       deskripsiNya,
       idNya,
+      linkPhoto,
       tglUpload,
       tglAwal,
       tglAkhir,
@@ -137,7 +139,7 @@ class _DetailLowonganState extends State<DetailLowongan> {
         });
       }
     });
-
+    print("dataUsernya $_idUser");
     var userQuery2 = firestore
         .collection('registerIntern')
         .document('${user.uid}_${widget.idNya}');
@@ -235,19 +237,37 @@ class _DetailLowonganState extends State<DetailLowongan> {
             child: new Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                new Container(
-                  child: new Center(
-                    child: new Text("Foto"),
-                  ),
-                  height: 110.0,
-                  width: 110.0,
-                  // color: Colors.red,
-                  decoration: new BoxDecoration(
-                      color: Color(0xFFe87c55),
-                      borderRadius: new BorderRadius.only(
-                          bottomLeft: Radius.circular(5.0),
-                          topLeft: Radius.circular(5.0))),
-                ),
+                widget.linkPhoto == null
+                    ? new Container(
+                        child: new Center(
+                          child: new Text("T",
+                              style: TextStyle(
+                                  fontSize: 50.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)),
+                        ),
+                        height: 110.0,
+                        width: 110.0,
+                        // color: Colors.red,
+                        decoration: new BoxDecoration(
+                            color: Color(0xFFe87c55),
+                            borderRadius: new BorderRadius.only(
+                                bottomLeft: Radius.circular(5.0),
+                                topLeft: Radius.circular(5.0))),
+                      )
+                    : new Container(
+                        height: 110.0,
+                        width: 110.0,
+                        // color: Colors.red,
+                        decoration: new BoxDecoration(
+                            image: new DecorationImage(
+                                fit: BoxFit.fill,
+                                image: new NetworkImage(widget.linkPhoto)),
+                            color: Color(0xFFe87c55),
+                            borderRadius: new BorderRadius.only(
+                                bottomLeft: Radius.circular(5.0),
+                                topLeft: Radius.circular(5.0))),
+                      ),
                 Expanded(
                   child: new Container(
                     child: Padding(

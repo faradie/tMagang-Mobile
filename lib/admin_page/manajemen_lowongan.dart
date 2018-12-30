@@ -409,6 +409,7 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                                                 minWidth: 200.0,
                                                 height: 40.0,
                                                 child: new RaisedButton(
+                                                  onPressed: null,
                                                   color:
                                                       const Color(0xFFff9977),
                                                   elevation: 4.0,
@@ -435,6 +436,7 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                                                 minWidth: 200.0,
                                                 height: 40.0,
                                                 child: new RaisedButton(
+                                                  onPressed: null,
                                                   color:
                                                       const Color(0xFFff9977),
                                                   elevation: 4.0,

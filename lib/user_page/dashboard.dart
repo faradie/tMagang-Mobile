@@ -31,7 +31,8 @@ enum AuthStatus { notSignedIn, signedIn }
 
 class _DashboardState extends State<Dashboard> {
   AuthStatus authStatus = AuthStatus.notSignedIn;
-  String _currentEmail, _namaUser, _statusUser, _idUser;
+  String _currentEmail, _namaUser, _idUser, _role, _linkPhoto;
+  bool _statusUser;
   ScrollController _hideButtonController;
   var name;
 
@@ -88,8 +89,10 @@ class _DashboardState extends State<Dashboard> {
         setState(() {
           name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
           _namaUser = name["displayName"];
+          _linkPhoto = name["photoURL"];
           _idUser = data.documents[0].data['uid'];
-          _statusUser = data.documents[0].data['role'];
+          _statusUser = data.documents[0].data['isActive'];
+          _role = data.documents[0].data['role'];
         });
       }
     });
@@ -147,10 +150,11 @@ class _DashboardState extends State<Dashboard> {
               accountEmail:
                   new Text('${_currentEmail == null ? "" : _currentEmail}'),
               accountName: new Text('$_namaUser'),
-              currentAccountPicture: new CircleAvatar(
-                backgroundColor: Colors.amber,
-                child: new Text("A"),
-              ),
+              currentAccountPicture: _linkPhoto == null
+                  ? new CircleAvatar(
+                      backgroundColor: Colors.white,
+                      child: new Text("T", style: TextStyle(fontSize: 25.0)))
+                  : new CircleAvatar(backgroundImage: NetworkImage(_linkPhoto)),
             ),
             new ListTile(
               title: new Text("Profil"),
@@ -215,7 +219,7 @@ class _DashboardState extends State<Dashboard> {
                       flexibleSpace: FlexibleSpaceBar(
                           centerTitle: true,
                           title: Text(
-                              "${_statusUser == null ? "" : _statusUser == "intern" ? "Pemagang" : _statusUser == "agency" ? "Instansi" : _statusUser == "college" ? "Kampus" : _statusUser == "mentor" ? "mentor" : "admin"}"
+                              "${_role == null ? "" : _role == "intern" ? "Pemagang" : _role == "agency" ? "Instansi" : _role == "college" ? "Kampus" : _role == "mentor" ? "mentor" : "admin"}"
                                   .toUpperCase(),
                               style: TextStyle(
                                 color: Colors.white,
@@ -282,7 +286,12 @@ class _DashboardState extends State<Dashboard> {
                   //   ),
                   // ),
                   new Expanded(
-                    child: ListPage(),
+                    child: _statusUser == false
+                        ? ListPage()
+                        : new Center(
+                            child: new Text(
+                                "Anda sedang melaksanakan tugas Magang"),
+                          ),
                   ),
                 ],
               )),
@@ -417,102 +426,127 @@ class CustomCard extends StatelessWidget {
 
   final int kuota;
   final List<String> requirementNya;
+
   @override
   Widget build(BuildContext context) {
-    return Hero(
-      tag: idNya,
-      child: Material(
-        child: InkWell(
-          onTap: () => Navigator.of(context).push(new MaterialPageRoute(
-                builder: (BuildContext context) => new DetailLowongan(
-                      tglUpload: tglUpload,
-                      kuota: kuota,
-                      instansi: instansi,
-                      tglAwal: tglMulai,
-                      tglAkhir: tglAkhir,
-                      requirementNya: requirementNya,
-                      deskripsiNya: deskripsiNya,
-                      idNya: idNya,
-                      judulNya: judulNya,
-                      jurusan: jurusan,
-                    ),
-              )),
-          child: new Card(
-            elevation: 2.0,
-            color: Colors.white,
-            child: Column(
-              children: <Widget>[
-                Container(
-                  child: Row(
-                    children: <Widget>[
-                      new Container(
-                        padding: const EdgeInsets.only(left: 10.0),
-                        child: new CircleAvatar(
-                          backgroundColor: const Color(0xFFe87c55),
-                          child: new Text("W"),
-                        ),
-                      ),
-                      new Expanded(
-                        child: new Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            new Container(
-                              padding:
-                                  const EdgeInsets.only(top: 8.0, left: 8.0),
-                              child: new Text(
-                                judulNya.toUpperCase(),
-                                style: new TextStyle(
-                                    fontSize: 15.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.grey[850]),
-                              ),
+    return new StreamBuilder<DocumentSnapshot>(
+        stream: Firestore.instance
+            .collection('users')
+            .document('$instansi')
+            .snapshots(),
+        builder:
+            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center();
+          } else if (!snapshot.hasData) {
+            return Center(child: new Text("Yah.. Belum ada lowongan.."));
+          } else if (snapshot.hasError) {
+            return Center(child: new Text("Yah.. ada yang salah nih.."));
+          } else {
+            var dataMap = snapshot.data['data'] as Map<dynamic, dynamic>;
+            String _linkPhoto = dataMap["photoURL"];
+            return Hero(
+              tag: idNya,
+              child: Material(
+                child: InkWell(
+                  onTap: () => Navigator.of(context).push(new MaterialPageRoute(
+                        builder: (BuildContext context) => new DetailLowongan(
+                              tglUpload: tglUpload,
+                              kuota: kuota,
+                              instansi: instansi,
+                              tglAwal: tglMulai,
+                              tglAkhir: tglAkhir,
+                              requirementNya: requirementNya,
+                              deskripsiNya: deskripsiNya,
+                              idNya: idNya,
+                              judulNya: judulNya,
+                              jurusan: jurusan,
+                              linkPhoto: _linkPhoto,
                             ),
-                            new Container(
-                              padding:
-                                  const EdgeInsets.only(bottom: 8.0, left: 8.0),
-                              child: new Text(
-                                tglUpload.toString(),
-                                style: new TextStyle(
-                                    color: Colors.grey, fontSize: 13.0),
+                      )),
+                  child: new Card(
+                    elevation: 2.0,
+                    color: Colors.white,
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          child: Row(
+                            children: <Widget>[
+                              new Container(
+                                padding: const EdgeInsets.only(left: 10.0),
+                                child: _linkPhoto == null
+                                    ? new CircleAvatar(
+                                        backgroundColor:
+                                            const Color(0xFFe87c55),
+                                        child: new Text("T"),
+                                      )
+                                    : new CircleAvatar(
+                                        backgroundImage:
+                                            NetworkImage(_linkPhoto)),
                               ),
-                            )
-                          ],
+                              new Expanded(
+                                child: new Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    new Container(
+                                      padding: const EdgeInsets.only(
+                                          top: 8.0, left: 8.0),
+                                      child: new Text(
+                                        judulNya.toUpperCase(),
+                                        style: new TextStyle(
+                                            fontSize: 15.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.grey[850]),
+                                      ),
+                                    ),
+                                    new Container(
+                                      padding: const EdgeInsets.only(
+                                          bottom: 8.0, left: 8.0),
+                                      child: new Text(
+                                        tglUpload.toString(),
+                                        style: new TextStyle(
+                                            color: Colors.grey, fontSize: 13.0),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              // new Text("Judul"),
+                              // new Container(
+                              //   child: new IconButton(
+                              //     icon: Icon(Icons.bookmark_border),
+                              //   ),
+                              // ),
+                              new Container(
+                                child: new IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(Icons.more_vert),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      // new Text("Judul"),
-                      // new Container(
-                      //   child: new IconButton(
-                      //     icon: Icon(Icons.bookmark_border),
-                      //   ),
-                      // ),
-                      new Container(
-                        child: new IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.more_vert),
+                        new Deskrips(
+                          des: deskripsiNya,
                         ),
-                      ),
-                    ],
+                        Container(
+                          padding: const EdgeInsets.only(
+                              bottom: 8.0, left: 8.0, right: 8.0),
+                          child: Container(
+                              height: 25.0,
+                              color: Colors.transparent,
+                              child: Requir(
+                                req: requirementNya,
+                              )),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                new Deskrips(
-                  des: deskripsiNya,
-                ),
-                Container(
-                  padding:
-                      const EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0),
-                  child: Container(
-                      height: 25.0,
-                      color: Colors.transparent,
-                      child: Requir(
-                        req: requirementNya,
-                      )),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+              ),
+            );
+          }
+        });
   }
 }
 

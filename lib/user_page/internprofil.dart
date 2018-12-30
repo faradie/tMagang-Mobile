@@ -1,8 +1,12 @@
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart';
 
 class InternProfil extends StatefulWidget {
   InternProfil({this.id});
@@ -45,7 +49,9 @@ class InternProfilState extends State<InternProfil> {
           _namaUser = name["displayName"];
 
           _jurusan = name["departement"];
-          _isActive = name["isActive"] == true ? "Magang" : "Tidak Magang";
+          _isActive = data.documents[0].data['isActive'] == true
+              ? "Magang"
+              : "Tidak Magang";
           _jenisKel = name["gender"] == "male"
               ? "Laki-laki"
               : name["gender"] == "female" ? "Perempuan" : null;
@@ -403,15 +409,17 @@ class _EditProfilState extends State<EditProfil> {
   final TextEditingController _controlSkills = new TextEditingController();
   final formKeySave = new GlobalKey<FormState>();
   String _namaUser,
-      _nimUser,
-      _kontakUser,
-      _alamatUser,
-      _skillUser,
       _emailUser,
       _collegeID,
-      _tmpJenisKelamin;
+      _tmpJenisKelamin,
+      _linkPhoto,
+      _imageName,
+      _url;
   var name;
   bool tekan = true;
+  bool _addSkill = false;
+
+  File image;
 
   void _showToast(String pesan, Color warna) {
     Fluttertoast.showToast(
@@ -438,24 +446,38 @@ class _EditProfilState extends State<EditProfil> {
           name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
           _namaUser = name["displayName"];
           _emailUser = name["email"];
+          _linkPhoto = name["photoURL"];
           _collegeID = name["collegeId"];
+          _addSkill = name["addSkill"] == null ? false : name["addSkill"];
         });
       }
     });
   }
 
-  void isPressed() {
+  Future _ambilGambar() async {
+    var selectedImage =
+        await ImagePicker.pickImage(source: ImageSource.gallery);
     setState(() {
-      tekan = false;
+      image = selectedImage;
+      _imageName = basename(image.path);
     });
+  }
+
+  Future<String> uploadImage() async {
+    StorageReference ref = FirebaseStorage.instance.ref().child(_imageName);
+    StorageUploadTask uploadTask = ref.putFile(image);
+
+    var downloadUrl = await (await uploadTask.onComplete).ref.getDownloadURL();
+    var url = downloadUrl.toString();
+
     Map<String, dynamic> datadalam = <String, dynamic>{
       "studentIDNumber": _controlNIM.text,
-      "skills": _controlSkills.text.toLowerCase().split(","),
-      "photoURL": widget.linkPhoto,
+      "skills": _controlSkills.text == "Skill belum diatur"
+          ? null
+          : _controlSkills.text.toLowerCase().split(","),
+      "photoURL": url,
       "phoneNumber": _controlKontak.text,
-      "isActive": widget.status == "Magang"
-          ? true
-          : widget.status == "Tidak Magang" ? false : "",
+      "addSkill": true,
       "gender": _tmpJenisKelamin,
       "email": _emailUser,
       "displayName": _controlName.text,
@@ -466,18 +488,28 @@ class _EditProfilState extends State<EditProfil> {
 
     Map<String, dynamic> dataAwal = <String, dynamic>{
       "data": datadalam,
+      "isActive": widget.status == "Magang"
+          ? true
+          : widget.status == "Tidak Magang" ? false : "",
     };
     Firestore.instance
         .collection("users")
         .document("${widget.idMhs}")
         .updateData(dataAwal)
         .whenComplete(() {
-      Navigator.of(context).pop();
-      Navigator.of(context).pop();
+      Navigator.of(this.context).pop();
+      Navigator.of(this.context).pop();
       _showToast("Berhasil Update Profil", Colors.blue);
     }).catchError((e) {
       print(e);
     });
+  }
+
+  void isPressed() {
+    setState(() {
+      tekan = false;
+    });
+    uploadImage();
   }
 
   static const menutItem = <String>['male', 'female'];
@@ -494,7 +526,7 @@ class _EditProfilState extends State<EditProfil> {
     _controlNIM.text = widget.nimUser == "Kosong" ? "" : widget.nimUser;
     _controlKontak.text = widget.kontak == "Kosong" ? "" : widget.kontak;
     _controlAlamat.text = widget.alamat == "Kosong" ? "" : widget.alamat;
-    String s = widget.skills.join(', ');
+    String s = widget.skills.join(',');
     _controlSkills.text = s;
     _tmpJenisKelamin = widget.jenisKelamin == "Laki-laki"
         ? "male"
@@ -535,22 +567,47 @@ class _EditProfilState extends State<EditProfil> {
                     new Expanded(
                       child: new Column(
                         children: <Widget>[
-                          new CircleAvatar(
-                            radius: 40.0,
-                            backgroundColor: Colors.amber,
-                            child: new Text("A"),
-                          ),
+                          image == null
+                              ? _linkPhoto == null
+                                  ? new CircleAvatar(
+                                      radius: 40.0,
+                                      backgroundColor: const Color(0xFFe87c55),
+                                      child: new Text(
+                                        "T",
+                                        style: TextStyle(
+                                            fontSize: 20.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white),
+                                      ),
+                                    )
+                                  : new CircleAvatar(
+                                      radius: 40.0,
+                                      backgroundImage: NetworkImage(_linkPhoto),
+                                    )
+                              : new CircleAvatar(
+                                  radius: 40.0,
+                                  backgroundImage: FileImage(image),
+                                ),
                           Padding(
                             padding: const EdgeInsets.only(left: 10.0),
+                          ),
+                          new Container(
+                            padding:
+                                const EdgeInsets.only(bottom: 8.0, left: 8.0),
+                            child: InkWell(
+                              onTap: _ambilGambar,
+                              child: new Text(
+                                "Ubah gambar",
+                                style: new TextStyle(
+                                    color: Colors.grey, fontSize: 13.0),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
                           ),
                           new Container(
                             padding: const EdgeInsets.only(top: 8.0, left: 8.0),
                             child: new TextFormField(
                               controller: _controlName,
-                              onSaved: (value) => _namaUser = value,
-                              validator: (value) => value.isEmpty
-                                  ? 'Isikan nama terlebih dulu'
-                                  : null,
                               keyboardType: TextInputType.text,
                               decoration: new InputDecoration(
                                 labelText: 'Nama Pemagang',
@@ -619,10 +676,6 @@ class _EditProfilState extends State<EditProfil> {
                           children: <Widget>[
                             new TextFormField(
                               controller: _controlNIM,
-                              onSaved: (value) => _nimUser = value,
-                              validator: (value) => value.isEmpty
-                                  ? 'Isikan NIM terlebih dulu'
-                                  : null,
                               keyboardType: TextInputType.text,
                               decoration: new InputDecoration(
                                 labelText: 'NIM Pemagang',
@@ -657,10 +710,6 @@ class _EditProfilState extends State<EditProfil> {
                           children: <Widget>[
                             new TextFormField(
                               controller: _controlKontak,
-                              onSaved: (value) => _kontakUser = value,
-                              validator: (value) => value.isEmpty
-                                  ? 'Isikan kontak terlebih dulu'
-                                  : null,
                               keyboardType: TextInputType.number,
                               decoration: new InputDecoration(
                                 labelText: 'Kontak Aktif Pemagang',
@@ -677,10 +726,6 @@ class _EditProfilState extends State<EditProfil> {
                           children: <Widget>[
                             new TextFormField(
                               controller: _controlAlamat,
-                              onSaved: (value) => _alamatUser = value,
-                              validator: (value) => value.isEmpty
-                                  ? 'Isikan alamat terlebih dulu'
-                                  : null,
                               keyboardType: TextInputType.text,
                               decoration: new InputDecoration(
                                 labelText: 'Alamat Pemagang',
@@ -700,19 +745,34 @@ class _EditProfilState extends State<EditProfil> {
                         margin: const EdgeInsets.only(left: 10.0, right: 10.0),
                         child: new Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            new TextFormField(
-                              controller: _controlSkills,
-                              onSaved: (value) => _skillUser = value,
-                              validator: (value) => value.isEmpty
-                                  ? 'Isikan Skill terlebih dulu'
-                                  : null,
-                              keyboardType: TextInputType.text,
-                              decoration: new InputDecoration(
-                                labelText: 'Skill Pemagang',
-                              ),
-                            ),
-                          ],
+                          children: _addSkill == false
+                              ? <Widget>[
+                                  new TextFormField(
+                                    controller: _controlSkills,
+                                    keyboardType: TextInputType.text,
+                                    decoration: new InputDecoration(
+                                      labelText: 'Skill Pemagang',
+                                    ),
+                                  )
+                                ]
+                              : <Widget>[
+                                  new Text(
+                                    "Skills",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.only(top: 8.0),
+                                    child: Container(
+                                        height: 25.0,
+                                        color: Colors.transparent,
+                                        child: Requir(
+                                          req: widget.skills == null
+                                              ? ["Silahkan lengkapi data"]
+                                              : widget.skills,
+                                        )),
+                                  ),
+                                ],
                         ),
                       ),
                       Padding(

@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:tempat_magang/user_page/internprofil.dart';
 
 class ManajemenLowonganInstansi extends StatefulWidget {
@@ -185,7 +186,7 @@ class ListLowonganState extends State<ListLowongan> {
                 itemBuilder: (_, index) {
                   DateTime _validUntil = snapshot.data[index].data["expiredAt"];
                   final difference = dateNow.difference(_validUntil).inDays;
-                  if (difference >= 0) {
+                  if (difference > 0) {
                     _icon = Icons.warning;
                     _colors = Colors.red;
                   } else {
@@ -402,12 +403,13 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                                                 minWidth: 200.0,
                                                 height: 40.0,
                                                 child: new RaisedButton(
+                                                  onPressed: null,
                                                   color:
                                                       const Color(0xFFff9977),
                                                   elevation: 4.0,
                                                   splashColor: Colors.blueGrey,
                                                   child: new Text(
-                                                    selisih < 0
+                                                    selisih <= 0
                                                         ? "Status Lowongan Aktif"
                                                         : "Status Lowongan Expired",
                                                     style: TextStyle(
@@ -428,12 +430,13 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                                                 minWidth: 200.0,
                                                 height: 40.0,
                                                 child: new RaisedButton(
+                                                  onPressed: null,
                                                   color:
                                                       const Color(0xFFff9977),
                                                   elevation: 4.0,
                                                   splashColor: Colors.blueGrey,
                                                   child: new Text(
-                                                    selisih < 0
+                                                    selisih <= 0
                                                         ? "Sampai $expiredAt"
                                                         : "Pada $expiredAt",
                                                     style: TextStyle(
@@ -589,6 +592,7 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                             itemCount: snapshot.data.length,
                             itemBuilder: (_, index) {
                               return new TilePendaftar(
+                                idLowongan: widget.idLowongan,
                                 no: (index + 1).toString(),
                                 idUser: snapshot.data[index].data["userId"],
                               );
@@ -652,14 +656,99 @@ class KompetensiUser extends StatelessWidget {
 }
 
 class TilePendaftar extends StatefulWidget {
-  TilePendaftar({this.idUser, this.no});
-  String idUser, no;
+  TilePendaftar({this.idUser, this.no, this.idLowongan});
+  final String idUser, no, idLowongan;
   _TilePendaftarState createState() => _TilePendaftarState();
 }
 
 class _TilePendaftarState extends State<TilePendaftar> {
-  String _namaUser, _kampus;
+  String _namaUser, _kampus, _owner;
+  DateTime _timeEndIntern, _timeStartIntern;
+  bool _statusUser;
   var name, mapKampus;
+  bool tekan = true;
+
+  void _showToast(String pesan, Color warna) {
+    Fluttertoast.showToast(
+      msg: pesan,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIos: 1,
+      backgroundColor: warna,
+      textColor: Colors.white,
+    );
+  }
+
+  void _isPressed() {
+    setState(() {
+      tekan = false;
+    });
+    String _idInternship = "${widget.idLowongan}_${widget.idUser}";
+    DateTime dateNow = DateTime.now();
+    Map<String, dynamic> data = <String, dynamic>{
+      "userId": widget.idUser,
+      "vacanciesId": widget.idLowongan,
+      "acceptedAt": dateNow,
+      "timeStartIntern": _timeStartIntern,
+      "_timeEndIntern": _timeEndIntern,
+      "ownerAgency": _owner,
+      "mentorId": ""
+    };
+
+    Map<String, dynamic> user = <String, dynamic>{"isActive": true};
+
+    Firestore.instance
+        .collection("users")
+        .document("${widget.idUser}")
+        .updateData(user)
+        .whenComplete(() {
+      Firestore.instance
+          .collection("internship")
+          .document("$_idInternship")
+          .setData(data)
+          .whenComplete(() {
+        _showToast("Berhasil Menerima", Color(0xFFe87c55));
+      }).catchError((e) {
+        print(e);
+      });
+    }).catchError((e) {
+      print(e);
+    });
+  }
+
+  Future getStatus() async {
+    var firestore = Firestore.instance;
+    var userQuery = firestore
+        .collection('vacancies')
+        .where('id', isEqualTo: widget.idLowongan)
+        .limit(1);
+
+    userQuery.getDocuments().then((data) {
+      if (data.documents.length > 0) {
+        setState(() {
+          _timeEndIntern = data.documents[0].data['timeEndIntern'];
+          _timeStartIntern = data.documents[0].data['timeStartIntern'];
+          _owner = data.documents[0].data['ownerAgency'];
+        });
+
+        var collegeQuery = firestore
+            .collection('users')
+            .where('uid', isEqualTo: name["collegeId"])
+            .limit(1);
+
+        collegeQuery.getDocuments().then((collegeData) {
+          if (collegeData.documents.length > 0) {
+            setState(() {
+              mapKampus = collegeData.documents[0].data['data']
+                  as Map<dynamic, dynamic>;
+              _kampus = mapKampus["displayName"];
+            });
+          }
+        });
+      }
+    });
+  }
+
   Future getDataUser() async {
     var firestore = Firestore.instance;
     var userQuery = firestore
@@ -672,6 +761,7 @@ class _TilePendaftarState extends State<TilePendaftar> {
         setState(() {
           name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
           _namaUser = name["displayName"];
+          _statusUser = data.documents[0].data['isActive'];
         });
 
         var collegeQuery = firestore
@@ -696,6 +786,7 @@ class _TilePendaftarState extends State<TilePendaftar> {
   void initState() {
     super.initState();
     getDataUser();
+    getStatus();
   }
 
   @override
@@ -725,12 +816,16 @@ class _TilePendaftarState extends State<TilePendaftar> {
               trailing: new ButtonTheme(
                 height: 40.0,
                 child: new RaisedButton(
-                  onPressed: () {},
+                  onPressed: tekan == true
+                      ? _statusUser == false ? _isPressed : null
+                      : null,
                   color: const Color(0xFFff9977),
                   elevation: 4.0,
                   splashColor: Colors.blueGrey,
                   child: new Text(
-                    "Terima",
+                    tekan == false
+                        ? "Magang"
+                        : _statusUser == false ? "Terima" : "Magang",
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
