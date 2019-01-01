@@ -174,7 +174,8 @@ class _DetailLowonganState extends State<DetailLowongan> {
           "registerAt": today,
           "requirement": widget.requirementNya,
           "skills": _skills,
-          "ownerAgency": widget.instansi
+          "ownerAgency": widget.instansi,
+          "status": true
         };
 
         Firestore.instance

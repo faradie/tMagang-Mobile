@@ -61,6 +61,7 @@ class LamaranPemagangState extends State<LamaranPemagang> {
           ),
         ),
         body: new Container(
+          margin: const EdgeInsets.only(top: 10.0),
           child: FutureBuilder(
             future: getLamaran(),
             builder: (_, snapshot) {
@@ -85,6 +86,7 @@ class LamaranPemagangState extends State<LamaranPemagang> {
                       return new TileLowongan(
                         registeAt: snapshot.data[index].data["registerAt"],
                         vacanciesId: snapshot.data[index].data["vacanciesId"],
+                        status: snapshot.data[index].data["status"],
                       );
                     },
                   );
@@ -97,8 +99,9 @@ class LamaranPemagangState extends State<LamaranPemagang> {
 }
 
 class TileLowongan extends StatefulWidget {
-  TileLowongan({this.vacanciesId, this.registeAt});
+  TileLowongan({this.vacanciesId, this.registeAt, this.status});
   final String vacanciesId;
+  final bool status;
   final DateTime registeAt;
 
   @override
@@ -137,7 +140,7 @@ class TileLowonganState extends State<TileLowongan> {
         setState(() {
           _nameLamaran = doc.data["title"];
           regAt = formatDate(
-              widget.registeAt, [HH, ':', nn, '  ', dd, ' ', MM, ' ', yyyy]);
+              widget.registeAt, [dd, ' ', MM, ' ', yyyy, ' ', HH, ':', nn]);
         });
       }
     });
@@ -153,7 +156,21 @@ class TileLowonganState extends State<TileLowongan> {
   Widget build(BuildContext context) {
     return new Container(
       child: new ListTile(
-        leading: new Icon(Icons.check, color: Colors.blue),
+        trailing: new ButtonTheme(
+          height: 40.0,
+          child: new RaisedButton(
+            onPressed: null,
+            color: const Color(0xFFff9977),
+            elevation: 4.0,
+            splashColor: Colors.blueGrey,
+            child: new Text(
+              widget.status == null
+                  ? "Review"
+                  : widget.status == true ? "Diterima" : "Ditolak",
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
         title: new Text(
           _nameLamaran == null ? "Mengambil data" : _nameLamaran,
           style: TextStyle(fontWeight: FontWeight.bold),

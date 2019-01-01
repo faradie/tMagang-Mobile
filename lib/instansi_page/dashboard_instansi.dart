@@ -260,11 +260,13 @@ class _ListPageState extends State<ListPage> {
   );
   @override
   Widget build(BuildContext context) {
+    DateTime dateNow = DateTime.now();
     return Container(
       child: StreamBuilder(
         stream: Firestore.instance
             .collection('internship')
             .where('ownerAgency', isEqualTo: widget.idUser)
+            .where('timeEndIntern', isGreaterThanOrEqualTo: dateNow)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -286,7 +288,6 @@ class _ListPageState extends State<ListPage> {
                 itemCount: snapshot.data.documents.length,
                 itemBuilder: (_, index) {
                   DocumentSnapshot ds = snapshot.data.documents[index];
-
                   return TileLowongan(
                     idLowongan: ds["vacanciesId"],
                     no: (index + 1).toString(),

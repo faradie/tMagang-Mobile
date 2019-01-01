@@ -186,7 +186,7 @@ class ListLowonganState extends State<ListLowongan> {
                 itemBuilder: (_, index) {
                   DateTime _validUntil = snapshot.data[index].data["expiredAt"];
                   final difference = dateNow.difference(_validUntil).inDays;
-                  if (difference > 0) {
+                  if (difference >= 0) {
                     _icon = Icons.warning;
                     _colors = Colors.red;
                   } else {
@@ -284,6 +284,7 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
     QuerySnapshot qn = await firestore
         .collection('registerIntern')
         .where('vacanciesId', isEqualTo: widget.idLowongan)
+        .where('status', isEqualTo: true)
         .getDocuments();
 
     return qn.documents;
@@ -409,7 +410,7 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                                                   elevation: 4.0,
                                                   splashColor: Colors.blueGrey,
                                                   child: new Text(
-                                                    selisih <= 0
+                                                    selisih < 0
                                                         ? "Status Lowongan Aktif"
                                                         : "Status Lowongan Expired",
                                                     style: TextStyle(
@@ -663,10 +664,11 @@ class TilePendaftar extends StatefulWidget {
 
 class _TilePendaftarState extends State<TilePendaftar> {
   String _namaUser, _kampus, _owner;
-  DateTime _timeEndIntern, _timeStartIntern;
+  DateTime _timeEndIntern, _timeStartIntern, _expiredAt;
   bool _statusUser;
   var name, mapKampus;
   bool tekan = true;
+  bool penerimaan = false;
 
   void _showToast(String pesan, Color warna) {
     Fluttertoast.showToast(
@@ -679,18 +681,21 @@ class _TilePendaftarState extends State<TilePendaftar> {
     );
   }
 
+  void cobaTolak() {}
+
   void _isPressed() {
     setState(() {
       tekan = false;
     });
     String _idInternship = "${widget.idLowongan}_${widget.idUser}";
+
     DateTime dateNow = DateTime.now();
     Map<String, dynamic> data = <String, dynamic>{
       "userId": widget.idUser,
       "vacanciesId": widget.idLowongan,
       "acceptedAt": dateNow,
       "timeStartIntern": _timeStartIntern,
-      "_timeEndIntern": _timeEndIntern,
+      "timeEndIntern": _timeEndIntern,
       "ownerAgency": _owner,
       "mentorId": ""
     };
@@ -714,9 +719,34 @@ class _TilePendaftarState extends State<TilePendaftar> {
     }).catchError((e) {
       print(e);
     });
+
+//proses mencari registerId
+    Firestore.instance
+        .collection("registerIntern")
+        .where("userId", isEqualTo: widget.idUser)
+        .getDocuments()
+        .then((data) {
+      data.documents.forEach((doc) {
+        //update masing-masing status false di register dari for each doc
+        Map<String, dynamic> statFalse = <String, dynamic>{"status": false};
+        String docID = "${doc.data["userId"]}_${doc.data["vacanciesId"]}";
+        print("wew $docID");
+        Firestore.instance
+            .collection("registerIntern")
+            .document("$docID")
+            .updateData(statFalse)
+            .whenComplete(() {
+          print("donechange");
+        }).catchError((e) {
+          print(e.toString());
+        });
+      });
+    });
   }
 
   Future getStatus() async {
+    DateTime dateNow = DateTime.now();
+
     var firestore = Firestore.instance;
     var userQuery = firestore
         .collection('vacancies')
@@ -729,6 +759,13 @@ class _TilePendaftarState extends State<TilePendaftar> {
           _timeEndIntern = data.documents[0].data['timeEndIntern'];
           _timeStartIntern = data.documents[0].data['timeStartIntern'];
           _owner = data.documents[0].data['ownerAgency'];
+          _expiredAt = data.documents[0].data['expiredAt'];
+          var selisih = dateNow.difference(_expiredAt).inDays;
+          if (selisih <= 0) {
+            penerimaan = false;
+          } else {
+            penerimaan = true;
+          }
         });
 
         var collegeQuery = firestore
@@ -789,6 +826,20 @@ class _TilePendaftarState extends State<TilePendaftar> {
     getStatus();
   }
 
+  static const menuItems = <String>[
+    'Terima',
+    'Tolak',
+  ];
+
+  String _selectVal;
+
+  final List<PopupMenuItem<String>> _popUpTerimaItem = menuItems
+      .map((String value) => PopupMenuItem<String>(
+            child: Text(value),
+            value: value,
+          ))
+      .toList();
+
   @override
   Widget build(BuildContext context) {
     return new Container(
@@ -796,41 +847,41 @@ class _TilePendaftarState extends State<TilePendaftar> {
         child: new Column(
           children: <Widget>[
             new ListTile(
-              onTap: () {
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(
-                    builder: (BuildContext context) => new InternProfil(
-                          id: widget.idUser,
-                        )));
-              },
-              leading: new Text(
-                widget.no,
-                style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold),
-              ),
-              title: new Text(
-                _namaUser == null ? "" : _namaUser,
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: new Text("Kampus : ${_kampus == null ? "" : _kampus}"),
-              trailing: new ButtonTheme(
-                height: 40.0,
-                child: new RaisedButton(
-                  onPressed: tekan == true
-                      ? _statusUser == false ? _isPressed : null
-                      : null,
-                  color: const Color(0xFFff9977),
-                  elevation: 4.0,
-                  splashColor: Colors.blueGrey,
-                  child: new Text(
-                    tekan == false
-                        ? "Magang"
-                        : _statusUser == false ? "Terima" : "Magang",
-                    style: TextStyle(color: Colors.white),
-                  ),
+                onTap: () {
+                  Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute(
+                      builder: (BuildContext context) => new InternProfil(
+                            id: widget.idUser,
+                          )));
+                },
+                leading: new Text(
+                  widget.no,
+                  style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold),
                 ),
-              ),
-            ),
+                title: new Text(
+                  _namaUser == null ? "" : _namaUser,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle:
+                    new Text("Kampus : ${_kampus == null ? "" : _kampus}"),
+                trailing: penerimaan == false
+                    ? new Text("")
+                    : new PopupMenuButton<String>(
+                        onSelected: (String newValue) {
+                          _selectVal = newValue;
+                          if (_selectVal == "Terima") {
+                            if (penerimaan == false) {
+                              _showToast("Belum saatnya", Colors.red);
+                            } else {
+                              _isPressed();
+                            }
+                          } else {
+                            cobaTolak();
+                          }
+                        },
+                        itemBuilder: (BuildContext context) => _popUpTerimaItem,
+                      )),
             new Divider(),
           ],
         ));

@@ -330,6 +330,33 @@ class _InstansiBuatLowonganState extends State<InstansiBuatLowongan> {
                                                   MainAxisAlignment.start,
                                               children: <Widget>[
                                                 new Text(
+                                                  "Penyedia lowongan akan dapat menerima calon peserta magang ketika masa lowongan telah berakhir.",
+                                                  textAlign: TextAlign.justify,
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      )),
+                                  new Container(
+                                      padding: const EdgeInsets.only(
+                                          bottom: 8.0, left: 8.0, right: 8.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          new Text("8. "),
+                                          SizedBox(height: 10.0),
+                                          new Expanded(
+                                            child: new Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: <Widget>[
+                                                new Text(
                                                   "Penyedia berkewajiban menindak lanjuti pengajuan yang diajukan oleh pemagang.",
                                                   textAlign: TextAlign.justify,
                                                 )

@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:image/image.dart' as Img;
 
 class InternProfil extends StatefulWidget {
   InternProfil({this.id});
@@ -27,6 +29,7 @@ class InternProfilState extends State<InternProfil> {
       _jenisKel,
       _nim,
       _kontak,
+      _linkPhoto,
       _alamat,
       _userViewId,
       _isActive;
@@ -47,7 +50,7 @@ class InternProfilState extends State<InternProfil> {
           _userViewId = user.uid;
           name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
           _namaUser = name["displayName"];
-
+          _linkPhoto = name["photoURL"];
           _jurusan = name["departement"];
           _isActive = data.documents[0].data['isActive'] == true
               ? "Magang"
@@ -141,11 +144,22 @@ class InternProfilState extends State<InternProfil> {
                   new Expanded(
                     child: new Column(
                       children: <Widget>[
-                        new CircleAvatar(
-                          radius: 40.0,
-                          backgroundColor: Colors.amber,
-                          child: new Text("A"),
-                        ),
+                        _linkPhoto == null
+                            ? new CircleAvatar(
+                                radius: 40.0,
+                                backgroundColor: const Color(0xFFe87c55),
+                                child: new Text(
+                                  "T",
+                                  style: TextStyle(
+                                      fontSize: 20.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                ),
+                              )
+                            : new CircleAvatar(
+                                radius: 40.0,
+                                backgroundImage: NetworkImage(_linkPhoto),
+                              ),
                         Padding(
                           padding: const EdgeInsets.only(left: 10.0),
                         ),
@@ -457,6 +471,7 @@ class _EditProfilState extends State<EditProfil> {
   Future _ambilGambar() async {
     var selectedImage =
         await ImagePicker.pickImage(source: ImageSource.gallery);
+
     setState(() {
       image = selectedImage;
       _imageName = basename(image.path);
@@ -464,8 +479,19 @@ class _EditProfilState extends State<EditProfil> {
   }
 
   Future<String> uploadImage() async {
-    StorageReference ref = FirebaseStorage.instance.ref().child(_imageName);
-    StorageUploadTask uploadTask = ref.putFile(image);
+    var user = await FirebaseAuth.instance.currentUser();
+    final tempDir = await getTemporaryDirectory();
+    final path = tempDir.path;
+
+    String title = user.uid;
+
+    Img.Image resizeImage = Img.decodeImage(image.readAsBytesSync());
+    Img.Image smallerImage = Img.copyResize(resizeImage, 200);
+    var compressImg = new File(image.path)
+      ..writeAsBytesSync(Img.encodeJpg(smallerImage, quality: 85));
+
+    StorageReference ref = FirebaseStorage.instance.ref().child("$title.jpg");
+    StorageUploadTask uploadTask = ref.putFile(compressImg);
 
     var downloadUrl = await (await uploadTask.onComplete).ref.getDownloadURL();
     var url = downloadUrl.toString();
@@ -509,7 +535,44 @@ class _EditProfilState extends State<EditProfil> {
     setState(() {
       tekan = false;
     });
-    uploadImage();
+
+    if (image == null) {
+      Map<String, dynamic> datadalam = <String, dynamic>{
+        "studentIDNumber": _controlNIM.text,
+        "skills": _controlSkills.text == "Skill belum diatur"
+            ? null
+            : _controlSkills.text.toLowerCase().split(","),
+        "photoURL": _linkPhoto,
+        "phoneNumber": _controlKontak.text,
+        "addSkill": true,
+        "gender": _tmpJenisKelamin,
+        "email": _emailUser,
+        "displayName": _controlName.text,
+        "collegeId": _collegeID,
+        "departement": widget.jurusan,
+        "address": _controlAlamat.text
+      };
+
+      Map<String, dynamic> dataAwal = <String, dynamic>{
+        "data": datadalam,
+        "isActive": widget.status == "Magang"
+            ? true
+            : widget.status == "Tidak Magang" ? false : "",
+      };
+      Firestore.instance
+          .collection("users")
+          .document("${widget.idMhs}")
+          .updateData(dataAwal)
+          .whenComplete(() {
+        Navigator.of(this.context).pop();
+        Navigator.of(this.context).pop();
+        _showToast("Berhasil Update Profil", Colors.blue);
+      }).catchError((e) {
+        print(e);
+      });
+    } else {
+      uploadImage();
+    }
   }
 
   static const menutItem = <String>['male', 'female'];

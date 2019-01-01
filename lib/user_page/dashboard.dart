@@ -137,65 +137,140 @@ class _DashboardState extends State<Dashboard> {
             child: new Icon(Icons.chat),
           ),
         ),
-        drawer: Drawer(
-            child: ListView(
-          children: <Widget>[
-            new UserAccountsDrawerHeader(
-              decoration: BoxDecoration(color: const Color(0xFFe87c55)
-                  //     image: DecorationImage(
-                  //   image: ExactAssetImage('img/selamatdatang.png'),
-                  //   fit: BoxFit.cover,
-                  // )
-                  ),
-              accountEmail:
-                  new Text('${_currentEmail == null ? "" : _currentEmail}'),
-              accountName: new Text('$_namaUser'),
-              currentAccountPicture: _linkPhoto == null
-                  ? new CircleAvatar(
-                      backgroundColor: Colors.white,
-                      child: new Text("T", style: TextStyle(fontSize: 25.0)))
-                  : new CircleAvatar(backgroundImage: NetworkImage(_linkPhoto)),
-            ),
-            new ListTile(
-              title: new Text("Profil"),
-              trailing: new Icon(Icons.person),
-              onTap: () {
-                Navigator.of(context).pop();
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        new InternProfil(id: _idUser)));
-              },
-            ),
-            new Divider(),
-            new ListTile(
-              title: new Text("Lamaran"),
-              trailing: new Icon(Icons.find_in_page),
-              onTap: () {
-                Navigator.of(context).pop();
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(
-                    builder: (BuildContext context) => new LamaranPemagang()));
-              },
-            ),
-            new ListTile(
-              title: new Text("Rekomendasi"),
-              trailing: new Icon(Icons.star),
-              onTap: () {
-                Navigator.of(context).pop();
-                _showToast("Comingsoon", Colors.orange);
-              },
-            ),
-            new Divider(),
-            new ListTile(
-              leading: Icon(Icons.input),
-              title: new Text("Keluar"),
-              onTap: _signOut,
-            )
-          ],
-        )),
+        drawer: StreamBuilder(
+            stream: Firestore.instance
+                .collection('users')
+                .document('$_idUser')
+                .snapshots(),
+            builder: (BuildContext context,
+                AsyncSnapshot<DocumentSnapshot> snapshot) {
+              if (snapshot.hasError) {
+                return Center(child: new Text("Load"));
+              } else if (!snapshot.hasData) {
+                return Drawer(
+                    child: ListView(
+                  children: <Widget>[
+                    new UserAccountsDrawerHeader(
+                      accountName: new Text(""),
+                      decoration: BoxDecoration(color: const Color(0xFFe87c55)
+                          //     image: DecorationImage(
+                          //   image: ExactAssetImage('img/selamatdatang.png'),
+                          //   fit: BoxFit.cover,
+                          // )
+                          ),
+                      accountEmail: new Text(
+                          '${_currentEmail == null ? "" : _currentEmail}'),
+                    ),
+                    new ListTile(
+                      title: new Text("Profil"),
+                      trailing: new Icon(Icons.person),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(
+                          context,
+                        ).push(MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                new InternProfil(id: _idUser)));
+                      },
+                    ),
+                    new Divider(),
+                    new ListTile(
+                      title: new Text("Lamaran"),
+                      trailing: new Icon(Icons.find_in_page),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(
+                          context,
+                        ).push(MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                new LamaranPemagang()));
+                      },
+                    ),
+                    new ListTile(
+                      title: new Text("Rekomendasi"),
+                      trailing: new Icon(Icons.star),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        _showToast("Comingsoon", Colors.orange);
+                      },
+                    ),
+                    new Divider(),
+                    new ListTile(
+                      leading: Icon(Icons.input),
+                      title: new Text("Keluar"),
+                      onTap: _signOut,
+                    )
+                  ],
+                ));
+              } else if (snapshot.connectionState == ConnectionState.active ||
+                  snapshot.hasData) {
+                name = snapshot.data['data'] as Map<dynamic, dynamic>;
+                return Drawer(
+                    child: ListView(
+                  children: <Widget>[
+                    new UserAccountsDrawerHeader(
+                      decoration: BoxDecoration(color: const Color(0xFFe87c55)
+                          //     image: DecorationImage(
+                          //   image: ExactAssetImage('img/selamatdatang.png'),
+                          //   fit: BoxFit.cover,
+                          // )
+                          ),
+                      accountEmail:
+                          new Text(name["email"] == null ? "" : name["email"]),
+                      accountName: new Text(name["displayName"] == null
+                          ? ""
+                          : name["displayName"]),
+                      currentAccountPicture: _linkPhoto == null
+                          ? new CircleAvatar(
+                              backgroundColor: Colors.white,
+                              child: new Text("T",
+                                  style: TextStyle(fontSize: 25.0)))
+                          : new CircleAvatar(
+                              backgroundImage: NetworkImage(name["photoURL"])),
+                    ),
+                    new ListTile(
+                      title: new Text("Profil"),
+                      trailing: new Icon(Icons.person),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(
+                          context,
+                        ).push(MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                new InternProfil(id: _idUser)));
+                      },
+                    ),
+                    new Divider(),
+                    new ListTile(
+                      title: new Text("Lamaran"),
+                      trailing: new Icon(Icons.find_in_page),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(
+                          context,
+                        ).push(MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                new LamaranPemagang()));
+                      },
+                    ),
+                    new ListTile(
+                      title: new Text("Rekomendasi"),
+                      trailing: new Icon(Icons.star),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        _showToast("Comingsoon", Colors.orange);
+                      },
+                    ),
+                    new Divider(),
+                    new ListTile(
+                      leading: Icon(Icons.input),
+                      title: new Text("Keluar"),
+                      onTap: _signOut,
+                    )
+                  ],
+                ));
+              }
+            }),
         body: DefaultTabController(
           length: 2,
           child: NestedScrollView(
@@ -286,12 +361,14 @@ class _DashboardState extends State<Dashboard> {
                   //   ),
                   // ),
                   new Expanded(
-                    child: _statusUser == false
-                        ? ListPage()
-                        : new Center(
-                            child: new Text(
-                                "Anda sedang melaksanakan tugas Magang"),
-                          ),
+                    child: _statusUser == null
+                        ? new Container()
+                        : _statusUser == false
+                            ? ListPage()
+                            : new Center(
+                                child: new Text(
+                                    "Anda sedang melaksanakan tugas Magang"),
+                              ),
                   ),
                 ],
               )),
