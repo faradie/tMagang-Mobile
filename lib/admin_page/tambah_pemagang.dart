@@ -2,7 +2,6 @@ import 'package:cloud_functions/cloud_functions.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class CreateIntern extends StatefulWidget {
   @override
@@ -10,17 +9,12 @@ class CreateIntern extends StatefulWidget {
 }
 
 class _CreateInternState extends State<CreateIntern> {
-  String _email, _pass, _konfirmPass, _noTelp, _namaPemagang;
-  int _kuota;
-  DateTime _tglMulai, _tglAkhir;
-
   final _controlEmail = new TextEditingController();
   final _controlPassword = new TextEditingController();
   final _controlConfirmPass = new TextEditingController();
   final _controlNoTelp = new TextEditingController();
   final _controlNamaPemagang = new TextEditingController();
   final formKeySave = new GlobalKey<FormState>();
-  bool _setuju = false;
 
   void showAlert(BuildContext context) {
     showDialog(
@@ -83,7 +77,6 @@ class _CreateInternState extends State<CreateIntern> {
                             splashColor: Colors.blueGrey,
                             onPressed: () {
                               Navigator.of(context).pop();
-                              _setuju = true;
                             },
                             padding: const EdgeInsets.only(),
                             child: new Text(
@@ -156,9 +149,8 @@ class _CreateInternState extends State<CreateIntern> {
           child: ListView(children: <Widget>[
             new TextFormField(
               controller: _controlEmail,
-              onSaved: (value) => _email = value,
-              validator: (value) =>
-                  value.isEmpty ? 'Isikan Email dahulu' : null,
+              validator: (_controlEmail) =>
+                  _controlEmail.isEmpty ? 'Isikan Email dahulu' : null,
               keyboardType: TextInputType.emailAddress,
               decoration: new InputDecoration(
                   labelText: 'Email Pemagang',
@@ -166,10 +158,9 @@ class _CreateInternState extends State<CreateIntern> {
             ),
             new TextFormField(
               controller: _controlPassword,
-              onSaved: (value) => _pass = value,
               obscureText: true,
-              validator: (value) =>
-                  value.isEmpty ? 'Isikan Password dahulu' : null,
+              validator: (_controlPassword) =>
+                  _controlPassword.isEmpty ? 'Isikan Password dahulu' : null,
               keyboardType: TextInputType.text,
               decoration: new InputDecoration(
                   labelText: 'Password',
@@ -177,10 +168,10 @@ class _CreateInternState extends State<CreateIntern> {
             ),
             new TextFormField(
               controller: _controlConfirmPass,
-              onSaved: (value) => _konfirmPass = value,
               obscureText: true,
-              validator: (value) =>
-                  value.isEmpty ? 'Isikan Konfirmasi Password dahulu' : null,
+              validator: (_controlConfirmPass) => _controlConfirmPass.isEmpty
+                  ? 'Isikan Konfirmasi Password dahulu'
+                  : null,
               keyboardType: TextInputType.text,
               decoration: new InputDecoration(
                   labelText: 'Konfirmasi Password',
@@ -188,17 +179,16 @@ class _CreateInternState extends State<CreateIntern> {
             ),
             new TextFormField(
               controller: _controlNoTelp,
-              onSaved: (value) => _noTelp = value,
-              validator: (value) =>
-                  value.isEmpty ? 'Isikan No Telp dahulu' : null,
+              validator: (_controlNoTelp) =>
+                  _controlNoTelp.isEmpty ? 'Isikan No Telp dahulu' : null,
               keyboardType: TextInputType.number,
               decoration: new InputDecoration(
                   labelText: 'Nomor Telepon', icon: new Icon(Icons.looks_one)),
             ),
             new TextFormField(
               controller: _controlNamaPemagang,
-              onSaved: (value) => _namaPemagang = value,
-              validator: (value) => value.isEmpty ? 'Isikan Nama dahulu' : null,
+              validator: (_controlNamaPemagang) =>
+                  _controlNamaPemagang.isEmpty ? 'Isikan Nama dahulu' : null,
               keyboardType: TextInputType.text,
               decoration: new InputDecoration(
                   labelText: 'Nama Pemagang', icon: new Icon(Icons.looks_one)),

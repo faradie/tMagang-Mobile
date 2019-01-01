@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:tempat_magang/auth.dart';
 
-import 'dart:ui' as ui;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
@@ -79,6 +78,7 @@ class _DashboardState extends State<Dashboard> {
   Future getDataUser() async {
     var user = await FirebaseAuth.instance.currentUser();
     var firestore = Firestore.instance;
+
     var userQuery = firestore
         .collection('users')
         .where('uid', isEqualTo: user.uid)
@@ -185,6 +185,11 @@ class _DashboardState extends State<Dashboard> {
                             builder: (BuildContext context) =>
                                 new LamaranPemagang()));
                       },
+                    ),
+                    new ListTile(
+                      title: new Text("Riwayat Lamaran"),
+                      trailing: new Icon(Icons.timeline),
+                      onTap: () {},
                     ),
                     new ListTile(
                       title: new Text("Rekomendasi"),
@@ -738,29 +743,5 @@ class _ListPageState extends State<ListPage> {
         },
       ),
     );
-  }
-}
-
-class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
-  _SliverAppBarDelegate(this._tabBar);
-
-  final Container _tabBar;
-
-  @override
-  double get minExtent => 0.0;
-  @override
-  double get maxExtent => 80.0;
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return new Container(
-      child: _tabBar,
-    );
-  }
-
-  @override
-  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
-    return false;
   }
 }

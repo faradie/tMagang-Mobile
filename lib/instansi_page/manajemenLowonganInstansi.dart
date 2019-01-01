@@ -1,11 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:tempat_magang/user_page/internprofil.dart';
+
+final loadingLoad = CircularProgressIndicator(
+  backgroundColor: Colors.deepOrange,
+  strokeWidth: 1.5,
+);
 
 class ManajemenLowonganInstansi extends StatefulWidget {
   ManajemenLowonganInstansi({this.idAgency});
@@ -273,12 +277,9 @@ class DetailLowonganInstansi extends StatefulWidget {
 }
 
 class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
-  String _userId, _namaUser;
+  String _namaUser;
   var name;
-  final loadingLoad = CircularProgressIndicator(
-    backgroundColor: Colors.deepOrange,
-    strokeWidth: 1.5,
-  );
+
   Future _getLowonganSaya() async {
     var firestore = Firestore.instance;
     QuerySnapshot qn = await firestore
@@ -291,13 +292,18 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: new Scaffold(
           appBar: AppBar(
             elevation:
@@ -320,6 +326,9 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                 ),
                 Tab(
                   text: "Pendaftar",
+                ),
+                Tab(
+                  text: "Rekomendasi",
                 ),
               ],
             ),
@@ -351,10 +360,6 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                     );
                   } else if (snapshot.connectionState ==
                       ConnectionState.active) {
-                    FirebaseAuth.instance.currentUser().then((user) {
-                      _userId = user.uid;
-                    });
-
                     DateTime dateNow = DateTime.now();
                     DateTime _validUntil = snapshot.data['expiredAt'];
                     final selisih = dateNow.difference(_validUntil).inDays;
@@ -578,7 +583,7 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                   }
                 },
               ),
-              //batas tabs
+              //batas tabs 1 dan 2
               Container(
                 child: new FutureBuilder(
                   future: _getLowonganSaya(),
@@ -605,6 +610,12 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                       }
                     }
                   },
+                ),
+              ),
+              //akhir dari tab2
+              Container(
+                child: new Center(
+                  child: new Text("Konten Rekomendasi"),
                 ),
               )
             ],
@@ -665,7 +676,7 @@ class TilePendaftar extends StatefulWidget {
 class _TilePendaftarState extends State<TilePendaftar> {
   String _namaUser, _kampus, _owner;
   DateTime _timeEndIntern, _timeStartIntern, _expiredAt;
-  bool _statusUser;
+
   var name, mapKampus;
   bool tekan = true;
   bool penerimaan = false;
@@ -681,7 +692,19 @@ class _TilePendaftarState extends State<TilePendaftar> {
     );
   }
 
-  void cobaTolak() {}
+  void _hasilTolak() {
+    String _idRegist = "${widget.idUser}_${widget.idLowongan}";
+    Map<String, dynamic> statsTolak = <String, dynamic>{"status": false};
+    Firestore.instance
+        .collection("registerIntern")
+        .document("$_idRegist")
+        .updateData(statsTolak)
+        .whenComplete(() {
+      print("doneRejectChange");
+    }).catchError((e) {
+      print(e.toString());
+    });
+  }
 
   void _isPressed() {
     setState(() {
@@ -730,7 +753,7 @@ class _TilePendaftarState extends State<TilePendaftar> {
         //update masing-masing status false di register dari for each doc
         Map<String, dynamic> statFalse = <String, dynamic>{"status": false};
         String docID = "${doc.data["userId"]}_${doc.data["vacanciesId"]}";
-        print("wew $docID");
+
         Firestore.instance
             .collection("registerIntern")
             .document("$docID")
@@ -798,7 +821,7 @@ class _TilePendaftarState extends State<TilePendaftar> {
         setState(() {
           name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
           _namaUser = name["displayName"];
-          _statusUser = data.documents[0].data['isActive'];
+          // _statusUser = data.documents[0].data['isActive'];
         });
 
         var collegeQuery = firestore
@@ -877,7 +900,7 @@ class _TilePendaftarState extends State<TilePendaftar> {
                               _isPressed();
                             }
                           } else {
-                            cobaTolak();
+                            _hasilTolak();
                           }
                         },
                         itemBuilder: (BuildContext context) => _popUpTerimaItem,

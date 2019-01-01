@@ -1,9 +1,9 @@
-import 'package:date_format/date_format.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tempat_magang/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tempat_magang/instansi_page/instansiOrCollegeProfil.dart';
 import 'package:tempat_magang/instansi_page/instansi_buat_lowongan.dart';
 import 'package:tempat_magang/instansi_page/manajemenLowonganInstansi.dart';
 
@@ -21,7 +21,9 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
   var name;
   Future getDataUser() async {
     var user = await FirebaseAuth.instance.currentUser();
+
     var firestore = Firestore.instance;
+
     var userQuery = firestore
         .collection('users')
         .where('uid', isEqualTo: user.uid)
@@ -72,71 +74,184 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        drawer: Drawer(
-            child: ListView(
-          children: <Widget>[
-            new UserAccountsDrawerHeader(
-              decoration: BoxDecoration(color: const Color(0xFFe87c55)
-                  //     image: DecorationImage(
-                  //   image: ExactAssetImage('img/selamatdatang.png'),
-                  //   fit: BoxFit.cover,
-                  // )
-                  ),
-              accountEmail:
-                  new Text('${_currentEmail == null ? "" : _currentEmail}'),
-              accountName: new Text('$_namaUser'),
-              currentAccountPicture: _linkPhoto == null
-                  ? new CircleAvatar(
-                      backgroundColor: Colors.white,
-                      child: new Text("T", style: TextStyle(fontSize: 25.0)))
-                  : new CircleAvatar(backgroundImage: NetworkImage(_linkPhoto)),
-            ),
-            new ListTile(
-              title: new Text("Buat lowongan"),
-              trailing: new Icon(Icons.plus_one),
-              onTap: () {
-                Navigator.of(context).pop();
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        new InstansiBuatLowongan()));
-              },
-            ),
-            new ListTile(
-              title: new Text("Manajemen lowongan"),
-              trailing: new Icon(Icons.assignment),
-              onTap: () {
-                Navigator.of(context).pop();
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        new ManajemenLowonganInstansi(
-                          idAgency: _idUser,
-                        )));
-              },
-            ),
-            new ListTile(
-              title: new Text("Tambah mentor"),
-              trailing: new Icon(Icons.people_outline),
-            ),
-            new ListTile(
-              title: new Text("Manajemen mentor"),
-              trailing: new Icon(Icons.person_outline),
-            ),
-            new ListTile(
-              title: new Text("Profil"),
-              trailing: new Icon(Icons.person),
-            ),
-            new Divider(),
-            new ListTile(
-              leading: Icon(Icons.input),
-              title: new Text("Keluar"),
-              onTap: _signOut,
-            )
-          ],
-        )),
+        drawer: StreamBuilder(
+            stream: Firestore.instance
+                .collection('users')
+                .document('$_idUser')
+                .snapshots(),
+            builder: (BuildContext context,
+                AsyncSnapshot<DocumentSnapshot> snapshot) {
+              if (snapshot.hasError) {
+                return Center(child: new Text("Load"));
+              } else if (!snapshot.hasData) {
+                return Drawer(
+                    child: ListView(
+                  children: <Widget>[
+                    new UserAccountsDrawerHeader(
+                      accountName: new Text(""),
+                      decoration: BoxDecoration(color: const Color(0xFFe87c55)
+                          //     image: DecorationImage(
+                          //   image: ExactAssetImage('img/selamatdatang.png'),
+                          //   fit: BoxFit.cover,
+                          // )
+                          ),
+                      accountEmail: new Text(
+                          '${_currentEmail == null ? "" : _currentEmail}'),
+                    ),
+                    new ListTile(
+                      title: new Text("Buat lowongan"),
+                      trailing: new Icon(Icons.plus_one),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(
+                          context,
+                        ).push(MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                new InstansiBuatLowongan()));
+                      },
+                    ),
+                    new ListTile(
+                      title: new Text("Manajemen lowongan"),
+                      trailing: new Icon(Icons.assignment),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(
+                          context,
+                        ).push(MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                new ManajemenLowonganInstansi(
+                                  idAgency: _idUser,
+                                )));
+                      },
+                    ),
+                    new ListTile(
+                      title: new Text("Tambah mentor"),
+                      trailing: new Icon(Icons.people_outline),
+                    ),
+                    new ListTile(
+                      title: new Text("Manajemen mentor"),
+                      trailing: new Icon(Icons.person_outline),
+                    ),
+                    new ListTile(
+                      title: new Text("Riwayat Magang"),
+                      trailing: new Icon(Icons.timeline),
+                    ),
+                    new ListTile(
+                      title: new Text("Profil"),
+                      trailing: new Icon(Icons.person),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(
+                          context,
+                        ).push(MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                new InstansiOrCollegeProfil(id: _idUser)));
+                      },
+                    ),
+                    new Divider(),
+                    new ListTile(
+                      leading: Icon(Icons.help),
+                      title: new Text("Bantuan"),
+                      onTap: _signOut,
+                    ),
+                    new ListTile(
+                      leading: Icon(Icons.input),
+                      title: new Text("Keluar"),
+                      onTap: _signOut,
+                    )
+                  ],
+                ));
+              } else if (snapshot.connectionState == ConnectionState.active ||
+                  snapshot.hasData) {
+                name = snapshot.data['data'] as Map<dynamic, dynamic>;
+                return new Drawer(
+                    child: ListView(
+                  children: <Widget>[
+                    new UserAccountsDrawerHeader(
+                      decoration: BoxDecoration(color: const Color(0xFFe87c55)
+                          //     image: DecorationImage(
+                          //   image: ExactAssetImage('img/selamatdatang.png'),
+                          //   fit: BoxFit.cover,
+                          // )
+                          ),
+                      accountEmail:
+                          new Text(name["email"] == null ? "" : name["email"]),
+                      accountName: new Text(name["displayName"] == null
+                          ? ""
+                          : name["displayName"]),
+                      currentAccountPicture: _linkPhoto == null
+                          ? new CircleAvatar(
+                              backgroundColor: Colors.white,
+                              child: new Text("T",
+                                  style: TextStyle(fontSize: 25.0)))
+                          : new CircleAvatar(
+                              backgroundImage: NetworkImage(name["photoURL"])),
+                    ),
+                    new ListTile(
+                      title: new Text("Buat lowongan"),
+                      trailing: new Icon(Icons.plus_one),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(
+                          context,
+                        ).push(MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                new InstansiBuatLowongan()));
+                      },
+                    ),
+                    new ListTile(
+                      title: new Text("Manajemen lowongan"),
+                      trailing: new Icon(Icons.assignment),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(
+                          context,
+                        ).push(MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                new ManajemenLowonganInstansi(
+                                  idAgency: _idUser,
+                                )));
+                      },
+                    ),
+                    new ListTile(
+                      title: new Text("Tambah mentor"),
+                      trailing: new Icon(Icons.people_outline),
+                    ),
+                    new ListTile(
+                      title: new Text("Manajemen mentor"),
+                      trailing: new Icon(Icons.person_outline),
+                    ),
+                    new ListTile(
+                      title: new Text("Riwayat Magang"),
+                      trailing: new Icon(Icons.timeline),
+                    ),
+                    new ListTile(
+                      title: new Text("Profil"),
+                      trailing: new Icon(Icons.person),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(
+                          context,
+                        ).push(MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                new InstansiOrCollegeProfil(id: _idUser)));
+                      },
+                    ),
+                    new Divider(),
+                    new ListTile(
+                      leading: Icon(Icons.help),
+                      title: new Text("Bantuan"),
+                      onTap: _signOut,
+                    ),
+                    new ListTile(
+                      leading: Icon(Icons.input),
+                      title: new Text("Keluar"),
+                      onTap: _signOut,
+                    )
+                  ],
+                ));
+              }
+            }),
         body: DefaultTabController(
           length: 2,
           child: NestedScrollView(
@@ -218,14 +333,6 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
-                  // new Container(
-                  //   margin: const EdgeInsets.all(10.0),
-                  //   child: new Text(
-                  //     "Segera temukan magangmu",
-                  //     style: TextStyle(
-                  //         fontWeight: FontWeight.bold, color: Colors.grey),
-                  //   ),
-                  // ),
                   Container(
                       margin: const EdgeInsets.only(top: 20.0, left: 10.0),
                       child: new Text(

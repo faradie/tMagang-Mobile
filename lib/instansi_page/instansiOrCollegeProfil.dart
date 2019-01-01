@@ -1,38 +1,24 @@
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image/image.dart' as Img;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image/image.dart' as Img;
 
-class InternProfil extends StatefulWidget {
-  InternProfil({this.id});
+class InstansiOrCollegeProfil extends StatefulWidget {
+  InstansiOrCollegeProfil({this.id});
   final String id;
-  @override
-  InternProfilState createState() {
-    return new InternProfilState();
-  }
+  _InstansiOrCollegeProfilState createState() =>
+      _InstansiOrCollegeProfilState();
 }
 
-class InternProfilState extends State<InternProfil> {
+class _InstansiOrCollegeProfilState extends State<InstansiOrCollegeProfil> {
+  String _userViewId, _namaUser, _linkPhoto, _kontak, _alamat;
+  DateTime _accountExpiredAt;
   var name;
-  List<dynamic> dummy = ["Skill belum diatur"];
-  String _namaUser,
-      _collegeName,
-      _collegeId,
-      _jurusan,
-      _jenisKel,
-      _nim,
-      _kontak,
-      _linkPhoto,
-      _alamat,
-      _userViewId,
-      _isActive;
-  List<String> _requirementNya;
-
   Future getDataUser() async {
     var user = await FirebaseAuth.instance.currentUser();
     var firestore = Firestore.instance;
@@ -49,32 +35,9 @@ class InternProfilState extends State<InternProfil> {
           name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
           _namaUser = name["displayName"];
           _linkPhoto = name["photoURL"];
-          _jurusan = name["departement"];
-          _isActive = data.documents[0].data['isActive'] == true
-              ? "Magang"
-              : "Tidak Magang";
-          _jenisKel = name["gender"] == "male"
-              ? "Laki-laki"
-              : name["gender"] == "female" ? "Perempuan" : null;
-          _nim = name["studentIDNumber"];
           _kontak = name["phoneNumber"];
-          _collegeId = name["collegeId"];
           _alamat = name["address"];
-          _requirementNya =
-              List.from(name["skills"] == null ? dummy : name["skills"]);
-        });
-        var getCollegeNameQuery = firestore
-            .collection('users')
-            .where('uid', isEqualTo: _collegeId)
-            .limit(1);
-
-        getCollegeNameQuery.getDocuments().then((data) {
-          if (data.documents.length > 0) {
-            setState(() {
-              name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
-              _collegeName = name["displayName"];
-            });
-          }
+          _accountExpiredAt = data.documents[0].data['accountExpiredAt'];
         });
       }
     });
@@ -110,18 +73,14 @@ class InternProfilState extends State<InternProfil> {
                     onPressed: () {
                       Navigator.of(context).push(new MaterialPageRoute(
                         builder: (BuildContext context) => new EditProfil(
-                              idMhs: widget.id,
+                              idAccount: widget.id,
                               namaUser:
                                   _namaUser == null ? "Kosong" : _namaUser,
-                              nimUser: _nim == null ? "Kosong" : _nim,
-                              jenisKelamin:
-                                  _jenisKel == null ? "Kosong" : _jenisKel,
                               kontak: _kontak == null ? "Kosong" : _kontak,
                               alamat: _alamat == null ? "Kosong" : _alamat,
-                              skills: _requirementNya,
-                              jurusan: _jurusan,
-                              kampus: _collegeName,
-                              status: _isActive,
+                              accountExpiredAt: _accountExpiredAt == null
+                                  ? "Kosong"
+                                  : _accountExpiredAt,
                             ),
                       ));
                     },
@@ -173,18 +132,6 @@ class InternProfilState extends State<InternProfil> {
                             textAlign: TextAlign.center,
                           ),
                         ),
-                        new Container(
-                          padding:
-                              const EdgeInsets.only(bottom: 8.0, left: 8.0),
-                          child: new Text(
-                            _collegeName == null
-                                ? "Mengambil data"
-                                : _collegeName,
-                            style: new TextStyle(
-                                color: Colors.grey, fontSize: 13.0),
-                            textAlign: TextAlign.center,
-                          ),
-                        )
                       ],
                     ),
                   ),
@@ -193,30 +140,6 @@ class InternProfilState extends State<InternProfil> {
               Padding(
                 padding: const EdgeInsets.only(top: 10.0),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  new Column(
-                    children: <Widget>[
-                      new Text(
-                        "Status",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      new Text(
-                          _isActive == null ? "Mengambil data" : _isActive),
-                    ],
-                  ),
-                  new Column(
-                    children: <Widget>[
-                      new Text(
-                        "Jurusan",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      new Text(_jurusan == null ? "Mengambil data" : _jurusan),
-                    ],
-                  ),
-                ],
-              ),
               new Divider(
                 color: Colors.grey,
               ),
@@ -224,37 +147,6 @@ class InternProfilState extends State<InternProfil> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Container(
-                      margin: const EdgeInsets.only(
-                          top: 10.0, left: 10.0, right: 10.0),
-                      child: new Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          new Text(
-                            "NIM",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          new Text(
-                              _nim == null ? "Silahkan lengkapi data" : _nim)
-                        ],
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(
-                          top: 10.0, left: 10.0, right: 10.0),
-                      child: new Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          new Text(
-                            "Jenis kelamin",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          new Text(_jenisKel == null
-                              ? "Silahkan lengkapi data"
-                              : _jenisKel)
-                        ],
-                      ),
-                    ),
                     Container(
                       margin: const EdgeInsets.only(
                           top: 10.0, left: 10.0, right: 10.0),
@@ -287,30 +179,6 @@ class InternProfilState extends State<InternProfil> {
                         ],
                       ),
                     ),
-                    Container(
-                      margin: const EdgeInsets.only(
-                          top: 10.0, left: 10.0, right: 10.0),
-                      child: new Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          new Text(
-                            "Skills",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            child: Container(
-                                height: 25.0,
-                                color: Colors.transparent,
-                                child: Requir(
-                                  req: _requirementNya == null
-                                      ? ["Silahkan lengkapi data"]
-                                      : _requirementNya,
-                                )),
-                          ),
-                        ],
-                      ),
-                    ),
                     Padding(
                       padding: const EdgeInsets.all(10.0),
                     )
@@ -320,7 +188,7 @@ class InternProfilState extends State<InternProfil> {
               new Container(
                 margin: const EdgeInsets.all(5.0),
                 child: new Text(
-                  "Riwayat Magang",
+                  "Data Penunjang",
                   style: TextStyle(
                       fontWeight: FontWeight.bold, color: Colors.grey),
                 ),
@@ -331,7 +199,7 @@ class InternProfilState extends State<InternProfil> {
                   child: Container(
                     margin: const EdgeInsets.all(10.0),
                     child: new Text(
-                      "Data Riwayat Magang",
+                      "Comingsoon...",
                     ),
                   ),
                 ),
@@ -342,85 +210,29 @@ class InternProfilState extends State<InternProfil> {
   }
 }
 
-class Requir extends StatelessWidget {
-  Requir({this.req});
-  final List<String> req;
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      scrollDirection: Axis.horizontal,
-      itemCount: req.length,
-      itemBuilder: (_, index) {
-        return Container(
-          padding: const EdgeInsets.only(right: 5.0),
-          child: KompetensiUser(
-            judulKompetensi: req[index].toString(),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class KompetensiUser extends StatelessWidget {
-  KompetensiUser({this.judulKompetensi});
-  final String judulKompetensi;
-  @override
-  Widget build(BuildContext context) {
-    return new Container(
-        padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-        decoration: new BoxDecoration(
-            color: Colors.transparent,
-            border: new Border.all(color: const Color(0xFFe87c55), width: 1.0),
-            borderRadius: new BorderRadius.all(Radius.circular(20.0))),
-        child: new Center(
-          child: new Text(
-            judulKompetensi,
-            style: TextStyle(
-                fontSize: 15.0,
-                color: const Color(0xFFe87c55),
-                fontWeight: FontWeight.bold),
-          ),
-        ));
-  }
-}
-
 class EditProfil extends StatefulWidget {
   EditProfil(
-      {this.jurusan,
-      this.kampus,
-      this.status,
+      {this.idAccount,
       this.namaUser,
-      this.nimUser,
-      this.jenisKelamin,
       this.kontak,
       this.alamat,
-      this.idMhs,
-      this.skills});
-  final namaUser,
-      nimUser,
-      jenisKelamin,
-      kontak,
-      alamat,
-      jurusan,
-      idMhs,
-      kampus,
-      status;
-  final List<String> skills;
+      this.accountExpiredAt});
+  final String namaUser, kontak, alamat, idAccount;
+  final DateTime accountExpiredAt;
+
   _EditProfilState createState() => _EditProfilState();
 }
 
 class _EditProfilState extends State<EditProfil> {
   final TextEditingController _controlName = new TextEditingController();
-  final TextEditingController _controlNIM = new TextEditingController();
+
   final TextEditingController _controlKontak = new TextEditingController();
   final TextEditingController _controlAlamat = new TextEditingController();
-  final TextEditingController _controlSkills = new TextEditingController();
+
   final formKeySave = new GlobalKey<FormState>();
-  String _namaUser, _emailUser, _collegeID, _tmpJenisKelamin, _linkPhoto;
+  String _namaUser, _emailUser, _linkPhoto;
   var name;
   bool tekan = true;
-  bool _addSkill = false;
 
   File image;
 
@@ -450,8 +262,6 @@ class _EditProfilState extends State<EditProfil> {
           _namaUser = name["displayName"];
           _emailUser = name["email"];
           _linkPhoto = name["photoURL"];
-          _collegeID = name["collegeId"];
-          _addSkill = name["addSkill"] == null ? false : name["addSkill"];
         });
       }
     });
@@ -480,34 +290,29 @@ class _EditProfilState extends State<EditProfil> {
     StorageReference ref = FirebaseStorage.instance.ref().child("$title.jpg");
     StorageUploadTask uploadTask = ref.putFile(compressImg);
 
-    var downloadUrl = await (await uploadTask.onComplete).ref.getDownloadURL();
+    var downloadUrl = await (await uploadTask.onComplete)
+        .ref
+        .getDownloadURL()
+        .catchError((e) {
+      _showToast(e.toString(), Colors.red);
+    });
     var url = downloadUrl.toString();
 
     Map<String, dynamic> datadalam = <String, dynamic>{
-      "studentIDNumber": _controlNIM.text,
-      "skills": _controlSkills.text == "Skill belum diatur"
-          ? null
-          : _controlSkills.text.toLowerCase().split(","),
       "photoURL": url,
       "phoneNumber": _controlKontak.text,
-      "addSkill": true,
-      "gender": _tmpJenisKelamin,
       "email": _emailUser,
       "displayName": _controlName.text,
-      "collegeId": _collegeID,
-      "departement": widget.jurusan,
       "address": _controlAlamat.text
     };
 
     Map<String, dynamic> dataAwal = <String, dynamic>{
       "data": datadalam,
-      "isActive": widget.status == "Magang"
-          ? true
-          : widget.status == "Tidak Magang" ? false : "",
     };
+
     Firestore.instance
         .collection("users")
-        .document("${widget.idMhs}")
+        .document("${widget.idAccount}")
         .updateData(dataAwal)
         .whenComplete(() {
       Navigator.of(this.context).pop();
@@ -525,30 +330,19 @@ class _EditProfilState extends State<EditProfil> {
 
     if (image == null) {
       Map<String, dynamic> datadalam = <String, dynamic>{
-        "studentIDNumber": _controlNIM.text,
-        "skills": _controlSkills.text == "Skill belum diatur"
-            ? null
-            : _controlSkills.text.toLowerCase().split(","),
         "photoURL": _linkPhoto,
         "phoneNumber": _controlKontak.text,
-        "addSkill": true,
-        "gender": _tmpJenisKelamin,
         "email": _emailUser,
         "displayName": _controlName.text,
-        "collegeId": _collegeID,
-        "departement": widget.jurusan,
         "address": _controlAlamat.text
       };
 
       Map<String, dynamic> dataAwal = <String, dynamic>{
         "data": datadalam,
-        "isActive": widget.status == "Magang"
-            ? true
-            : widget.status == "Tidak Magang" ? false : "",
       };
       Firestore.instance
           .collection("users")
-          .document("${widget.idMhs}")
+          .document("${widget.idAccount}")
           .updateData(dataAwal)
           .whenComplete(() {
         Navigator.of(this.context).pop();
@@ -562,25 +356,12 @@ class _EditProfilState extends State<EditProfil> {
     }
   }
 
-  static const menutItem = <String>['male', 'female'];
-  final List<DropdownMenuItem<String>> _dropDownJenisKel = menutItem
-      .map((String value) => DropdownMenuItem<String>(
-            value: value,
-            child: new Text(value == 'female' ? "Perempuan" : "Laki-laki"),
-          ))
-      .toList();
-
   @override
   void initState() {
     _controlName.text = widget.namaUser;
-    _controlNIM.text = widget.nimUser == "Kosong" ? "" : widget.nimUser;
     _controlKontak.text = widget.kontak == "Kosong" ? "" : widget.kontak;
     _controlAlamat.text = widget.alamat == "Kosong" ? "" : widget.alamat;
-    String s = widget.skills.join(',');
-    _controlSkills.text = s;
-    _tmpJenisKelamin = widget.jenisKelamin == "Laki-laki"
-        ? "male"
-        : widget.jenisKelamin == "Kosong" ? "male" : "female";
+
     super.initState();
     getDataUser();
   }
@@ -664,18 +445,6 @@ class _EditProfilState extends State<EditProfil> {
                               ),
                             ),
                           ),
-                          new Container(
-                            padding:
-                                const EdgeInsets.only(bottom: 8.0, left: 8.0),
-                            child: new Text(
-                              widget.kampus == null
-                                  ? "Silahkan diisi"
-                                  : widget.kampus,
-                              style: new TextStyle(
-                                  color: Colors.grey, fontSize: 13.0),
-                              textAlign: TextAlign.center,
-                            ),
-                          )
                         ],
                       ),
                     ),
@@ -684,33 +453,6 @@ class _EditProfilState extends State<EditProfil> {
                 Padding(
                   padding: const EdgeInsets.only(top: 10.0),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    new Column(
-                      children: <Widget>[
-                        new Text(
-                          "Status",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        new Text(widget.status == null
-                            ? "Silahkan diisi"
-                            : widget.status),
-                      ],
-                    ),
-                    new Column(
-                      children: <Widget>[
-                        new Text(
-                          "Jurusan",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        new Text(widget.jurusan == null
-                            ? "Silahkan diisi"
-                            : widget.jurusan),
-                      ],
-                    ),
-                  ],
-                ),
                 new Divider(
                   color: Colors.grey,
                 ),
@@ -718,40 +460,6 @@ class _EditProfilState extends State<EditProfil> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Container(
-                        margin: const EdgeInsets.only(
-                            top: 10.0, left: 10.0, right: 10.0),
-                        child: new Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            new TextFormField(
-                              controller: _controlNIM,
-                              keyboardType: TextInputType.text,
-                              decoration: new InputDecoration(
-                                labelText: 'NIM Pemagang',
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(
-                            top: 10.0, left: 10.0, right: 10.0),
-                        child: new Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            new DropdownButton<String>(
-                              value: _tmpJenisKelamin,
-                              onChanged: (String nilaiBaru) {
-                                setState(() {
-                                  _tmpJenisKelamin = nilaiBaru;
-                                });
-                              },
-                              items: this._dropDownJenisKel,
-                            )
-                          ],
-                        ),
-                      ),
                       Container(
                         margin: const EdgeInsets.only(
                             top: 10.0, left: 10.0, right: 10.0),
@@ -782,47 +490,6 @@ class _EditProfilState extends State<EditProfil> {
                               ),
                             ),
                           ],
-                        ),
-                      ),
-                      new Container(
-                        margin: const EdgeInsets.all(10.0),
-                        child: new Text(
-                          "Skill dipisahkan dengan tanda koma ( , ) :",
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(left: 10.0, right: 10.0),
-                        child: new Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: _addSkill == false
-                              ? <Widget>[
-                                  new TextFormField(
-                                    controller: _controlSkills,
-                                    keyboardType: TextInputType.text,
-                                    decoration: new InputDecoration(
-                                      labelText: 'Skill Pemagang',
-                                    ),
-                                  )
-                                ]
-                              : <Widget>[
-                                  new Text(
-                                    "Skills",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.only(top: 8.0),
-                                    child: Container(
-                                        height: 25.0,
-                                        color: Colors.transparent,
-                                        child: Requir(
-                                          req: widget.skills == null
-                                              ? ["Silahkan lengkapi data"]
-                                              : widget.skills,
-                                        )),
-                                  ),
-                                ],
                         ),
                       ),
                       Padding(

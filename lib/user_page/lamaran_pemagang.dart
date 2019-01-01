@@ -114,6 +114,8 @@ class TileLowonganState extends State<TileLowongan> {
   var name;
   String _nameLamaran;
   String regAt;
+  bool _isAccepted;
+
   // Future getDataUser() async {
   //   var firestore = Firestore.instance;
   //   var userQuery = firestore
@@ -132,6 +134,7 @@ class TileLowonganState extends State<TileLowongan> {
   // }
 
   Future getDataUser() async {
+    var user = await FirebaseAuth.instance.currentUser();
     var firestore = Firestore.instance;
     var userQuery2 =
         firestore.collection('vacancies').document(widget.vacanciesId);
@@ -142,6 +145,17 @@ class TileLowonganState extends State<TileLowongan> {
           regAt = formatDate(
               widget.registeAt, [dd, ' ', MM, ' ', yyyy, ' ', HH, ':', nn]);
         });
+      }
+    });
+
+    String _idInternship = "${widget.vacanciesId}_${user.uid}";
+    var cekVacanciesStatus =
+        firestore.collection('internship').document('$_idInternship');
+    cekVacanciesStatus.get().then((dat) {
+      if (dat.exists) {
+        _isAccepted = true;
+      } else {
+        _isAccepted = false;
       }
     });
   }
@@ -164,9 +178,10 @@ class TileLowonganState extends State<TileLowongan> {
             elevation: 4.0,
             splashColor: Colors.blueGrey,
             child: new Text(
-              widget.status == null
+              widget.status == true
+                  //kalo false cek dulu apakah ada id lowongan_iduser itu ada di internship, kalo gaada ditolak kalo ada diterima
                   ? "Review"
-                  : widget.status == true ? "Diterima" : "Ditolak",
+                  : _isAccepted == true ? "Diterima" : "Ditolak",
               style: TextStyle(color: Colors.white),
             ),
           ),

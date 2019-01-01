@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -279,7 +277,7 @@ class DetailLowonganInstansi extends StatefulWidget {
 }
 
 class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
-  String _userId, _namaUser;
+  String _namaUser;
   var name;
   final loadingLoad = CircularProgressIndicator(
     backgroundColor: Colors.deepOrange,
@@ -356,10 +354,6 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                     );
                   } else if (snapshot.connectionState ==
                       ConnectionState.active) {
-                    FirebaseAuth.instance.currentUser().then((user) {
-                      _userId = user.uid;
-                    });
-
                     DateTime dateNow = DateTime.now();
                     DateTime _validUntil = snapshot.data['expiredAt'];
                     final selisih = dateNow.difference(_validUntil).inDays;
@@ -662,7 +656,7 @@ class KompetensiUser extends StatelessWidget {
 
 class TilePendaftar extends StatefulWidget {
   TilePendaftar({this.idUser, this.no});
-  String idUser, no;
+  final String idUser, no;
   _TilePendaftarState createState() => _TilePendaftarState();
 }
 
