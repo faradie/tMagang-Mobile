@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tempat_magang/instansi_page/instansiOrCollegeProfil.dart';
 import 'package:tempat_magang/instansi_page/instansi_buat_lowongan.dart';
 import 'package:tempat_magang/instansi_page/manajemenLowonganInstansi.dart';
+import 'package:tempat_magang/instansi_page/riwayatMagang.dart';
 
 class InstansiDashboard extends StatefulWidget {
   InstansiDashboard({this.auth, this.onSignedOut, this.wew});
@@ -224,6 +225,16 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
                     new ListTile(
                       title: new Text("Riwayat Magang"),
                       trailing: new Icon(Icons.timeline),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(
+                          context,
+                        ).push(MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                new RiwayatMagang(
+                                  id: _idUser,
+                                )));
+                      },
                     ),
                     new ListTile(
                       title: new Text("Profil"),
@@ -241,7 +252,7 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
                     new ListTile(
                       leading: Icon(Icons.help),
                       title: new Text("Bantuan"),
-                      onTap: _signOut,
+                      onTap: () {},
                     ),
                     new ListTile(
                       leading: Icon(Icons.input),

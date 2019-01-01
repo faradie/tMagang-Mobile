@@ -718,12 +718,15 @@ class _ListPageState extends State<ListPage> {
               itemCount: snapshot.data.documents.length,
               itemBuilder: (_, index) {
                 DocumentSnapshot ds = snapshot.data.documents[index];
-                String uploadTglBaru =
-                    formatDate(ds["createdAt"], [dd, ' ', MM, ' ', yyyy]);
-                String mulaiTglBaru =
-                    formatDate(ds["timeStartIntern"], [dd, ' ', MM, ' ', yyyy]);
-                String akhirTglBaru =
-                    formatDate(ds["timeEndIntern"], [dd, ' ', MM, ' ', yyyy]);
+                Timestamp _createdAtStamp = ds["createdAt"];
+                Timestamp _startInternStamp = ds["timeStartIntern"];
+                Timestamp _endInternStamp = ds["timeEndIntern"];
+                String uploadTglBaru = formatDate(
+                    _createdAtStamp.toDate(), [dd, ' ', MM, ' ', yyyy]);
+                String mulaiTglBaru = formatDate(
+                    _startInternStamp.toDate(), [dd, ' ', MM, ' ', yyyy]);
+                String akhirTglBaru = formatDate(
+                    _endInternStamp.toDate(), [dd, ' ', MM, ' ', yyyy]);
 
                 return new CustomCard(
                   jurusan: ds["departement"],

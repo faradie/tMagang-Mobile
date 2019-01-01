@@ -25,7 +25,6 @@ class _RootPageState extends State<RootPage> {
 
   void initState() {
     super.initState();
-    getUser();
     widget.auth.currentUser().then((userId) {
       setState(() {
         // if(userId==null){
@@ -35,6 +34,9 @@ class _RootPageState extends State<RootPage> {
         authStatus =
             userId == null ? AuthStatus.notSignedIn : AuthStatus.signedIn;
       });
+      if (userId != null) {
+        getUser();
+      }
     });
   }
 
@@ -48,6 +50,7 @@ class _RootPageState extends State<RootPage> {
   void getUser() async {
     var user = await FirebaseAuth.instance.currentUser();
     var firestore = Firestore.instance;
+    await firestore.settings(timestampsInSnapshotsEnabled: true);
     var userQuery = firestore
         .collection('users')
         .where('uid', isEqualTo: user.uid)
@@ -66,6 +69,11 @@ class _RootPageState extends State<RootPage> {
       authStatus = AuthStatus.notSignedIn;
       _statusUser = null;
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override

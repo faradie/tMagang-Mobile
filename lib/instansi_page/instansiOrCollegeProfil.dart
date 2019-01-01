@@ -17,7 +17,7 @@ class InstansiOrCollegeProfil extends StatefulWidget {
 
 class _InstansiOrCollegeProfilState extends State<InstansiOrCollegeProfil> {
   String _userViewId, _namaUser, _linkPhoto, _kontak, _alamat;
-  DateTime _accountExpiredAt;
+  Timestamp _accountExpiredAt;
   var name;
   Future getDataUser() async {
     var user = await FirebaseAuth.instance.currentUser();
@@ -56,7 +56,7 @@ class _InstansiOrCollegeProfilState extends State<InstansiOrCollegeProfil> {
           elevation:
               defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
           backgroundColor: const Color(0xFFe87c55),
-          title: new Text("Profil Pemagang"),
+          title: new Text("Profil"),
           leading: InkWell(
             onTap: () {
               Navigator.of(context).pop();
@@ -218,7 +218,7 @@ class EditProfil extends StatefulWidget {
       this.alamat,
       this.accountExpiredAt});
   final String namaUser, kontak, alamat, idAccount;
-  final DateTime accountExpiredAt;
+  final Timestamp accountExpiredAt;
 
   _EditProfilState createState() => _EditProfilState();
 }

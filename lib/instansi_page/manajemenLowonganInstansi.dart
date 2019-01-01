@@ -188,8 +188,10 @@ class ListLowonganState extends State<ListLowongan> {
               return ListView.builder(
                 itemCount: snapshot.data.length,
                 itemBuilder: (_, index) {
-                  DateTime _validUntil = snapshot.data[index].data["expiredAt"];
-                  final difference = dateNow.difference(_validUntil).inDays;
+                  Timestamp _validUntil =
+                      snapshot.data[index].data["expiredAt"];
+                  DateTime _valUntil = _validUntil.toDate();
+                  final difference = dateNow.difference(_valUntil).inDays;
                   if (difference >= 0) {
                     _icon = Icons.warning;
                     _colors = Colors.red;
@@ -224,7 +226,7 @@ class TileLowongan extends StatefulWidget {
       this.no,
       this.warna});
   final String judul, no, idLowongan;
-  final DateTime created;
+  final Timestamp created;
   final IconData iconData;
   final MaterialColor warna;
 
@@ -261,7 +263,7 @@ class TileLowonganState extends State<TileLowongan> {
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           subtitle: new Text(
-              "Dibuat pada : ${widget.created == null ? "" : widget.created}"),
+              "Dibuat pada : ${widget.created.toDate() == null ? "" : widget.created.toDate()}"),
           trailing: new Icon(widget.iconData, color: widget.warna),
         ),
       ],
@@ -289,11 +291,6 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
         .getDocuments();
 
     return qn.documents;
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   @override
@@ -361,9 +358,10 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                   } else if (snapshot.connectionState ==
                       ConnectionState.active) {
                     DateTime dateNow = DateTime.now();
-                    DateTime _validUntil = snapshot.data['expiredAt'];
-                    final selisih = dateNow.difference(_validUntil).inDays;
-                    String expiredAt = formatDate(_validUntil, [
+                    Timestamp _validUntil = snapshot.data['expiredAt'];
+                    DateTime _valUntil = _validUntil.toDate();
+                    final selisih = dateNow.difference(_valUntil).inDays;
+                    String expiredAt = formatDate(_valUntil, [
                       dd,
                       ' ',
                       MM,
@@ -374,6 +372,9 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                       ':',
                       nn,
                     ]);
+                    Timestamp _startIntern = snapshot.data['timeStartIntern'];
+                    Timestamp _endIntern = snapshot.data['timeEndIntern'];
+                    Timestamp _createtAt = snapshot.data['createdAt'];
                     return new ListView(
                       children: <Widget>[
                         new Card(
@@ -499,8 +500,7 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                                               fontSize: 15.0,
                                               fontWeight: FontWeight.bold,
                                               color: Colors.grey[800])),
-                                      new Text(formatDate(
-                                          snapshot.data['timeStartIntern'],
+                                      new Text(formatDate(_startIntern.toDate(),
                                           [dd, ' ', MM, ' ', yyyy])),
                                     ],
                                   )),
@@ -513,8 +513,7 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                                               fontSize: 15.0,
                                               fontWeight: FontWeight.bold,
                                               color: Colors.grey[800])),
-                                      new Text(formatDate(
-                                          snapshot.data['timeEndIntern'],
+                                      new Text(formatDate(_endIntern.toDate(),
                                           [dd, ' ', MM, ' ', yyyy])),
                                     ],
                                   ))
@@ -535,7 +534,7 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                                         CrossAxisAlignment.start,
                                     children: <Widget>[
                                       new Text(
-                                        "Diupload pada ${snapshot.data['createdAt']}",
+                                        "Diupload pada $_createtAt",
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -615,7 +614,7 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
               //akhir dari tab2
               Container(
                 child: new Center(
-                  child: new Text("Konten Rekomendasi"),
+                  child: new Text("Konten Rekomendasi. Comingsoon..."),
                 ),
               )
             ],
@@ -675,6 +674,7 @@ class TilePendaftar extends StatefulWidget {
 
 class _TilePendaftarState extends State<TilePendaftar> {
   String _namaUser, _kampus, _owner;
+  Timestamp _timeEndInternStamp, _timeStartInternStamp, _expiredAtStamp;
   DateTime _timeEndIntern, _timeStartIntern, _expiredAt;
 
   var name, mapKampus;
@@ -779,10 +779,13 @@ class _TilePendaftarState extends State<TilePendaftar> {
     userQuery.getDocuments().then((data) {
       if (data.documents.length > 0) {
         setState(() {
-          _timeEndIntern = data.documents[0].data['timeEndIntern'];
-          _timeStartIntern = data.documents[0].data['timeStartIntern'];
+          _timeEndInternStamp = data.documents[0].data['timeEndIntern'];
+          _timeEndIntern = _timeEndInternStamp.toDate();
+          _timeStartInternStamp = data.documents[0].data['timeStartIntern'];
+          _timeStartIntern = _timeStartInternStamp.toDate();
           _owner = data.documents[0].data['ownerAgency'];
-          _expiredAt = data.documents[0].data['expiredAt'];
+          _expiredAtStamp = data.documents[0].data['expiredAt'];
+          _expiredAt = _expiredAtStamp.toDate();
           var selisih = dateNow.difference(_expiredAt).inDays;
           if (selisih <= 0) {
             penerimaan = false;

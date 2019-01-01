@@ -102,7 +102,7 @@ class TileLowongan extends StatefulWidget {
   TileLowongan({this.vacanciesId, this.registeAt, this.status});
   final String vacanciesId;
   final bool status;
-  final DateTime registeAt;
+  final Timestamp registeAt;
 
   @override
   TileLowonganState createState() {
@@ -142,8 +142,8 @@ class TileLowonganState extends State<TileLowongan> {
       if (doc.exists) {
         setState(() {
           _nameLamaran = doc.data["title"];
-          regAt = formatDate(
-              widget.registeAt, [dd, ' ', MM, ' ', yyyy, ' ', HH, ':', nn]);
+          regAt = formatDate(widget.registeAt.toDate(),
+              [dd, ' ', MM, ' ', yyyy, ' ', HH, ':', nn]);
         });
       }
     });
