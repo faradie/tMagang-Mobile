@@ -11,6 +11,11 @@ import 'package:tempat_magang/user_page/detailLowongan.dart';
 import 'package:tempat_magang/user_page/internprofil.dart';
 import 'package:tempat_magang/user_page/lamaran_pemagang.dart';
 
+final loadingLoad = CircularProgressIndicator(
+  backgroundColor: Colors.deepOrange,
+  strokeWidth: 1.5,
+);
+
 class Dashboard extends StatefulWidget {
   Dashboard({this.auth, this.onSignedOut});
   final BaseAuth auth;
@@ -129,91 +134,49 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        floatingActionButton: new Opacity(
-          opacity: _isVisible ? 1.0 : 0.0,
-          child: new FloatingActionButton(
-            onPressed: () {},
-            tooltip: 'Increment',
-            child: new Icon(Icons.chat),
-          ),
-        ),
-        drawer: StreamBuilder(
-            stream: Firestore.instance
-                .collection('users')
-                .document('$_idUser')
-                .snapshots(),
-            builder: (BuildContext context,
-                AsyncSnapshot<DocumentSnapshot> snapshot) {
-              if (snapshot.hasError) {
-                return Center(child: new Text("Load"));
-              } else if (!snapshot.hasData) {
-                return Drawer(
-                    child: ListView(
-                  children: <Widget>[
-                    new UserAccountsDrawerHeader(
-                      accountName: new Text(""),
-                      decoration: BoxDecoration(color: const Color(0xFFe87c55)
-                          //     image: DecorationImage(
-                          //   image: ExactAssetImage('img/selamatdatang.png'),
-                          //   fit: BoxFit.cover,
-                          // )
-                          ),
-                      accountEmail: new Text(
-                          '${_currentEmail == null ? "" : _currentEmail}'),
+        floatingActionButton: _statusUser == null
+            ? null
+            : _statusUser == false
+                ? null
+                : new Opacity(
+                    opacity: _isVisible ? 1.0 : 0.0,
+                    child: new FloatingActionButton(
+                      onPressed: () {},
+                      tooltip: 'Increment',
+                      child: new Icon(Icons.chat),
                     ),
-                    new ListTile(
-                      title: new Text("Profil"),
-                      trailing: new Icon(Icons.person),
-                      onTap: () {
-                        Navigator.of(context).pop();
-                        Navigator.of(
-                          context,
-                        ).push(MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                new InternProfil(id: _idUser)));
-                      },
-                    ),
-                    new Divider(),
-                    new ListTile(
-                      title: new Text("Lamaran"),
-                      trailing: new Icon(Icons.find_in_page),
-                      onTap: () {
-                        Navigator.of(context).pop();
-                        Navigator.of(
-                          context,
-                        ).push(MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                new LamaranPemagang()));
-                      },
-                    ),
-                    new ListTile(
-                      title: new Text("Riwayat Lamaran"),
-                      trailing: new Icon(Icons.timeline),
-                      onTap: () {},
-                    ),
-                    new ListTile(
-                      title: new Text("Rekomendasi"),
-                      trailing: new Icon(Icons.star),
-                      onTap: () {
-                        Navigator.of(context).pop();
-                        _showToast("Comingsoon", Colors.orange);
-                      },
-                    ),
-                    new Divider(),
-                    new ListTile(
-                      leading: Icon(Icons.input),
-                      title: new Text("Keluar"),
-                      onTap: _signOut,
-                    )
-                  ],
-                ));
-              } else if (snapshot.connectionState == ConnectionState.active ||
-                  snapshot.hasData) {
-                name = snapshot.data['data'] as Map<dynamic, dynamic>;
-                return Drawer(
-                    child: ListView(
-                  children: <Widget>[
-                    new UserAccountsDrawerHeader(
+                  ),
+        drawer: new Drawer(
+            child: ListView(
+          children: <Widget>[
+            new StreamBuilder(
+                stream: Firestore.instance
+                    .collection('users')
+                    .document('$_idUser')
+                    .snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return Center(child: new Text("Load"));
+                  } else if (!snapshot.hasData) {
+                    return new UserAccountsDrawerHeader(
+                        decoration: BoxDecoration(color: const Color(0xFFe87c55)
+                            //     image: DecorationImage(
+                            //   image: ExactAssetImage('img/selamatdatang.png'),
+                            //   fit: BoxFit.cover,
+                            // )
+                            ),
+                        accountEmail: new Text("Mengambil data"),
+                        accountName: new Text("Mengambil data"),
+                        currentAccountPicture: new CircleAvatar(
+                            backgroundColor: Colors.white,
+                            child: new Text("T",
+                                style: TextStyle(fontSize: 25.0))));
+                  } else if (snapshot.connectionState ==
+                          ConnectionState.active ||
+                      snapshot.hasData) {
+                    name = snapshot.data['data'] as Map<dynamic, dynamic>;
+                    return new UserAccountsDrawerHeader(
                       decoration: BoxDecoration(color: const Color(0xFFe87c55)
                           //     image: DecorationImage(
                           //   image: ExactAssetImage('img/selamatdatang.png'),
@@ -232,50 +195,54 @@ class _DashboardState extends State<Dashboard> {
                                   style: TextStyle(fontSize: 25.0)))
                           : new CircleAvatar(
                               backgroundImage: NetworkImage(name["photoURL"])),
-                    ),
-                    new ListTile(
-                      title: new Text("Profil"),
-                      trailing: new Icon(Icons.person),
-                      onTap: () {
-                        Navigator.of(context).pop();
-                        Navigator.of(
-                          context,
-                        ).push(MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                new InternProfil(id: _idUser)));
-                      },
-                    ),
-                    new Divider(),
-                    new ListTile(
-                      title: new Text("Lamaran"),
-                      trailing: new Icon(Icons.find_in_page),
-                      onTap: () {
-                        Navigator.of(context).pop();
-                        Navigator.of(
-                          context,
-                        ).push(MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                new LamaranPemagang()));
-                      },
-                    ),
-                    new ListTile(
-                      title: new Text("Rekomendasi"),
-                      trailing: new Icon(Icons.star),
-                      onTap: () {
-                        Navigator.of(context).pop();
-                        _showToast("Comingsoon", Colors.orange);
-                      },
-                    ),
-                    new Divider(),
-                    new ListTile(
-                      leading: Icon(Icons.input),
-                      title: new Text("Keluar"),
-                      onTap: _signOut,
-                    )
-                  ],
-                ));
-              }
-            }),
+                    );
+                  }
+                }),
+            new ListTile(
+              title: new Text("Profil"),
+              trailing: new Icon(Icons.person),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(
+                    builder: (BuildContext context) =>
+                        new InternProfil(id: _idUser)));
+              },
+            ),
+            new Divider(),
+            new ListTile(
+              title: new Text("Lamaran"),
+              trailing: new Icon(Icons.find_in_page),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(
+                    builder: (BuildContext context) => new LamaranPemagang()));
+              },
+            ),
+            new ListTile(
+              title: new Text("Rekomendasi"),
+              trailing: new Icon(Icons.star),
+              onTap: () {
+                Navigator.of(context).pop();
+                _showToast("Comingsoon", Colors.orange);
+              },
+            ),
+            new Divider(),
+            new ListTile(
+              title: new Text("Bantuan"),
+              leading: Icon(Icons.help),
+              onTap: () {},
+            ),
+            new ListTile(
+              leading: Icon(Icons.input),
+              title: new Text("Keluar"),
+              onTap: _signOut,
+            )
+          ],
+        )),
         body: DefaultTabController(
           length: 2,
           child: NestedScrollView(
@@ -367,7 +334,17 @@ class _DashboardState extends State<Dashboard> {
                   // ),
                   new Expanded(
                     child: _statusUser == null
-                        ? new Container()
+                        ? new Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                loadingLoad,
+                                Text("Loading Data..")
+                              ],
+                            ),
+                          )
                         : _statusUser == false
                             ? ListPage()
                             : new Center(
@@ -599,12 +576,12 @@ class CustomCard extends StatelessWidget {
                               //     icon: Icon(Icons.bookmark_border),
                               //   ),
                               // ),
-                              new Container(
-                                child: new IconButton(
-                                  onPressed: () {},
-                                  icon: Icon(Icons.more_vert),
-                                ),
-                              ),
+                              // new Container(
+                              //   child: new IconButton(
+                              //     onPressed: () {},
+                              //     icon: Icon(Icons.more_vert),
+                              //   ),
+                              // ),
                             ],
                           ),
                         ),
@@ -684,10 +661,7 @@ class _ListPageState extends State<ListPage> {
   DateTime dateNow = DateTime.now();
 
   //composite expiredAt and createdAt
-  final loadingLoad = CircularProgressIndicator(
-    backgroundColor: Colors.deepOrange,
-    strokeWidth: 1.5,
-  );
+
   @override
   Widget build(BuildContext context) {
     return Container(

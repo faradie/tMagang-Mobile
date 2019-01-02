@@ -737,9 +737,10 @@ class _EditProfilState extends State<EditProfil> {
                       Container(
                         margin: const EdgeInsets.only(
                             top: 10.0, left: 10.0, right: 10.0),
-                        child: new Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: new Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
+                            new Text("Jenis Kelamin : "),
                             new DropdownButton<String>(
                               value: _tmpJenisKelamin,
                               onChanged: (String nilaiBaru) {

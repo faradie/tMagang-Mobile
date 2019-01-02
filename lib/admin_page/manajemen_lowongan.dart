@@ -3,6 +3,7 @@ import 'package:date_format/date_format.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:tempat_magang/user_page/internprofil.dart';
 
 class InternManage extends StatefulWidget {
@@ -165,14 +166,17 @@ class ListLowonganState extends State<ListLowongan> {
               return ListView.builder(
                 itemCount: snapshot.data.length,
                 itemBuilder: (_, index) {
-                  DateTime _validUntil = snapshot.data[index].data["expiredAt"];
-                  final difference = dateNow.difference(_validUntil).inDays;
-                  if (difference >= 0) {
-                    _icon = Icons.warning;
-                    _colors = Colors.red;
-                  } else {
+                  Timestamp _validUntil =
+                      snapshot.data[index].data["expiredAt"];
+                  DateTime _valUntil = _validUntil.toDate();
+                  final difference = _valUntil.difference(dateNow).inHours;
+
+                  if (difference > 0) {
                     _icon = Icons.check;
                     _colors = Colors.blue;
+                  } else {
+                    _icon = Icons.warning;
+                    _colors = Colors.red;
                   }
                   return new TileLowongan(
                     idLowongan: snapshot.data[index].data["id"],
@@ -300,7 +304,7 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
       DeviceOrientation.portraitDown,
     ]);
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: new Scaffold(
           appBar: AppBar(
             elevation:
@@ -323,6 +327,9 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                 ),
                 Tab(
                   text: "Pendaftar",
+                ),
+                Tab(
+                  text: "Rekomendasi",
                 ),
               ],
             ),
@@ -355,9 +362,14 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                   } else if (snapshot.connectionState ==
                       ConnectionState.active) {
                     DateTime dateNow = DateTime.now();
-                    DateTime _validUntil = snapshot.data['expiredAt'];
-                    final selisih = dateNow.difference(_validUntil).inDays;
-                    String expiredAt = formatDate(_validUntil, [
+                    Timestamp _validUntil = snapshot.data['expiredAt'];
+                    Timestamp _startInternStamp =
+                        snapshot.data['timeStartIntern'];
+                    Timestamp _createdAtStamp = snapshot.data['createdAt'];
+                    Timestamp _endInternStamp = snapshot.data['timeEndIntern'];
+                    final selisih =
+                        dateNow.difference(_validUntil.toDate()).inMinutes;
+                    String expiredAt = formatDate(_validUntil.toDate(), [
                       dd,
                       ' ',
                       MM,
@@ -494,7 +506,7 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                                               fontWeight: FontWeight.bold,
                                               color: Colors.grey[800])),
                                       new Text(formatDate(
-                                          snapshot.data['timeStartIntern'],
+                                          _startInternStamp.toDate(),
                                           [dd, ' ', MM, ' ', yyyy])),
                                     ],
                                   )),
@@ -508,7 +520,7 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                                               fontWeight: FontWeight.bold,
                                               color: Colors.grey[800])),
                                       new Text(formatDate(
-                                          snapshot.data['timeEndIntern'],
+                                          _endInternStamp.toDate(),
                                           [dd, ' ', MM, ' ', yyyy])),
                                     ],
                                   ))
@@ -529,7 +541,7 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                                         CrossAxisAlignment.start,
                                     children: <Widget>[
                                       new Text(
-                                        "Diupload pada ${snapshot.data['createdAt']}",
+                                        "Diupload pada ${_createdAtStamp.toDate()}",
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -592,6 +604,7 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                             itemCount: snapshot.data.length,
                             itemBuilder: (_, index) {
                               return new TilePendaftar(
+                                idLowongan: widget.idLowongan,
                                 no: (index + 1).toString(),
                                 idUser: snapshot.data[index].data["userId"],
                               );
@@ -603,6 +616,12 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                       }
                     }
                   },
+                ),
+              ),
+              //akhir dari tab2
+              Container(
+                child: new Center(
+                  child: new Text("Konten Rekomendasi. Comingsoon..."),
                 ),
               )
             ],
@@ -655,14 +674,151 @@ class KompetensiUser extends StatelessWidget {
 }
 
 class TilePendaftar extends StatefulWidget {
-  TilePendaftar({this.idUser, this.no});
-  final String idUser, no;
+  TilePendaftar({this.idUser, this.no, this.idLowongan});
+  final String idUser, no, idLowongan;
   _TilePendaftarState createState() => _TilePendaftarState();
 }
 
 class _TilePendaftarState extends State<TilePendaftar> {
-  String _namaUser, _kampus;
+  String _namaUser, _kampus, _owner;
+  Timestamp _timeEndInternStamp, _timeStartInternStamp, _expiredAtStamp;
+  DateTime _timeEndIntern, _timeStartIntern, _expiredAt;
+
   var name, mapKampus;
+  bool tekan = true;
+  bool penerimaan = false;
+
+  void _showToast(String pesan, Color warna) {
+    Fluttertoast.showToast(
+      msg: pesan,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIos: 1,
+      backgroundColor: warna,
+      textColor: Colors.white,
+    );
+  }
+
+  void _hasilTolak() {
+    String _idRegist = "${widget.idUser}_${widget.idLowongan}";
+    Map<String, dynamic> statsTolak = <String, dynamic>{"status": false};
+    Firestore.instance
+        .collection("registerIntern")
+        .document("$_idRegist")
+        .updateData(statsTolak)
+        .whenComplete(() {
+      print("doneRejectChange");
+    }).catchError((e) {
+      print(e.toString());
+    });
+  }
+
+  void _isPressed() {
+    setState(() {
+      tekan = false;
+    });
+    String _idInternship = "${widget.idLowongan}_${widget.idUser}";
+
+    DateTime dateNow = DateTime.now();
+    Map<String, dynamic> data = <String, dynamic>{
+      "userId": widget.idUser,
+      "vacanciesId": widget.idLowongan,
+      "acceptedAt": dateNow,
+      "timeStartIntern": _timeStartIntern,
+      "timeEndIntern": _timeEndIntern,
+      "ownerAgency": _owner,
+      "mentorId": ""
+    };
+
+    Map<String, dynamic> user = <String, dynamic>{"isActive": true};
+
+    Firestore.instance
+        .collection("users")
+        .document("${widget.idUser}")
+        .updateData(user)
+        .whenComplete(() {
+      Firestore.instance
+          .collection("internship")
+          .document("$_idInternship")
+          .setData(data)
+          .whenComplete(() {
+        _showToast("Berhasil Menerima", Color(0xFFe87c55));
+      }).catchError((e) {
+        print(e);
+      });
+    }).catchError((e) {
+      print(e);
+    });
+
+//proses mencari registerId
+    Firestore.instance
+        .collection("registerIntern")
+        .where("userId", isEqualTo: widget.idUser)
+        .getDocuments()
+        .then((data) {
+      data.documents.forEach((doc) {
+        //update masing-masing status false di register dari for each doc
+        Map<String, dynamic> statFalse = <String, dynamic>{"status": false};
+        String docID = "${doc.data["userId"]}_${doc.data["vacanciesId"]}";
+
+        Firestore.instance
+            .collection("registerIntern")
+            .document("$docID")
+            .updateData(statFalse)
+            .whenComplete(() {
+          print("donechange");
+        }).catchError((e) {
+          print(e.toString());
+        });
+      });
+    });
+  }
+
+  Future getStatus() async {
+    DateTime dateNow = DateTime.now();
+
+    var firestore = Firestore.instance;
+    var userQuery = firestore
+        .collection('vacancies')
+        .where('id', isEqualTo: widget.idLowongan)
+        .limit(1);
+
+    userQuery.getDocuments().then((data) {
+      if (data.documents.length > 0) {
+        setState(() {
+          _timeEndInternStamp = data.documents[0].data['timeEndIntern'];
+          _timeEndIntern = _timeEndInternStamp.toDate();
+          _timeStartInternStamp = data.documents[0].data['timeStartIntern'];
+          _timeStartIntern = _timeStartInternStamp.toDate();
+          _owner = data.documents[0].data['ownerAgency'];
+          _expiredAtStamp = data.documents[0].data['expiredAt'];
+          _expiredAt = _expiredAtStamp.toDate();
+          var selisih = dateNow.difference(_expiredAt).inMinutes;
+          if (selisih <= 0) {
+            penerimaan = false;
+          } else {
+            penerimaan = true;
+          }
+        });
+
+        var collegeQuery = firestore
+            .collection('users')
+            .where('uid', isEqualTo: name["collegeId"])
+            .limit(1);
+
+        collegeQuery.getDocuments().then((collegeData) {
+          if (collegeData.documents.length > 0) {
+            setState(() {
+              mapKampus = collegeData.documents[0].data['data']
+                  as Map<dynamic, dynamic>;
+              _kampus = mapKampus["displayName"];
+            });
+          }
+        });
+      }
+    });
+  }
+
   Future getDataUser() async {
     var firestore = Firestore.instance;
     var userQuery = firestore
@@ -675,6 +831,7 @@ class _TilePendaftarState extends State<TilePendaftar> {
         setState(() {
           name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
           _namaUser = name["displayName"];
+          // _statusUser = data.documents[0].data['isActive'];
         });
 
         var collegeQuery = firestore
@@ -699,7 +856,22 @@ class _TilePendaftarState extends State<TilePendaftar> {
   void initState() {
     super.initState();
     getDataUser();
+    getStatus();
   }
+
+  static const menuItems = <String>[
+    'Terima',
+    'Tolak',
+  ];
+
+  String _selectVal;
+
+  final List<PopupMenuItem<String>> _popUpTerimaItem = menuItems
+      .map((String value) => PopupMenuItem<String>(
+            child: Text(value),
+            value: value,
+          ))
+      .toList();
 
   @override
   Widget build(BuildContext context) {
@@ -708,37 +880,41 @@ class _TilePendaftarState extends State<TilePendaftar> {
         child: new Column(
           children: <Widget>[
             new ListTile(
-              onTap: () {
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(
-                    builder: (BuildContext context) => new InternProfil(
-                          id: widget.idUser,
-                        )));
-              },
-              leading: new Text(
-                widget.no,
-                style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold),
-              ),
-              title: new Text(
-                _namaUser == null ? "" : _namaUser,
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: new Text("Kampus : ${_kampus == null ? "" : _kampus}"),
-              trailing: new ButtonTheme(
-                height: 40.0,
-                child: new RaisedButton(
-                  onPressed: () {},
-                  color: const Color(0xFFff9977),
-                  elevation: 4.0,
-                  splashColor: Colors.blueGrey,
-                  child: new Text(
-                    "Terima",
-                    style: TextStyle(color: Colors.white),
-                  ),
+                onTap: () {
+                  Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute(
+                      builder: (BuildContext context) => new InternProfil(
+                            id: widget.idUser,
+                          )));
+                },
+                leading: new Text(
+                  widget.no,
+                  style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold),
                 ),
-              ),
-            ),
+                title: new Text(
+                  _namaUser == null ? "" : _namaUser,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle:
+                    new Text("Kampus : ${_kampus == null ? "" : _kampus}"),
+                trailing: penerimaan == false
+                    ? new Text("")
+                    : new PopupMenuButton<String>(
+                        onSelected: (String newValue) {
+                          _selectVal = newValue;
+                          if (_selectVal == "Terima") {
+                            if (penerimaan == false) {
+                              _showToast("Belum saatnya", Colors.red);
+                            } else {
+                              _isPressed();
+                            }
+                          } else {
+                            _hasilTolak();
+                          }
+                        },
+                        itemBuilder: (BuildContext context) => _popUpTerimaItem,
+                      )),
             new Divider(),
           ],
         ));

@@ -52,6 +52,7 @@ class _InstansiBuatLowonganState extends State<InstansiBuatLowongan> {
         bool _isActiveIntern = true;
         String _idNya = uuid.v4();
         var today = new DateTime.now();
+
         var _validUntil = today.add(new Duration(days: _expiredAt - 1));
         Map<String, dynamic> data = <String, dynamic>{
           "SLA": _setuju,

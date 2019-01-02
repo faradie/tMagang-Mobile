@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:tempat_magang/instansi_page/editLowongan.dart';
 import 'package:tempat_magang/user_page/internprofil.dart';
 
 final loadingLoad = CircularProgressIndicator(
@@ -191,13 +193,14 @@ class ListLowonganState extends State<ListLowongan> {
                   Timestamp _validUntil =
                       snapshot.data[index].data["expiredAt"];
                   DateTime _valUntil = _validUntil.toDate();
-                  final difference = dateNow.difference(_valUntil).inDays;
-                  if (difference >= 0) {
-                    _icon = Icons.warning;
-                    _colors = Colors.red;
-                  } else {
+                  final difference = _valUntil.difference(dateNow).inHours;
+
+                  if (difference > 0) {
                     _icon = Icons.check;
                     _colors = Colors.blue;
+                  } else {
+                    _icon = Icons.warning;
+                    _colors = Colors.red;
                   }
                   return new TileLowongan(
                     idLowongan: snapshot.data[index].data["id"],
@@ -315,6 +318,18 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
               ),
             ),
             title: new Text("Detail"),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Icon(Icons.settings, color: Colors.white),
+                onPressed: () {
+                  Navigator.of(context).push(new MaterialPageRoute(
+                    builder: (BuildContext context) => new EditLowongan(
+                          idLowongan: widget.idLowongan,
+                        ),
+                  ));
+                },
+              )
+            ],
             backgroundColor: const Color(0xFFe87c55),
             bottom: TabBar(
               tabs: <Widget>[
@@ -360,7 +375,7 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                     DateTime dateNow = DateTime.now();
                     Timestamp _validUntil = snapshot.data['expiredAt'];
                     DateTime _valUntil = _validUntil.toDate();
-                    final selisih = dateNow.difference(_valUntil).inDays;
+                    final selisih = _valUntil.difference(dateNow).inMinutes;
                     String expiredAt = formatDate(_valUntil, [
                       dd,
                       ' ',
@@ -375,6 +390,17 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                     Timestamp _startIntern = snapshot.data['timeStartIntern'];
                     Timestamp _endIntern = snapshot.data['timeEndIntern'];
                     Timestamp _createtAt = snapshot.data['createdAt'];
+                    String uploadPada = formatDate(_createtAt.toDate(), [
+                      dd,
+                      ' ',
+                      MM,
+                      ' ',
+                      yyyy,
+                      ' - ',
+                      HH,
+                      ':',
+                      nn,
+                    ]);
                     return new ListView(
                       children: <Widget>[
                         new Card(
@@ -416,7 +442,7 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                                                   elevation: 4.0,
                                                   splashColor: Colors.blueGrey,
                                                   child: new Text(
-                                                    selisih < 0
+                                                    selisih > 0
                                                         ? "Status Lowongan Aktif"
                                                         : "Status Lowongan Expired",
                                                     style: TextStyle(
@@ -443,7 +469,7 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                                                   elevation: 4.0,
                                                   splashColor: Colors.blueGrey,
                                                   child: new Text(
-                                                    selisih <= 0
+                                                    selisih > 0
                                                         ? "Sampai $expiredAt"
                                                         : "Pada $expiredAt",
                                                     style: TextStyle(
@@ -534,7 +560,7 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                                         CrossAxisAlignment.start,
                                     children: <Widget>[
                                       new Text(
-                                        "Diupload pada $_createtAt",
+                                        "Diupload pada $uploadPada",
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -680,7 +706,7 @@ class _TilePendaftarState extends State<TilePendaftar> {
   var name, mapKampus;
   bool tekan = true;
   bool penerimaan = false;
-
+  int _kuotaMax, _maxInternship;
   void _showToast(String pesan, Color warna) {
     Fluttertoast.showToast(
       msg: pesan,
@@ -710,60 +736,185 @@ class _TilePendaftarState extends State<TilePendaftar> {
     setState(() {
       tekan = false;
     });
-    String _idInternship = "${widget.idLowongan}_${widget.idUser}";
 
-    DateTime dateNow = DateTime.now();
-    Map<String, dynamic> data = <String, dynamic>{
-      "userId": widget.idUser,
-      "vacanciesId": widget.idLowongan,
-      "acceptedAt": dateNow,
-      "timeStartIntern": _timeStartIntern,
-      "timeEndIntern": _timeEndIntern,
-      "ownerAgency": _owner,
-      "mentorId": ""
-    };
+    var firestore = Firestore.instance;
+    var getMaxQuot = firestore
+        .collection('vacancies')
+        .where('id', isEqualTo: widget.idLowongan)
+        .limit(1);
 
-    Map<String, dynamic> user = <String, dynamic>{"isActive": true};
+    getMaxQuot.getDocuments().then((data) {
+      if (data.documents.length > 0) {
+        setState(() {
+          _kuotaMax = data.documents[0].data['quota'];
+        });
 
-    Firestore.instance
-        .collection("users")
-        .document("${widget.idUser}")
-        .updateData(user)
-        .whenComplete(() {
-      Firestore.instance
-          .collection("internship")
-          .document("$_idInternship")
-          .setData(data)
-          .whenComplete(() {
-        _showToast("Berhasil Menerima", Color(0xFFe87c55));
-      }).catchError((e) {
-        print(e);
-      });
-    }).catchError((e) {
-      print(e);
-    });
+        var getMaxIntern = firestore
+            .collection('internship')
+            .where('vacanciesId', isEqualTo: widget.idLowongan);
+
+        getMaxIntern.getDocuments().then((data) {
+          if (data.documents.length > 0) {
+            setState(() {
+              _maxInternship = data.documents.length;
+            });
+          }
+        });
+        print("Sebelum : $_maxInternship dan ini $_kuotaMax");
+        if (_maxInternship == null) {
+          _maxInternship = 0;
+        }
+        if (_maxInternship <= _kuotaMax) {
+          if (_maxInternship == _kuotaMax) {
+            print("Sama dengan : $_maxInternship dan ini $_kuotaMax");
+            String _idInternship = "${widget.idLowongan}_${widget.idUser}";
+
+            DateTime dateNow = DateTime.now();
+            Map<String, dynamic> data = <String, dynamic>{
+              "userId": widget.idUser,
+              "vacanciesId": widget.idLowongan,
+              "acceptedAt": dateNow,
+              "timeStartIntern": _timeStartIntern,
+              "timeEndIntern": _timeEndIntern,
+              "ownerAgency": _owner,
+              "mentorId": ""
+            };
+
+            Map<String, dynamic> user = <String, dynamic>{"isActive": true};
+
+            Firestore.instance
+                .collection("users")
+                .document("${widget.idUser}")
+                .updateData(user)
+                .whenComplete(() {
+              Firestore.instance
+                  .collection("internship")
+                  .document("$_idInternship")
+                  .setData(data)
+                  .whenComplete(() {
+                _showToast("Berhasil Menerima", Color(0xFFe87c55));
+              }).catchError((e) {
+                print(e);
+              });
+            }).catchError((e) {
+              print(e);
+            });
 
 //proses mencari registerId
-    Firestore.instance
-        .collection("registerIntern")
-        .where("userId", isEqualTo: widget.idUser)
-        .getDocuments()
-        .then((data) {
-      data.documents.forEach((doc) {
-        //update masing-masing status false di register dari for each doc
-        Map<String, dynamic> statFalse = <String, dynamic>{"status": false};
-        String docID = "${doc.data["userId"]}_${doc.data["vacanciesId"]}";
+            Firestore.instance
+                .collection("registerIntern")
+                .where("userId", isEqualTo: widget.idUser)
+                .getDocuments()
+                .then((data) {
+              data.documents.forEach((doc) {
+                //update masing-masing status false di register dari for each doc
+                Map<String, dynamic> statFalse = <String, dynamic>{
+                  "status": false
+                };
+                String docID =
+                    "${doc.data["userId"]}_${doc.data["vacanciesId"]}";
 
-        Firestore.instance
-            .collection("registerIntern")
-            .document("$docID")
-            .updateData(statFalse)
-            .whenComplete(() {
-          print("donechange");
-        }).catchError((e) {
-          print(e.toString());
-        });
-      });
+                Firestore.instance
+                    .collection("registerIntern")
+                    .document("$docID")
+                    .updateData(statFalse)
+                    .whenComplete(() {
+                  print("donechange");
+                }).catchError((e) {
+                  print(e.toString());
+                });
+              });
+            });
+
+//proses menggagalkan semua vacancies ketika sudah full kuota /  menolak semua
+            Firestore.instance
+                .collection("registerIntern")
+                .where("vacanciesId", isEqualTo: widget.idLowongan)
+                .getDocuments()
+                .then((data) {
+              data.documents.forEach((doc) {
+                //update masing-masing status false di register dari for each doc
+                Map<String, dynamic> statusFalse = <String, dynamic>{
+                  "status": false
+                };
+                String docsID =
+                    "${doc.data["userId"]}_${doc.data["vacanciesId"]}";
+
+                Firestore.instance
+                    .collection("registerIntern")
+                    .document("$docsID")
+                    .updateData(statusFalse)
+                    .whenComplete(() {
+                  print("done gagalin semua");
+                }).catchError((e) {
+                  print(e.toString());
+                });
+              });
+            });
+          } else {
+            String _idInternship = "${widget.idLowongan}_${widget.idUser}";
+
+            DateTime dateNow = DateTime.now();
+            Map<String, dynamic> data = <String, dynamic>{
+              "userId": widget.idUser,
+              "vacanciesId": widget.idLowongan,
+              "acceptedAt": dateNow,
+              "timeStartIntern": _timeStartIntern,
+              "timeEndIntern": _timeEndIntern,
+              "ownerAgency": _owner,
+              "mentorId": ""
+            };
+
+            Map<String, dynamic> user = <String, dynamic>{"isActive": true};
+
+            Firestore.instance
+                .collection("users")
+                .document("${widget.idUser}")
+                .updateData(user)
+                .whenComplete(() {
+              Firestore.instance
+                  .collection("internship")
+                  .document("$_idInternship")
+                  .setData(data)
+                  .whenComplete(() {
+                _showToast("Berhasil Menerima", Color(0xFFe87c55));
+              }).catchError((e) {
+                print(e);
+              });
+            }).catchError((e) {
+              print(e);
+            });
+
+//proses mencari registerId
+            Firestore.instance
+                .collection("registerIntern")
+                .where("userId", isEqualTo: widget.idUser)
+                .getDocuments()
+                .then((data) {
+              data.documents.forEach((doc) {
+                //update masing-masing status false di register dari for each doc
+                Map<String, dynamic> statFalse = <String, dynamic>{
+                  "status": false
+                };
+                String docID =
+                    "${doc.data["userId"]}_${doc.data["vacanciesId"]}";
+
+                Firestore.instance
+                    .collection("registerIntern")
+                    .document("$docID")
+                    .updateData(statFalse)
+                    .whenComplete(() {
+                  print("donechange");
+                }).catchError((e) {
+                  print(e.toString());
+                });
+              });
+            });
+          }
+        } else {
+          _showToast("Kuota Lowongan telah penuh", Colors.red);
+        }
+      }
     });
   }
 
@@ -786,7 +937,7 @@ class _TilePendaftarState extends State<TilePendaftar> {
           _owner = data.documents[0].data['ownerAgency'];
           _expiredAtStamp = data.documents[0].data['expiredAt'];
           _expiredAt = _expiredAtStamp.toDate();
-          var selisih = dateNow.difference(_expiredAt).inDays;
+          var selisih = dateNow.difference(_expiredAt).inMinutes;
           if (selisih <= 0) {
             penerimaan = false;
           } else {

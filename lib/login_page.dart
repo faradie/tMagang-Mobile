@@ -75,8 +75,8 @@ class _LoginPageState extends State<LoginPage> {
         }
       } catch (e) {
         setState(() {
-            tekan = true;
-          });
+          tekan = true;
+        });
         print(e);
         if (e.toString() ==
             "PlatformException(exception, The email address is badly formatted., null)") {
@@ -303,6 +303,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  bool _obsecureText = true;
   List<Widget> buildInputs() {
     if (_formType == FormType.login) {
       return [
@@ -326,14 +327,21 @@ class _LoginPageState extends State<LoginPage> {
           controller: _passLoginController,
           onChanged: (value) => value == null ? _pass = null : _pass = value,
           // validator: (value) => value.isEmpty ? 'Isikan Password dahulu' : null,
-          obscureText: true,
+          obscureText: _obsecureText,
           keyboardType: TextInputType.text,
           decoration: new InputDecoration(
               labelText: 'Password',
               // labelStyle: TextStyle(color: Color(0xFFEAC324)),
-              suffixIcon: Icon(
-                Icons.lock,
-                color: Color(0xFF006885),
+              suffixIcon: new GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _obsecureText = !_obsecureText;
+                  });
+                },
+                child: new Icon(
+                  _obsecureText ? Icons.lock : Icons.lock_open,
+                  color: _obsecureText ? Color(0xFF006885) : Colors.red,
+                ),
               )),
         ),
       ];

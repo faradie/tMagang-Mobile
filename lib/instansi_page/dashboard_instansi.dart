@@ -477,7 +477,7 @@ class TileLowonganState extends State<TileLowongan> {
             _judulLowongan == null ? "" : _judulLowongan,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          subtitle: new Text("Dibuat pada : "),
+          subtitle: new Text("Mentor : "),
           // trailing: new Icon(widget.iconData, color: widget.warna),
         ),
         new Divider(),

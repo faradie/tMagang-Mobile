@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:date_format/date_format.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image/image.dart' as Img;
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,6 +18,7 @@ class InstansiOrCollegeProfil extends StatefulWidget {
 
 class _InstansiOrCollegeProfilState extends State<InstansiOrCollegeProfil> {
   String _userViewId, _namaUser, _linkPhoto, _kontak, _alamat;
+  String validUntilStr;
   Timestamp _accountExpiredAt;
   var name;
   Future getDataUser() async {
@@ -38,6 +40,18 @@ class _InstansiOrCollegeProfilState extends State<InstansiOrCollegeProfil> {
           _kontak = name["phoneNumber"];
           _alamat = name["address"];
           _accountExpiredAt = data.documents[0].data['accountExpiredAt'];
+          DateTime _valUntil = _accountExpiredAt.toDate();
+          validUntilStr = formatDate(_valUntil, [
+            dd,
+            ' ',
+            MM,
+            ' ',
+            yyyy,
+            ' - ',
+            HH,
+            ':',
+            nn,
+          ]);
         });
       }
     });
@@ -176,6 +190,22 @@ class _InstansiOrCollegeProfilState extends State<InstansiOrCollegeProfil> {
                           new Text(_alamat == null
                               ? "Silahkan lengkapi data"
                               : _alamat)
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(
+                          top: 10.0, left: 10.0, right: 10.0),
+                      child: new Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          new Text(
+                            "Valid sampai",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          new Text(validUntilStr == null
+                              ? "Mengambil data"
+                              : validUntilStr)
                         ],
                       ),
                     ),
