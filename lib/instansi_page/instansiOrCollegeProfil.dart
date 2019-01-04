@@ -471,7 +471,7 @@ class _EditProfilState extends State<EditProfil> {
                               controller: _controlName,
                               keyboardType: TextInputType.text,
                               decoration: new InputDecoration(
-                                labelText: 'Nama Pemagang',
+                                labelText: 'Nama',
                               ),
                             ),
                           ),
@@ -500,7 +500,7 @@ class _EditProfilState extends State<EditProfil> {
                               controller: _controlKontak,
                               keyboardType: TextInputType.number,
                               decoration: new InputDecoration(
-                                labelText: 'Kontak Aktif Pemagang',
+                                labelText: 'Kontak Aktif',
                               ),
                             ),
                           ],
@@ -516,7 +516,7 @@ class _EditProfilState extends State<EditProfil> {
                               controller: _controlAlamat,
                               keyboardType: TextInputType.text,
                               decoration: new InputDecoration(
-                                labelText: 'Alamat Pemagang',
+                                labelText: 'Alamat',
                               ),
                             ),
                           ],

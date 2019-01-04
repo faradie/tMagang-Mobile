@@ -35,7 +35,12 @@ enum AuthStatus { notSignedIn, signedIn }
 
 class _DashboardState extends State<Dashboard> {
   AuthStatus authStatus = AuthStatus.notSignedIn;
-  String _currentEmail, _namaUser, _idUser, _role, _linkPhoto;
+  String _currentEmail,
+      _namaUser,
+      _idUser,
+      _role,
+      _linkPhoto,
+      vacanciesIdInternship;
   bool _statusUser;
   ScrollController _hideButtonController;
   var name;
@@ -83,7 +88,7 @@ class _DashboardState extends State<Dashboard> {
   Future getDataUser() async {
     var user = await FirebaseAuth.instance.currentUser();
     var firestore = Firestore.instance;
-
+    DateTime dateNow = DateTime.now();
     var userQuery = firestore
         .collection('users')
         .where('uid', isEqualTo: user.uid)
@@ -99,6 +104,22 @@ class _DashboardState extends State<Dashboard> {
           _statusUser = data.documents[0].data['isActive'];
           _role = data.documents[0].data['role'];
         });
+
+        //ini id vacancies null query, perbaiki lg
+        if (_statusUser == true) {
+          var internshipQuery = firestore
+              .collection('internship')
+              .where('userId', isEqualTo: user.uid)
+              .where('timeEndIntern', isGreaterThanOrEqualTo: dateNow)
+              .limit(1);
+          internshipQuery.getDocuments().then((dat) {
+            if (dat.documents.length > 0) {
+              setState(() {
+                vacanciesIdInternship = dat.documents[0].data['vacanciesId'];
+              });
+            }
+          });
+        }
       }
     });
   }
@@ -188,13 +209,19 @@ class _DashboardState extends State<Dashboard> {
                       accountName: new Text(name["displayName"] == null
                           ? ""
                           : name["displayName"]),
-                      currentAccountPicture: _linkPhoto == null
+                      currentAccountPicture: name["photoURL"] == null
                           ? new CircleAvatar(
                               backgroundColor: Colors.white,
                               child: new Text("T",
                                   style: TextStyle(fontSize: 25.0)))
-                          : new CircleAvatar(
-                              backgroundImage: NetworkImage(name["photoURL"])),
+                          : name["photoURL"] == ""
+                              ? new CircleAvatar(
+                                  backgroundColor: Colors.white,
+                                  child: new Text("T",
+                                      style: TextStyle(fontSize: 25.0)))
+                              : new CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(name["photoURL"])),
                     );
                   }
                 }),
@@ -324,14 +351,18 @@ class _DashboardState extends State<Dashboard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
-                  // new Container(
-                  //   margin: const EdgeInsets.all(10.0),
-                  //   child: new Text(
-                  //     "Segera temukan magangmu",
-                  //     style: TextStyle(
-                  //         fontWeight: FontWeight.bold, color: Colors.grey),
-                  //   ),
-                  // ),
+                  new Container(
+                    margin: const EdgeInsets.all(10.0),
+                    child: new Text(
+                      _statusUser == null
+                          ? ""
+                          : _statusUser == false
+                              ? "Segera temukan magangmu"
+                              : "Anda sedang aktif magang",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.grey),
+                    ),
+                  ),
                   new Expanded(
                     child: _statusUser == null
                         ? new Center(
@@ -349,7 +380,7 @@ class _DashboardState extends State<Dashboard> {
                             ? ListPage()
                             : new Center(
                                 child: new Text(
-                                    "Anda sedang melaksanakan tugas Magang"),
+                                    "Vacancies ID : $vacanciesIdInternship"),
                               ),
                   ),
                 ],

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tempat_magang/admin_page/admin_dashboard.dart';
+import 'package:tempat_magang/college_page/college_dashboard.dart';
 import 'package:tempat_magang/instansi_page/dashboard_instansi.dart';
 
-import 'package:tempat_magang/user_page/college_dashboard.dart';
 import 'package:tempat_magang/user_page/dashboard.dart';
 
 import 'login_page.dart';

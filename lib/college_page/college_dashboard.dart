@@ -1,39 +1,46 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:date_format/date_format.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tempat_magang/auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tempat_magang/college_page/listMagangMhs.dart';
+import 'package:tempat_magang/college_page/manajemen_pemagang.dart';
 import 'package:tempat_magang/instansi_page/instansiOrCollegeProfil.dart';
-import 'package:tempat_magang/instansi_page/instansi_buat_lowongan.dart';
-import 'package:tempat_magang/instansi_page/manajemenLowonganInstansi.dart';
-import 'package:tempat_magang/instansi_page/riwayatMagang.dart';
 
-class InstansiDashboard extends StatefulWidget {
-  InstansiDashboard({this.auth, this.onSignedOut, this.wew});
+final loadingLoad = CircularProgressIndicator(
+  backgroundColor: Colors.deepOrange,
+  strokeWidth: 1.5,
+);
+
+class CollegeDashboard extends StatefulWidget {
+  CollegeDashboard({this.auth, this.onSignedOut, this.wew});
   final BaseAuth auth;
   final VoidCallback onSignedOut;
   final String wew;
-  @override
-  _InstansiDashboardState createState() => _InstansiDashboardState();
+  _CollegeDashboardState createState() => _CollegeDashboardState();
 }
 
-class _InstansiDashboardState extends State<InstansiDashboard> {
-  String _namaUser, _statusUser, _idUser;
+class _CollegeDashboardState extends State<CollegeDashboard> {
+  String _statusUser, _namaUser, _idUser;
   var name;
+
   Future getDataUser() async {
     var user = await FirebaseAuth.instance.currentUser();
-
     var firestore = Firestore.instance;
-
     var userQuery = firestore
         .collection('users')
         .where('uid', isEqualTo: user.uid)
         .limit(1);
+
     userQuery.getDocuments().then((data) {
       if (data.documents.length > 0) {
         setState(() {
           name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
           _namaUser = name["displayName"];
+
           _idUser = user.uid;
           _statusUser = data.documents[0].data['role'];
         });
@@ -124,49 +131,31 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
                   }
                 }),
             new ListTile(
-              title: new Text("Buat lowongan"),
-              trailing: new Icon(Icons.plus_one),
-              onTap: () {
-                Navigator.of(context).pop();
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        new InstansiBuatLowongan()));
-              },
+              title: new Text("Tambah Pemagang"),
+              trailing: new Icon(Icons.person_add),
             ),
             new ListTile(
-              title: new Text("Manajemen lowongan"),
-              trailing: new Icon(Icons.assignment),
-              onTap: () {
-                Navigator.of(context).pop();
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        new ManajemenLowonganInstansi(
-                          idAgency: _idUser,
-                        )));
-              },
-            ),
-            new ListTile(
-              title: new Text("Tambah mentor"),
+              title: new Text("Manajemen Pemagang"),
               trailing: new Icon(Icons.people_outline),
-            ),
-            new ListTile(
-              title: new Text("Manajemen mentor"),
-              trailing: new Icon(Icons.person_outline),
-            ),
-            new ListTile(
-              title: new Text("Riwayat Magang"),
-              trailing: new Icon(Icons.timeline),
               onTap: () {
                 Navigator.of(context).pop();
                 Navigator.of(
                   context,
                 ).push(MaterialPageRoute(
-                    builder: (BuildContext context) => new RiwayatMagang(
-                          id: _idUser,
+                    builder: (BuildContext context) =>
+                        new ManajemenPemagang()));
+              },
+            ),
+            new ListTile(
+              title: new Text("List Magang Mahasiswa"),
+              trailing: new Icon(Icons.list),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(
+                    builder: (BuildContext context) => new ListMagangMhs(
+                          idCollege: _idUser,
                         )));
               },
             ),
@@ -204,7 +193,7 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
                   SliverAppBar(
                       actions: <Widget>[
                         new FlatButton(
-                          child: new Icon(Icons.search, color: Colors.white),
+                          child: new Icon(Icons.add, color: Colors.white),
                           onPressed: () {},
                         )
                       ],
@@ -228,7 +217,7 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
                             fit: StackFit.expand,
                             children: <Widget>[
                               Image.asset(
-                                "img/instansiBack.jpg",
+                                "img/lecturer.jpg",
                                 fit: BoxFit.cover,
                               ),
                               new Container(
@@ -273,147 +262,101 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
                 ];
               },
               body: new Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
                   Container(
-                      margin: const EdgeInsets.only(top: 20.0, left: 10.0),
-                      child: new Text(
-                        "List Magang Aktif",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.grey),
+                      margin: const EdgeInsets.only(
+                          top: 10.0, left: 10.0, right: 10.0),
+                      child: Card(
+                        child: Container(
+                          margin: const EdgeInsets.all(5.0),
+                          child: new Text(
+                            "Informasi",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey),
+                          ),
+                        ),
                       )),
                   new Expanded(
-                      child: ListPage(
-                    idUser: _idUser,
-                  )),
+                    child: Container(
+                      margin: const EdgeInsets.only(left: 10.0, right: 10.0),
+                      child: ListView(
+                        children: <Widget>[
+                          new Card(
+                            child: Container(
+                              margin: const EdgeInsets.all(10.0),
+                              child: Column(
+                                children: <Widget>[
+                                  new Text(
+                                    "Kontrak",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.grey),
+                                  ),
+                                  StreamBuilder(
+                                    stream: Firestore.instance
+                                        .collection('users')
+                                        .document('$_idUser')
+                                        .snapshots(),
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot<DocumentSnapshot>
+                                            snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return Center(
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.max,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: <Widget>[
+                                              loadingLoad,
+                                              Text("Loading Data..")
+                                            ],
+                                          ),
+                                        );
+                                      } else if (snapshot.hasError) {
+                                        return Center(
+                                            child: new Text(
+                                                "Yah.. ada yang salah nih.."));
+                                      } else if (!snapshot.hasData) {
+                                        return Text(
+                                          'No Data...',
+                                        );
+                                      } else if (snapshot.connectionState ==
+                                          ConnectionState.active) {
+                                        Timestamp _valExpired =
+                                            snapshot.data['accountExpiredAt'];
+                                        String uploadPada =
+                                            formatDate(_valExpired.toDate(), [
+                                          dd,
+                                          ' ',
+                                          MM,
+                                          ' ',
+                                          yyyy,
+                                          ' - ',
+                                          HH,
+                                          ':',
+                                          nn,
+                                        ]);
+                                        return new Text(
+                                            "Valid sampai $uploadPada");
+                                      }
+                                    },
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               )),
         ));
-  }
-}
-
-class ListPage extends StatefulWidget {
-  ListPage({this.idUser});
-  final String idUser;
-  @override
-  _ListPageState createState() => _ListPageState();
-}
-
-class _ListPageState extends State<ListPage> {
-  DateTime dateNow = DateTime.now();
-
-  //composite expiredAt and createdAt
-  final loadingLoad = CircularProgressIndicator(
-    backgroundColor: Colors.deepOrange,
-    strokeWidth: 1.5,
-  );
-  @override
-  Widget build(BuildContext context) {
-    DateTime dateNow = DateTime.now();
-    return Container(
-      child: StreamBuilder(
-        stream: Firestore.instance
-            .collection('internship')
-            .where('ownerAgency', isEqualTo: widget.idUser)
-            .where('timeEndIntern', isGreaterThanOrEqualTo: dateNow)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[loadingLoad, Text("Loading Data..")],
-              ),
-            );
-          } else if (!snapshot.hasData) {
-            return Center(child: new Text("Yah.. Belum ada lowongan.."));
-          } else if (snapshot.hasError) {
-            return Center(child: new Text("Yah.. ada yang salah nih.."));
-          } else {
-            if (snapshot.data.documents.length > 0) {
-              return ListView.builder(
-                itemCount: snapshot.data.documents.length,
-                itemBuilder: (_, index) {
-                  DocumentSnapshot ds = snapshot.data.documents[index];
-                  return TileLowongan(
-                    idLowongan: ds["vacanciesId"],
-                    no: (index + 1).toString(),
-                  );
-                },
-              );
-            } else {
-              return Center(
-                child: new Text(
-                  "Belum ada magang yang AKTIF",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.grey),
-                ),
-              );
-            }
-          }
-        },
-      ),
-    );
-  }
-}
-
-class TileLowongan extends StatefulWidget {
-  TileLowongan({this.idLowongan, this.no});
-  final String idLowongan, no;
-
-  @override
-  TileLowonganState createState() {
-    return new TileLowonganState();
-  }
-}
-
-class TileLowonganState extends State<TileLowongan> {
-  String _judulLowongan;
-  Future getDataUser() async {
-    var firestore = Firestore.instance;
-    var userQuery = firestore
-        .collection('vacancies')
-        .where('id', isEqualTo: widget.idLowongan)
-        .limit(1);
-
-    userQuery.getDocuments().then((data) {
-      if (data.documents.length > 0) {
-        setState(() {
-          _judulLowongan = data.documents[0].data['title'];
-        });
-      }
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getDataUser();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return new Container(
-        child: new Column(
-      children: <Widget>[
-        new ListTile(
-          onTap: () {},
-          leading: new Text(
-            widget.no,
-            style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold),
-          ),
-          title: new Text(
-            _judulLowongan == null ? "" : _judulLowongan,
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          subtitle: new Text("Mentor : "),
-          // trailing: new Icon(widget.iconData, color: widget.warna),
-        ),
-        new Divider(),
-      ],
-    ));
   }
 }

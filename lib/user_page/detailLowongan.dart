@@ -36,7 +36,7 @@ class DetailLowongan extends StatefulWidget {
 
 class _DetailLowonganState extends State<DetailLowongan> {
   List<String> _skills;
-  bool _terDaftar = null;
+  bool _terDaftar;
   var name;
   String _idUser;
   bool tekan = false;

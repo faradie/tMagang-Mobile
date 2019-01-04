@@ -332,15 +332,25 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
             ],
             backgroundColor: const Color(0xFFe87c55),
             bottom: TabBar(
+              unselectedLabelColor: Color(0xFFff9f7f),
               tabs: <Widget>[
                 Tab(
-                  text: "Lowongan",
+                  child: new Text(
+                    "Lowongan",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
                 Tab(
-                  text: "Pendaftar",
+                  child: new Text(
+                    "Pendaftar",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
                 Tab(
-                  text: "Rekomendasi",
+                  child: new Text(
+                    "Rekomendasi",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               ],
             ),
@@ -699,7 +709,7 @@ class TilePendaftar extends StatefulWidget {
 }
 
 class _TilePendaftarState extends State<TilePendaftar> {
-  String _namaUser, _kampus, _owner;
+  String _namaUser, _kampus, _owner, _collegeId;
   Timestamp _timeEndInternStamp, _timeStartInternStamp, _expiredAtStamp;
   DateTime _timeEndIntern, _timeStartIntern, _expiredAt;
 
@@ -777,7 +787,8 @@ class _TilePendaftarState extends State<TilePendaftar> {
               "timeStartIntern": _timeStartIntern,
               "timeEndIntern": _timeEndIntern,
               "ownerAgency": _owner,
-              "mentorId": ""
+              "mentorId": "",
+              "collegeId": _collegeId
             };
 
             Map<String, dynamic> user = <String, dynamic>{"isActive": true};
@@ -975,6 +986,7 @@ class _TilePendaftarState extends State<TilePendaftar> {
         setState(() {
           name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
           _namaUser = name["displayName"];
+          _collegeId = name["collegeId"];
           // _statusUser = data.documents[0].data['isActive'];
         });
 

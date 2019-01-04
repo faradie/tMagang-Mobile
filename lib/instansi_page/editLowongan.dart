@@ -12,7 +12,7 @@ class EditLowongan extends StatefulWidget {
 }
 
 class _EditLowonganState extends State<EditLowongan> {
-  String _judulLowongan, _jurusanLowongan, _deskripsi, _idUser;
+  String _judulLowongan, _jurusanLowongan, _deskripsi;
   List<dynamic> _require;
   int _kuota;
   bool tekan = true;
@@ -25,7 +25,7 @@ class _EditLowonganState extends State<EditLowongan> {
   final _controlDeskrip = new TextEditingController();
   final _controlTglMulai = new TextEditingController();
   final _controlTglAkhir = new TextEditingController();
-  final _controlExpiredAt = new TextEditingController();
+
   void _showToast(String pesan, Color warna) {
     Fluttertoast.showToast(
       msg: pesan,
