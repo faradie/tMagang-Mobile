@@ -131,19 +131,16 @@ class _CollegeDashboardState extends State<CollegeDashboard> {
                   }
                 }),
             new ListTile(
-              title: new Text("Tambah Pemagang"),
-              trailing: new Icon(Icons.person_add),
-            ),
-            new ListTile(
-              title: new Text("Manajemen Pemagang"),
+              title: new Text("Manajemen Mahasiswa"),
               trailing: new Icon(Icons.people_outline),
               onTap: () {
                 Navigator.of(context).pop();
                 Navigator.of(
                   context,
                 ).push(MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        new ManajemenPemagang()));
+                    builder: (BuildContext context) => new ManajemenPemagang(
+                          idCollege: _idUser,
+                        )));
               },
             ),
             new ListTile(
@@ -192,10 +189,10 @@ class _CollegeDashboardState extends State<CollegeDashboard> {
                 return <Widget>[
                   SliverAppBar(
                       actions: <Widget>[
-                        new FlatButton(
-                          child: new Icon(Icons.add, color: Colors.white),
-                          onPressed: () {},
-                        )
+                        // new FlatButton(
+                        //   child: new Icon(Icons.add, color: Colors.white),
+                        //   onPressed: () {},
+                        // )
                       ],
                       expandedHeight: 200.0,
                       elevation: defaultTargetPlatform == TargetPlatform.android
@@ -271,11 +268,17 @@ class _CollegeDashboardState extends State<CollegeDashboard> {
                       child: Card(
                         child: Container(
                           margin: const EdgeInsets.all(5.0),
-                          child: new Text(
-                            "Informasi",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              new Text(
+                                "Informasi",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20.0,
+                                    color: Colors.grey),
+                              ),
+                            ],
                           ),
                         ),
                       )),

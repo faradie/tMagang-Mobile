@@ -88,7 +88,6 @@ class _DashboardState extends State<Dashboard> {
   Future getDataUser() async {
     var user = await FirebaseAuth.instance.currentUser();
     var firestore = Firestore.instance;
-    DateTime dateNow = DateTime.now();
     var userQuery = firestore
         .collection('users')
         .where('uid', isEqualTo: user.uid)
@@ -106,20 +105,21 @@ class _DashboardState extends State<Dashboard> {
         });
 
         //ini id vacancies null query, perbaiki lg
-        if (_statusUser == true) {
-          var internshipQuery = firestore
-              .collection('internship')
-              .where('userId', isEqualTo: user.uid)
-              .where('timeEndIntern', isGreaterThanOrEqualTo: dateNow)
-              .limit(1);
-          internshipQuery.getDocuments().then((dat) {
-            if (dat.documents.length > 0) {
-              setState(() {
-                vacanciesIdInternship = dat.documents[0].data['vacanciesId'];
-              });
-            }
-          });
-        }
+        // if (_statusUser == true) {
+        //   var internshipQuery = firestore
+        //       .collection('internship')
+        //       .where('userId', isEqualTo: user.uid)
+        //       .where('timeEndIntern', isGreaterThanOrEqualTo: dateNow)
+        //       .limit(1);
+        //   internshipQuery.getDocuments().then((dat) {
+        //     if (dat.documents.length > 0) {
+        //       setState(() {
+        //         vacanciesIdInternship = dat.documents[0].data['vacanciesId'];
+        //       });
+        //       print("ini vac $vacanciesIdInternship");
+        //     }
+        //   });
+        // }
       }
     });
   }
@@ -380,7 +380,7 @@ class _DashboardState extends State<Dashboard> {
                             ? ListPage()
                             : new Center(
                                 child: new Text(
-                                    "Vacancies ID : $vacanciesIdInternship"),
+                                    "Anda sedang dalam periode Magang."),
                               ),
                   ),
                 ],

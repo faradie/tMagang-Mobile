@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tempat_magang/instansi_page/instansiOrCollegeProfil.dart';
 import 'package:tempat_magang/instansi_page/instansi_buat_lowongan.dart';
 import 'package:tempat_magang/instansi_page/manajemenLowonganInstansi.dart';
+import 'package:tempat_magang/instansi_page/manajemenMentor.dart';
 import 'package:tempat_magang/instansi_page/riwayatMagang.dart';
 
 class InstansiDashboard extends StatefulWidget {
@@ -18,8 +19,18 @@ class InstansiDashboard extends StatefulWidget {
 }
 
 class _InstansiDashboardState extends State<InstansiDashboard> {
+  _MySearchDelegate _delegate;
+  final List<String> lowonganNya;
   String _namaUser, _statusUser, _idUser;
   var name;
+
+  List<String> wew = ['wew', 'wsadas'];
+  _InstansiDashboardState()
+      : lowonganNya = ['asdasd', 'asdwerwe', 'asdaswww']..sort(
+            (w1, w2) => w1.toLowerCase().compareTo(w2.toLowerCase()),
+          ),
+        super();
+
   Future getDataUser() async {
     var user = await FirebaseAuth.instance.currentUser();
 
@@ -60,6 +71,12 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
   void initState() {
     super.initState();
     getDataUser();
+    _delegate = _MySearchDelegate(lowonganNya);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -131,8 +148,9 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
                 Navigator.of(
                   context,
                 ).push(MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        new InstansiBuatLowongan()));
+                    builder: (BuildContext context) => new InstansiBuatLowongan(
+                          id: _idUser,
+                        )));
               },
             ),
             new ListTile(
@@ -150,12 +168,17 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
               },
             ),
             new ListTile(
-              title: new Text("Tambah mentor"),
-              trailing: new Icon(Icons.people_outline),
-            ),
-            new ListTile(
               title: new Text("Manajemen mentor"),
               trailing: new Icon(Icons.person_outline),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(
+                    builder: (BuildContext context) => new ManajemenMentor(
+                          id: _idUser,
+                        )));
+              },
             ),
             new ListTile(
               title: new Text("Riwayat Magang"),
@@ -203,9 +226,15 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
                 return <Widget>[
                   SliverAppBar(
                       actions: <Widget>[
-                        new FlatButton(
-                          child: new Icon(Icons.search, color: Colors.white),
-                          onPressed: () {},
+                        new IconButton(
+                          tooltip: 'Cari',
+                          icon: Icon(Icons.search),
+                          onPressed: () async {
+                            final String slected = await showSearch<String>(
+                              context: context,
+                              delegate: _delegate,
+                            );
+                          },
                         )
                       ],
                       expandedHeight: 200.0,
@@ -293,6 +322,129 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
   }
 }
 
+class _MySearchDelegate extends SearchDelegate<String> {
+  final List<String> _words;
+  final List<String> _history;
+
+  _MySearchDelegate(List<String> words)
+      : _words = words,
+        _history = <String>['wew', 'wew'],
+        super();
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      tooltip: 'Kembali',
+      icon: AnimatedIcon(
+        icon: AnimatedIcons.menu_arrow,
+        progress: transitionAnimation,
+      ),
+      onPressed: () {
+        this.close(context, null);
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text("kau memilih : "),
+            GestureDetector(
+              onTap: () {
+                this.close(context, this.query);
+              },
+              child: Text(
+                this.query,
+                style: Theme.of(context)
+                    .textTheme
+                    .display1
+                    .copyWith(fontWeight: FontWeight.bold),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    final Iterable<String> suggestions = this.query.isEmpty
+        ? _history
+        : _words.where((word) => word.startsWith(query));
+
+    return _SugestionList(
+      query: this.query,
+      onSelected: (String suggestion) {
+        this.query = suggestion;
+        this._history.insert(0, suggestion);
+        showResults(context);
+      },
+      suggestions: suggestions.toList(),
+    );
+  }
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return <Widget>[
+      query.isEmpty
+          ? IconButton(
+              tooltip: 'Voice Search',
+              icon: const Icon(Icons.mic),
+              onPressed: () {
+                this.query = 'TODO VOICE INPUT';
+              },
+            )
+          : IconButton(
+              tooltip: 'Clear',
+              icon: const Icon(Icons.clear),
+              onPressed: () {
+                query = '';
+                showSuggestions(context);
+              },
+            )
+    ];
+  }
+}
+
+class _SugestionList extends StatelessWidget {
+  const _SugestionList({this.suggestions, this.query, this.onSelected});
+  final List<String> suggestions;
+  final String query;
+  final ValueChanged<String> onSelected;
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme.subhead;
+    return ListView.builder(
+      itemCount: suggestions.length,
+      itemBuilder: (BuildContext context, int i) {
+        final String suggestion = suggestions[i];
+        return ListTile(
+          leading: query.isEmpty ? Icon(Icons.history) : Icon(null),
+          title: RichText(
+            text: TextSpan(
+                text: suggestion.substring(0, query.length),
+                style: textTheme.copyWith(fontWeight: FontWeight.bold),
+                children: <TextSpan>[
+                  TextSpan(
+                      text: suggestion.substring(query.length),
+                      style: textTheme)
+                ]),
+          ),
+          onTap: () {
+            onSelected(suggestion);
+          },
+        );
+      },
+    );
+  }
+}
+
 class ListPage extends StatefulWidget {
   ListPage({this.idUser});
   final String idUser;
@@ -371,7 +523,8 @@ class TileLowongan extends StatefulWidget {
 }
 
 class TileLowonganState extends State<TileLowongan> {
-  String _judulLowongan;
+  String _judulLowongan, _idMentor, _namaMentor;
+  var _name;
   Future getDataUser() async {
     var firestore = Firestore.instance;
     var userQuery = firestore
@@ -383,6 +536,19 @@ class TileLowonganState extends State<TileLowongan> {
       if (data.documents.length > 0) {
         setState(() {
           _judulLowongan = data.documents[0].data['title'];
+          _idMentor = data.documents[0].data['mentorId'];
+        });
+        var mentorQuery = firestore
+            .collection('users')
+            .where('uid', isEqualTo: _idMentor)
+            .limit(1);
+        mentorQuery.getDocuments().then((record) {
+          if (data.documents.length > 0) {
+            setState(() {
+              _name = record.documents[0].data['data'];
+              _namaMentor = _name['displayName'];
+            });
+          }
         });
       }
     });
@@ -392,6 +558,11 @@ class TileLowonganState extends State<TileLowongan> {
   void initState() {
     super.initState();
     getDataUser();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -409,7 +580,8 @@ class TileLowonganState extends State<TileLowongan> {
             _judulLowongan == null ? "" : _judulLowongan,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          subtitle: new Text("Mentor : "),
+          subtitle: new Text(
+              "Mentor : ${_namaMentor == null ? "Mengambil Mentor" : _namaMentor}"),
           // trailing: new Icon(widget.iconData, color: widget.warna),
         ),
         new Divider(),

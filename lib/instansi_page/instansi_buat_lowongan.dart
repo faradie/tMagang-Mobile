@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,16 +9,24 @@ import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
 
+final loadingLoad = CircularProgressIndicator(
+  backgroundColor: Colors.deepOrange,
+  strokeWidth: 1.5,
+);
+
 class InstansiBuatLowongan extends StatefulWidget {
+  InstansiBuatLowongan({this.id});
+  final String id;
   @override
   _InstansiBuatLowonganState createState() => _InstansiBuatLowonganState();
 }
 
 class _InstansiBuatLowonganState extends State<InstansiBuatLowongan> {
-  String _judulLowongan, _jurusanLowongan, _require, _deskripsi, _idUser;
+  String _judulLowongan, _jurusanLowongan, _require, _deskripsi, _tmpMentor;
   int _kuota, _expiredAt;
   bool tekan = true;
   DateTime _tglMulai, _tglAkhir;
+  var _queryCat;
 
   final _controlJudul = new TextEditingController();
   final _controlJurusan = new TextEditingController();
@@ -45,45 +54,51 @@ class _InstansiBuatLowonganState extends State<InstansiBuatLowongan> {
       _showToast("Gagal buat Lowongan, No SLA", Colors.red);
     } else {
       if (dataSaveFire()) {
-        setState(() {
-          tekan = false;
-        });
-        var uuid = new Uuid();
-        bool _isActiveIntern = true;
-        String _idNya = uuid.v4();
-        var today = new DateTime.now();
-
-        var _validUntil = today.add(new Duration(days: _expiredAt - 1));
-        Map<String, dynamic> data = <String, dynamic>{
-          "SLA": _setuju,
-          "title": _controlJudul.text,
-          "departement": _controlJurusan.text,
-          "quota": int.parse(_controlKuota.text),
-          "id": _idNya,
-          "createdAt": new DateTime.now(),
-          "timeStartIntern": _tglMulai,
-          "timeEndIntern": _tglAkhir,
-          "isActiveIntern": _isActiveIntern,
-          "ownerAgency": _idUser,
-          "description": _controlDeskrip.text,
-          "requirement": _controlRequir.text.toLowerCase().split(","),
-          "expiredAt": _validUntil
-        };
-
-        Firestore.instance
-            .collection("vacancies")
-            .document("$_idNya")
-            .setData(data)
-            .whenComplete(() {
-          _showToast("Berhasil buat Lowongan", Colors.greenAccent);
-          print("ini data lowongan $data");
+        if (_tmpMentor == null || _tmpMentor == "kosong") {
+          _showToast("Tetapkan mentor terlebih dahulu", Colors.pink);
+        } else {
           setState(() {
-            tekan = true;
+            tekan = false;
           });
-          Navigator.of(context).pop();
-        }).catchError((e) {
-          print(e);
-        });
+
+          var uuid = new Uuid();
+          bool _isActiveIntern = true;
+          String _idNya = uuid.v4();
+          var today = new DateTime.now();
+
+          var _validUntil = today.add(new Duration(days: _expiredAt - 1));
+          Map<String, dynamic> data = <String, dynamic>{
+            "SLA": _setuju,
+            "title": _controlJudul.text,
+            "departement": _controlJurusan.text,
+            "quota": int.parse(_controlKuota.text),
+            "id": _idNya,
+            "createdAt": new DateTime.now(),
+            "timeStartIntern": _tglMulai,
+            "timeEndIntern": _tglAkhir,
+            "isActiveIntern": _isActiveIntern,
+            "ownerAgency": widget.id,
+            "description": _controlDeskrip.text,
+            "requirement": _controlRequir.text.toLowerCase().split(","),
+            "expiredAt": _validUntil,
+            "mentorId": _tmpMentor
+          };
+
+          Firestore.instance
+              .collection("vacancies")
+              .document("$_idNya")
+              .setData(data)
+              .whenComplete(() {
+            _showToast("Berhasil buat Lowongan", Colors.greenAccent);
+            print("ini data lowongan $data");
+            setState(() {
+              tekan = true;
+            });
+            Navigator.of(context).pop();
+          }).catchError((e) {
+            print(e);
+          });
+        }
       }
     }
   }
@@ -91,14 +106,17 @@ class _InstansiBuatLowonganState extends State<InstansiBuatLowongan> {
   @override
   void initState() {
     super.initState();
-    getDataUser();
+    print("ini widgetID ${widget.id}");
     Future.delayed(Duration.zero, () => showAlert(context));
   }
 
-  Future getDataUser() async {
-    var user = await FirebaseAuth.instance.currentUser();
-    _idUser = user.uid;
-  }
+  static const menutItem = <String>['kosong'];
+  final List<DropdownMenuItem<String>> _dropDownJenisKel = menutItem
+      .map((String value) => DropdownMenuItem<String>(
+            value: value,
+            child: new Text("Belum ada Mentor"),
+          ))
+      .toList();
 
   void _showToast(String pesan, Color warna) {
     Fluttertoast.showToast(
@@ -493,6 +511,63 @@ class _InstansiBuatLowonganState extends State<InstansiBuatLowongan> {
               // )
 
               SizedBox(height: 16.0),
+              new Divider(),
+              new StreamBuilder<QuerySnapshot>(
+                  stream: Firestore.instance
+                      .collection('users')
+                      .where('data.agencyId', isEqualTo: widget.id)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            loadingLoad,
+                            Text("Loading Data..")
+                          ],
+                        ),
+                      );
+                    } else {
+                      return new Container(
+                        child: new Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            new Text(
+                                "Total ${snapshot.data.documents.length} Mentor tersedia: "),
+                            new DropdownButton<String>(
+                              value: _tmpMentor,
+                              isDense: true,
+                              onChanged: (String newValue) {
+                                setState(() {
+                                  _tmpMentor = newValue;
+                                });
+                              },
+                              items: snapshot.data.documents.length > 0
+                                  ? snapshot.data.documents
+                                      .map((DocumentSnapshot document) {
+                                      var wew = document.data['data'];
+                                      return new DropdownMenuItem<String>(
+                                          value: document.data['uid'] == null
+                                              ? ""
+                                              : document.data['uid'],
+                                          child: new Container(
+                                            child: new Text(
+                                              wew['displayName'] == null
+                                                  ? ""
+                                                  : wew['displayName'],
+                                            ),
+                                          ));
+                                    }).toList()
+                                  : this._dropDownJenisKel,
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  }),
               new Divider(),
               SizedBox(height: 16.0),
               new Text("Periode :"),

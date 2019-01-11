@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -588,6 +587,55 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
+                                      new StreamBuilder<DocumentSnapshot>(
+                                          stream: Firestore.instance
+                                              .collection('users')
+                                              .document(
+                                                  '${snapshot.data['mentorId']}')
+                                              .snapshots(),
+                                          builder: (BuildContext context,
+                                              AsyncSnapshot<DocumentSnapshot>
+                                                  snapshot) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              return Center(
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.max,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: <Widget>[
+                                                    loadingLoad,
+                                                    Text("Loading Data..")
+                                                  ],
+                                                ),
+                                              );
+                                            } else if (snapshot.hasError) {
+                                              return Center(
+                                                  child: new Text(
+                                                      "Yah.. ada yang salah nih.."));
+                                            } else if (!snapshot.hasData) {
+                                              return Text(
+                                                'No Data Mentor...',
+                                              );
+                                            } else if (snapshot
+                                                    .connectionState ==
+                                                ConnectionState.active) {
+                                              var name =
+                                                  snapshot.data['data'] == null
+                                                      ? ""
+                                                      : snapshot.data['data'];
+                                              return new Text(
+                                                "Mentor : ${name['displayName'] == null ? "" : name['displayName']}",
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              );
+                                            }
+                                          }),
+                                      SizedBox(height: 10.0),
                                       SizedBox(height: 10.0),
                                       new Text(
                                         "Requirement :",
@@ -709,7 +757,7 @@ class TilePendaftar extends StatefulWidget {
 }
 
 class _TilePendaftarState extends State<TilePendaftar> {
-  String _namaUser, _kampus, _owner, _collegeId;
+  String _namaUser, _kampus, _owner, _collegeId, _mentorID;
   Timestamp _timeEndInternStamp, _timeStartInternStamp, _expiredAtStamp;
   DateTime _timeEndIntern, _timeStartIntern, _expiredAt;
 
@@ -787,7 +835,7 @@ class _TilePendaftarState extends State<TilePendaftar> {
               "timeStartIntern": _timeStartIntern,
               "timeEndIntern": _timeEndIntern,
               "ownerAgency": _owner,
-              "mentorId": "",
+              "mentorId": _mentorID,
               "collegeId": _collegeId
             };
 
@@ -873,7 +921,7 @@ class _TilePendaftarState extends State<TilePendaftar> {
               "timeStartIntern": _timeStartIntern,
               "timeEndIntern": _timeEndIntern,
               "ownerAgency": _owner,
-              "mentorId": ""
+              "mentorId": _mentorID
             };
 
             Map<String, dynamic> user = <String, dynamic>{"isActive": true};
@@ -946,6 +994,7 @@ class _TilePendaftarState extends State<TilePendaftar> {
           _timeStartInternStamp = data.documents[0].data['timeStartIntern'];
           _timeStartIntern = _timeStartInternStamp.toDate();
           _owner = data.documents[0].data['ownerAgency'];
+          _mentorID = data.documents[0].data['mentorId'];
           _expiredAtStamp = data.documents[0].data['expiredAt'];
           _expiredAt = _expiredAtStamp.toDate();
           var selisih = dateNow.difference(_expiredAt).inMinutes;

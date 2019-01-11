@@ -2,27 +2,29 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class RiwayatMagang extends StatefulWidget {
-  RiwayatMagang({this.id});
+DateTime dateNow = DateTime.now();
+IconData _icon;
+MaterialColor _colors;
+
+final loadingLoad = CircularProgressIndicator(
+  backgroundColor: Colors.deepOrange,
+  strokeWidth: 1.5,
+);
+
+class ManajemenMentor extends StatefulWidget {
+  ManajemenMentor({this.id});
   final String id;
-  _RiwayatMagangState createState() => _RiwayatMagangState();
+  _ManajemenMentorState createState() => _ManajemenMentorState();
 }
 
-class _RiwayatMagangState extends State<RiwayatMagang> {
-  DateTime dateNow = DateTime.now();
-  IconData _icon;
-  MaterialColor _colors;
-  final loadingLoad = CircularProgressIndicator(
-    backgroundColor: Colors.deepOrange,
-    strokeWidth: 1.5,
-  );
+class _ManajemenMentorState extends State<ManajemenMentor> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         elevation: defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
         backgroundColor: const Color(0xFFe87c55),
-        title: new Text("Riwayat Magang"),
+        title: new Text("Mentor"),
         leading: InkWell(
           onTap: () {
             Navigator.of(context).pop();
@@ -36,8 +38,8 @@ class _RiwayatMagangState extends State<RiwayatMagang> {
       body: new Container(
         child: StreamBuilder(
           stream: Firestore.instance
-              .collection("internship")
-              .where('ownerAgency', isEqualTo: widget.id)
+              .collection("users")
+              .where('data.agencyId', isEqualTo: widget.id)
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -50,8 +52,7 @@ class _RiwayatMagangState extends State<RiwayatMagang> {
                 ),
               );
             } else if (!snapshot.hasData) {
-              return Center(
-                  child: new Text("Yah.. Belum ada riwayat magang.."));
+              return Center(child: new Text("Yah.. Belum ada mentor.."));
             } else if (snapshot.hasError) {
               return Center(child: new Text("Yah.. ada yang salah nih.."));
             } else {
@@ -60,22 +61,10 @@ class _RiwayatMagangState extends State<RiwayatMagang> {
                   itemCount: snapshot.data.documents.length,
                   itemBuilder: (_, index) {
                     DocumentSnapshot ds = snapshot.data.documents[index];
-                    Timestamp _validUntil = ds["timeEndIntern"];
-                    DateTime _until = _validUntil.toDate();
 
-                    final difference = dateNow.difference(_until).inDays;
-                    if (difference >= 0) {
-                      _icon = Icons.warning;
-                      _colors = Colors.red;
-                    } else {
-                      _icon = Icons.check;
-                      _colors = Colors.blue;
-                    }
-                    return TileLowongan(
-                      idLowongan: ds["vacanciesId"],
+                    return TileMentor(
+                      idMentor: ds["uid"],
                       no: (index + 1).toString(),
-                      iconData: _icon,
-                      warna: _colors,
                     );
                   },
                 );
@@ -96,43 +85,33 @@ class _RiwayatMagangState extends State<RiwayatMagang> {
   }
 }
 
-class TileLowongan extends StatefulWidget {
-  TileLowongan({this.idLowongan, this.no, this.iconData, this.warna});
-  final String idLowongan, no;
-  final IconData iconData;
-  final MaterialColor warna;
+class TileMentor extends StatefulWidget {
+  TileMentor({this.idMentor, this.no});
+  final String idMentor, no;
 
   @override
-  TileLowonganState createState() {
-    return new TileLowonganState();
+  TileMentorState createState() {
+    return new TileMentorState();
   }
 }
 
-class TileLowonganState extends State<TileLowongan> {
-  String _judulLowongan;
+class TileMentorState extends State<TileMentor> {
+  String _namaMentor;
+  var dataNya;
   int totPemagang = 0;
   Future getLowongan() async {
     var firestore = Firestore.instance;
     var userQuery = firestore
-        .collection('vacancies')
-        .where('id', isEqualTo: widget.idLowongan)
+        .collection('users')
+        .where('uid', isEqualTo: widget.idMentor)
         .limit(1);
 
     userQuery.getDocuments().then((data) {
       if (data.documents.length > 0) {
         setState(() {
-          _judulLowongan = data.documents[0].data['title'];
+          dataNya = data.documents[0].data['data'];
+          _namaMentor = dataNya["displayName"];
         });
-      }
-    });
-
-    var queryTotal = firestore
-        .collection('internship')
-        .where('vacanciesId', isEqualTo: widget.idLowongan)
-        .limit(1);
-    queryTotal.getDocuments().then((data) {
-      if (data.documents.length > 0) {
-        totPemagang = data.documents.length;
       }
     });
   }
@@ -155,11 +134,11 @@ class TileLowonganState extends State<TileLowongan> {
             style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold),
           ),
           title: new Text(
-            _judulLowongan == null ? "" : _judulLowongan,
+            _namaMentor == null ? "" : _namaMentor,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          subtitle: new Text("Total pemagang : $totPemagang"),
-          trailing: new Icon(widget.iconData, color: widget.warna),
+          // subtitle: new Text("Total pemagang : $totPemagang"),
+          // trailing: new Icon(widget.iconData, color: widget.warna),
         ),
         new Divider(),
       ],

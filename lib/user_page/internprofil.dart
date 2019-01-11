@@ -483,38 +483,52 @@ class _EditProfilState extends State<EditProfil> {
     var downloadUrl = await (await uploadTask.onComplete).ref.getDownloadURL();
     var url = downloadUrl.toString();
 
-    Map<String, dynamic> datadalam = <String, dynamic>{
-      "studentIDNumber": _controlNIM.text,
-      "skills": _controlSkills.text == "Skill belum diatur"
-          ? null
-          : _controlSkills.text.toLowerCase().split(","),
-      "photoURL": url,
-      "phoneNumber": _controlKontak.text,
-      "addSkill": true,
-      "gender": _tmpJenisKelamin,
-      "email": _emailUser,
-      "displayName": _controlName.text,
-      "collegeId": _collegeID,
-      "departement": widget.jurusan,
-      "address": _controlAlamat.text
-    };
+    // Map<String, dynamic> datadalam = <String, dynamic>{
+    //   "studentIDNumber": _controlNIM.text,
+    //   "skills": _controlSkills.text == "Skill belum diatur"
+    //       ? null
+    //       : _controlSkills.text.toLowerCase().split(","),
+    //   "photoURL": url,
+    //   "phoneNumber": _controlKontak.text,
+    //   "addSkill": true,
+    //   "gender": _tmpJenisKelamin,
+    //   "email": _emailUser,
+    //   "displayName": _controlName.text,
+    //   "collegeId": _collegeID,
+    //   "departement": widget.jurusan,
+    //   "address": _controlAlamat.text
+    // };
 
-    Map<String, dynamic> dataAwal = <String, dynamic>{
-      "data": datadalam,
-      "isActive": widget.status == "Magang"
-          ? true
-          : widget.status == "Tidak Magang" ? false : "",
-    };
-    Firestore.instance
-        .collection("users")
-        .document("${widget.idMhs}")
-        .updateData(dataAwal)
-        .whenComplete(() {
+    // Map<String, dynamic> dataAwal = <String, dynamic>{
+    //   "data": datadalam,
+    // };
+    DocumentReference favoritesReference =
+        Firestore.instance.collection('users').document("${widget.idMhs}");
+    Firestore.instance.runTransaction((Transaction tx) async {
+      DocumentSnapshot postSnapshot = await tx.get(favoritesReference);
+      if (postSnapshot.exists) {
+        await tx.update(favoritesReference, <String, dynamic>{
+          'data': {
+            "studentIDNumber": _controlNIM.text,
+            "skills": _controlSkills.text == "Skill belum diatur"
+                ? null
+                : _controlSkills.text.toLowerCase().split(","),
+            "photoURL": url,
+            "phoneNumber": _controlKontak.text,
+            "addSkill": true,
+            "gender": _tmpJenisKelamin,
+            "email": _emailUser,
+            "displayName": _controlName.text,
+            "collegeId": _collegeID,
+            "departement": widget.jurusan,
+            "address": _controlAlamat.text
+          }
+        });
+      } else {}
+    }).then((hasil) {
       Navigator.of(this.context).pop();
       Navigator.of(this.context).pop();
       _showToast("Berhasil Update Profil", Colors.blue);
-    }).catchError((e) {
-      print(e);
     });
   }
 
@@ -524,38 +538,34 @@ class _EditProfilState extends State<EditProfil> {
     });
 
     if (image == null) {
-      Map<String, dynamic> datadalam = <String, dynamic>{
-        "studentIDNumber": _controlNIM.text,
-        "skills": _controlSkills.text == "Skill belum diatur"
-            ? null
-            : _controlSkills.text.toLowerCase().split(","),
-        "photoURL": _linkPhoto,
-        "phoneNumber": _controlKontak.text,
-        "addSkill": true,
-        "gender": _tmpJenisKelamin,
-        "email": _emailUser,
-        "displayName": _controlName.text,
-        "collegeId": _collegeID,
-        "departement": widget.jurusan,
-        "address": _controlAlamat.text
-      };
-
-      Map<String, dynamic> dataAwal = <String, dynamic>{
-        "data": datadalam,
-        "isActive": widget.status == "Magang"
-            ? true
-            : widget.status == "Tidak Magang" ? false : "",
-      };
-      Firestore.instance
-          .collection("users")
-          .document("${widget.idMhs}")
-          .updateData(dataAwal)
-          .whenComplete(() {
+      DocumentReference favoritesReference =
+          Firestore.instance.collection('users').document("${widget.idMhs}");
+      Firestore.instance.runTransaction((Transaction tx) async {
+        DocumentSnapshot postSnapshot = await tx.get(favoritesReference);
+        if (postSnapshot.exists) {
+          await tx.update(favoritesReference, <String, dynamic>{
+            'data': {
+              "studentIDNumber": _controlNIM.text,
+              "skills": _controlSkills.text == "Skill belum diatur"
+                  ? null
+                  : _controlSkills.text.toLowerCase().split(","),
+              "photoURL": _linkPhoto,
+              "phoneNumber": _controlKontak.text,
+              "addSkill": true,
+              "gender": _tmpJenisKelamin,
+              "email": _emailUser,
+              "displayName": _controlName.text,
+              "collegeId": _collegeID,
+              "departement": widget.jurusan,
+              "address": _controlAlamat.text
+            }
+          });
+        } else {}
+      }).then((hasil) {
+        //perbaiki lagi
         Navigator.of(this.context).pop();
         Navigator.of(this.context).pop();
         _showToast("Berhasil Update Profil", Colors.blue);
-      }).catchError((e) {
-        print(e);
       });
     } else {
       uploadImage();

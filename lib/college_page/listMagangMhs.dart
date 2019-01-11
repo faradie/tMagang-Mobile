@@ -63,12 +63,6 @@ class ListMagangState extends State<ListMagang> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    print("ini idKampus : ${widget.id}");
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Container(
       child: FutureBuilder(

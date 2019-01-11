@@ -21,7 +21,7 @@ class AdminDashboard extends StatefulWidget {
 }
 
 class _AdminDashboardState extends State<AdminDashboard> {
-  String _currentEmail, _statusUser, _namaUser;
+  String _currentEmail, _statusUser, _namaUser, _uid;
   var name;
   DateTime dateNow = DateTime.now();
 
@@ -39,6 +39,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
           name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
           _namaUser = name["displayName"];
           _statusUser = data.documents[0].data['role'];
+          _uid = user.uid;
         });
       }
     });
@@ -188,8 +189,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 Navigator.of(
                   context,
                 ).push(MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        new InstansiBuatLowongan()));
+                    builder: (BuildContext context) => new InstansiBuatLowongan(
+                          id: _uid,
+                        )));
               },
             ),
             ListTile(
