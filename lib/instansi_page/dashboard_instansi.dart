@@ -226,16 +226,31 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
                 return <Widget>[
                   SliverAppBar(
                       actions: <Widget>[
-                        new IconButton(
-                          tooltip: 'Cari',
-                          icon: Icon(Icons.search),
-                          onPressed: () async {
-                            final String slected = await showSearch<String>(
-                              context: context,
-                              delegate: _delegate,
-                            );
+                        // new IconButton(
+                        //   tooltip: 'Cari',
+                        //   icon: Icon(Icons.search),
+                        //   onPressed: () async {
+                        //     final String slected = await showSearch<String>(
+                        //       context: context,
+                        //       delegate: _delegate,
+                        //     );
+                        //   },
+                        // )
+                        new FlatButton(
+                          child: new Icon(
+                            Icons.plus_one,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            Navigator.of(
+                              context,
+                            ).push(MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    new InstansiBuatLowongan(
+                                      id: _idUser,
+                                    )));
                           },
-                        )
+                        ),
                       ],
                       expandedHeight: 200.0,
                       elevation: defaultTargetPlatform == TargetPlatform.android

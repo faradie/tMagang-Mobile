@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tempat_magang/admin_page/admin_dashboard.dart';
 import 'package:tempat_magang/college_page/college_dashboard.dart';
 import 'package:tempat_magang/instansi_page/dashboard_instansi.dart';
+import 'package:tempat_magang/mentor/dashboard_mentor.dart';
 
 import 'package:tempat_magang/user_page/dashboard.dart';
 
@@ -21,7 +22,7 @@ enum AuthStatus { notSignedIn, signedIn }
 
 class _RootPageState extends State<RootPage> {
   AuthStatus authStatus = AuthStatus.notSignedIn;
-  String _statusUser = null;
+  String _statusUser;
 
   void initState() {
     super.initState();
@@ -102,6 +103,12 @@ class _RootPageState extends State<RootPage> {
       );
     } else if (authStatus == AuthStatus.signedIn && _statusUser == "college") {
       return new CollegeDashboard(
+        auth: widget.auth,
+        onSignedOut: _signedOut,
+        wew: _statusUser,
+      );
+    } else if (authStatus == AuthStatus.signedIn && _statusUser == "mentor") {
+      return new MentorDashboard(
         auth: widget.auth,
         onSignedOut: _signedOut,
         wew: _statusUser,

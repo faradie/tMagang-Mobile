@@ -447,7 +447,6 @@ class _EditProfilState extends State<EditProfil> {
       if (data.documents.length > 0) {
         setState(() {
           name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
-          _namaUser = name["displayName"];
           _emailUser = name["email"];
           _linkPhoto = name["photoURL"];
           _collegeID = name["collegeId"];

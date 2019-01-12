@@ -31,12 +31,12 @@ class _ManajemenPemagangState extends State<ManajemenPemagang> {
             color: Colors.white,
           ),
         ),
-        actions: <Widget>[
-          new FlatButton(
-            child: new Icon(Icons.search, color: Colors.white),
-            onPressed: () {},
-          )
-        ],
+        // actions: <Widget>[
+        //   new FlatButton(
+        //     child: new Icon(Icons.search, color: Colors.white),
+        //     onPressed: () {},
+        //   )
+        // ],
       ),
       body: new Container(
         child: ListMhs(

@@ -279,9 +279,22 @@ class _DashboardState extends State<Dashboard> {
                   SliverAppBar(
                       actions: <Widget>[
                         new FlatButton(
-                          child: new Icon(Icons.search, color: Colors.white),
-                          onPressed: () {},
-                        )
+                          child: new Icon(
+                            Icons.person,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            Navigator.of(
+                              context,
+                            ).push(MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    new InternProfil(id: _idUser)));
+                          },
+                        ),
+                        // new FlatButton(
+                        //   child: new Icon(Icons.search, color: Colors.white),
+                        //   onPressed: () {},
+                        // )
                       ],
                       expandedHeight: 200.0,
                       elevation: defaultTargetPlatform == TargetPlatform.android
