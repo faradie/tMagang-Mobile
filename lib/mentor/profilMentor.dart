@@ -84,7 +84,7 @@ class _ProfilMentorState extends State<ProfilMentor> {
           elevation:
               defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
           backgroundColor: const Color(0xFFe87c55),
-          title: new Text("Profil Pemagang"),
+          title: new Text("Profil Mentor"),
           leading: InkWell(
             onTap: () {
               Navigator.of(context).pop();
@@ -491,7 +491,7 @@ class _EditProfilMentorState extends State<EditProfilMentor> {
           elevation:
               defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
           backgroundColor: const Color(0xFFe87c55),
-          title: new Text("Profil Mentor"),
+          title: new Text("Edit Profil"),
           leading: InkWell(
             onTap: () {
               Navigator.of(context).pop();

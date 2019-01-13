@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tempat_magang/auth.dart';
+import 'package:tempat_magang/mentor/listMagangMentor.dart';
 import 'package:tempat_magang/mentor/profilMentor.dart';
 
 final loadingLoad = CircularProgressIndicator(
@@ -120,16 +121,16 @@ class _MentorDashboardState extends State<MentorDashboard> {
                   }
                 }),
             new ListTile(
-              title: new Text("List Magang Mahasiswa"),
+              title: new Text("Mentoring"),
               trailing: new Icon(Icons.list),
               onTap: () {
-                // Navigator.of(context).pop();
-                // Navigator.of(
-                //   context,
-                // ).push(MaterialPageRoute(
-                //     builder: (BuildContext context) => new ListMagangMhs(
-                //           idCollege: _idUser,
-                //         )));
+                Navigator.of(context).pop();
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(
+                    builder: (BuildContext context) => new ListMagangMentor(
+                          idMentor: _idUser,
+                        )));
               },
             ),
             new ListTile(
@@ -308,12 +309,11 @@ class _MentorDashboardState extends State<MentorDashboard> {
                                         );
                                       } else if (snapshot.connectionState ==
                                           ConnectionState.active) {
-                                        var wew = snapshot.data['data']
-                                            as Map<dynamic, dynamic>;
-
+                                        var wew = snapshot.data["data"] == null
+                                            ? ""
+                                            : snapshot.data["data"];
                                         return new Text(
-                                            "${wew['displayName'] == null ? "Mengambil data" : wew['displayName']}"
-                                                .toUpperCase());
+                                            "${wew['displayName'] == null ? "Mengambil data" : wew['displayName'].toUpperCase()}");
                                       }
                                     },
                                   )
