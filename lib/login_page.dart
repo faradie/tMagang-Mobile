@@ -121,29 +121,39 @@ class _LoginPageState extends State<LoginPage> {
       "judul": "Informasi",
       "icon": Icons.info,
       "warna": Color(0xFF006885),
-      "isi":
-          "<p>1. <b>Tempatmagang</b> adalah fasilitas yang mempertemukan antara pencari magang dengan penyedia magang.\n2. <b>Tempatmagang</b> merupakan aplikasi yang memfasilitasi <b>peraturan kementerian tenaga kerja dan transmigrasi No. 36 tahun 2016</b> tentang penyelenggaraan pemagangan dalam negeri.</p>"
+      "isi": <String>[
+        "Tempatmagang adalah fasilitas yang mempertemukan antara pencari magang dengan penyedia magang.",
+        "Tempatmagang merupakan aplikasi yang memfasilitasi peraturan kementerian tenaga kerja dan transmigrasi No. 36 tahun 2016 tentang penyelenggaraan pemagangan dalam negeri."
+      ]
     },
     {
       "judul": "Peraturan",
       "icon": Icons.power_input,
       "warna": Color(0xFF006885),
-      "isi":
-          "<p>1. Untuk dapat menggunakan aplikasi <b>Tempatmagang</b>, institusi Pendidikan anda harus terdaftar di aplikasi <b>Tempatmagang</b>. Untuk keterangan kerjasama dapat menghubungi <em>support@tempatmagang.com</em>\n2. Untuk mendaftar sebagai penyedia magang, silahkan menghubungi client support kami di <em>support@tempatmagang.com</em></p>"
+      "isi": <String>[
+        "Untuk dapat menggunakan aplikasi Tempatmagang, institusi Pendidikan anda harus terdaftar di aplikasi Tempatmagang. Untuk keterangan kerjasama dapat menghubungi support@tempatmagang.com",
+        "Untuk mendaftar sebagai penyedia magang, silahkan menghubungi client support kami di support@tempatmagang.com"
+      ]
     },
     {
       "judul": "Tata Cara",
       "icon": Icons.settings,
       "warna": Color(0xFF006885),
-      "isi":
-          "<p>1. Identitas pemagang adalah identitas resmi yang diberikan oleh institusi pendidikan asal calon peserta magang.\n2. Informasi lowongan magang bersifat umum, namun ada beberapa fitur yang kami sediakan untuk dapat mengoptimalkan pencarian tempat magang yang ideal sesuai dengan kompetensi pemagang dan kebutuhan penyedia magang.</p>"
+      "isi": <String>[
+        "1. Identitas pemagang adalah identitas resmi yang diberikan oleh institusi pendidikan asal calon peserta magang.",
+        "2. Informasi lowongan magang bersifat umum, namun ada beberapa fitur yang kami sediakan untuk dapat mengoptimalkan pencarian tempat magang yang ideal sesuai dengan kompetensi pemagang dan kebutuhan penyedia magang."
+      ]
     },
     {
       "judul": "Benefit",
       "icon": Icons.file_download,
       "warna": Color(0xFF006885),
-      "isi":
-          "<p>1. Dengan menjadi anggota tempat magang, anda akan mendapatkan informasi, memilih dan direkomendasikan untuk lowongan magang yang sesuai dengan kompetensi ataupun kebutuhan dari penyedia magang.\n2. Kemudahan pengelolaan informasi magang bagi penyedia magang.\n3. Kemudahan penelusuran dan pencarian magang bagi institusi pendidikan.\n4. Report dan feedback sebagai pemagang ataupun penyedia magang</p>"
+      "isi": <String>[
+        "1. Dengan menjadi anggota tempat magang, anda akan mendapatkan informasi, memilih dan direkomendasikan untuk lowongan magang yang sesuai dengan kompetensi ataupun kebutuhan dari penyedia magang.",
+        "2. Kemudahan pengelolaan informasi magang bagi penyedia magang.",
+        "3. Kemudahan penelusuran dan pencarian magang bagi institusi pendidikan.",
+        "4. Report dan feedback sebagai pemagang ataupun penyedia magang."
+      ]
     },
   ];
   final loadingLoad = CircularProgressIndicator(
@@ -157,7 +167,7 @@ class _LoginPageState extends State<LoginPage> {
       final String judulpakai = data["judul"];
       final Color warnapakai = data["warna"];
       final IconData iconpakai = data["icon"];
-      final String isipakai = data["isi"];
+      final List<String> isipakai = data["isi"];
 
       list.add(Container(
         child: Column(
@@ -469,67 +479,138 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-class Detail extends StatelessWidget {
-  Detail({this.judulDetail, this.iconDetail, this.isiDetail, this.warnaDetail});
+class _PageSelector extends StatelessWidget {
+  const _PageSelector(
+      {this.icons, this.judulNya, this.iconDetail, this.warnaDetail});
 
-  final String judulDetail, isiDetail;
+  final String judulNya;
+  final List<String> icons;
   final IconData iconDetail;
   final Color warnaDetail;
+  void _handleArrowButtonPress(BuildContext context, int delta) {
+    final TabController controller = DefaultTabController.of(context);
+    if (!controller.indexIsChanging)
+      controller
+          .animateTo((controller.index + delta).clamp(0, icons.length - 1));
+  }
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      body: new ListView(
+    final TabController controller = DefaultTabController.of(context);
+    final Color color = Theme.of(context).accentColor;
+    return SafeArea(
+      top: false,
+      bottom: false,
+      child: Column(
         children: <Widget>[
-          new Container(
-            color: warnaDetail,
-            height: 80.0,
-            child: new Hero(
-              tag: judulDetail,
-              child: new Material(
-                child: new InkWell(
-                  child: new Container(
-                    color: warnaDetail,
-                    child: new Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          new Icon(
-                            iconDetail,
-                            color: Colors.white,
-                          ),
-                          new Text(
-                            judulDetail.toUpperCase(),
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 20.0),
-                          ),
-                          new Icon(
-                            iconDetail,
-                            color: Colors.white,
-                          ),
-                        ],
-                      ),
+          Hero(
+            tag: judulNya,
+            child: Material(
+              child: InkWell(
+                child: new Container(
+                  margin: const EdgeInsets.only(top: 30.0),
+                  padding: const EdgeInsets.all(12.0),
+                  color: warnaDetail,
+                  child: new Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        new Icon(
+                          iconDetail,
+                          color: Colors.white,
+                        ),
+                        new Text(
+                          judulNya.toUpperCase(),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        new Icon(
+                          iconDetail,
+                          color: Colors.white,
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
             ),
           ),
-          new Scrollbar(
-            child: new SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                reverse: true,
-                child: Card(
-                  margin: const EdgeInsets.all(10.0),
-                  child: new Container(
-                      padding: const EdgeInsets.all(10.0),
-                      child: new HtmlView(
-                        data: isiDetail,
-                      )),
-                )),
+          Expanded(
+            child: IconTheme(
+              data: IconThemeData(
+                size: 128.0,
+                color: color,
+              ),
+              child: TabBarView(
+                  children: icons.map<Widget>((String icon) {
+                return Container(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Card(
+                    color: warnaDetail,
+                    child: Center(
+                      child: Container(
+                        margin: const EdgeInsets.all(10.0),
+                        child: Text(
+                          icon,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 20.0,
+                              color: Colors.white,
+                              fontStyle: FontStyle.italic),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }).toList()),
+            ),
           ),
+          Container(
+              margin: const EdgeInsets.only(top: 16.0),
+              child: Row(children: <Widget>[
+                IconButton(
+                    icon: const Icon(Icons.chevron_left),
+                    color: color,
+                    onPressed: () {
+                      _handleArrowButtonPress(context, -1);
+                    },
+                    tooltip: 'Page back'),
+                TabPageSelector(controller: controller),
+                IconButton(
+                    icon: const Icon(Icons.chevron_right),
+                    color: color,
+                    onPressed: () {
+                      _handleArrowButtonPress(context, 1);
+                    },
+                    tooltip: 'Page forward')
+              ], mainAxisAlignment: MainAxisAlignment.spaceBetween)),
         ],
       ),
+    );
+  }
+}
+
+class Detail extends StatelessWidget {
+  Detail({this.judulDetail, this.iconDetail, this.isiDetail, this.warnaDetail});
+
+  final String judulDetail;
+  final List<String> isiDetail;
+  final IconData iconDetail;
+  final Color warnaDetail;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: DefaultTabController(
+          length: isiDetail.length,
+          child: _PageSelector(
+            icons: isiDetail,
+            judulNya: judulDetail,
+            iconDetail: iconDetail,
+            warnaDetail: warnaDetail,
+          )),
     );
   }
 }
