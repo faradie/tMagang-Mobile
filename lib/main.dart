@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tempat_magang/auth.dart';
+import 'package:tempat_magang/global_page/loaders.dart';
 import 'root_page.dart';
 
 void main() {
@@ -109,7 +110,7 @@ class _SplashNyaState extends State<SplashNya> {
         children: <Widget>[
           Image.asset(
             'img/logoDoangS.png',
-            width: 200.0,
+            width: 100.0,
           ),
           Padding(
             padding: EdgeInsets.only(top: 10.0),
@@ -123,11 +124,6 @@ class _SplashNyaState extends State<SplashNya> {
           )
         ],
       ),
-    );
-
-    final loadingLoad = CircularProgressIndicator(
-      backgroundColor: Colors.deepOrange,
-      strokeWidth: 1.5,
     );
 
     return Scaffold(
@@ -151,7 +147,10 @@ class _SplashNyaState extends State<SplashNya> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    loadingLoad
+                    ColorLoader3(
+                      radius: 15.0,
+                      dotRadius: 6.0,
+                    )
                     // Padding(padding: EdgeInsets.only(top: 20.0),),
                     // Text("Mohon bersabar")
                   ],

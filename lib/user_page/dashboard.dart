@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:tempat_magang/auth.dart';
-
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
@@ -16,6 +16,22 @@ final loadingLoad = CircularProgressIndicator(
   strokeWidth: 1.5,
 );
 
+MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
+  testDevices: <String>[],
+  keywords: <String>['magang', 'kampus', 'industri', 'lowongan', 'kerja'],
+);
+
+// InterstitialAd _interstitialAd;
+
+InterstitialAd createInterstitialAd() {
+  return new InterstitialAd(
+      adUnitId: "ca-app-pub-9631895364890043/9973776335",
+      targetingInfo: targetingInfo,
+      listener: (MobileAdEvent event) {
+        print("intertiat ad $event");
+      });
+}
+
 class Dashboard extends StatefulWidget {
   Dashboard({this.auth, this.onSignedOut});
   final BaseAuth auth;
@@ -26,12 +42,6 @@ class Dashboard extends StatefulWidget {
 }
 
 enum AuthStatus { notSignedIn, signedIn }
-// class DashborInst extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return InstansiDashboard();
-//   }
-// }
 
 class _DashboardState extends State<Dashboard> {
   AuthStatus authStatus = AuthStatus.notSignedIn;
@@ -48,10 +58,73 @@ class _DashboardState extends State<Dashboard> {
   void _signOut() async {
     try {
       await widget.auth.signOut();
+      Navigator.of(context).pop();
       widget.onSignedOut();
     } catch (e) {
       print(e);
     }
+  }
+
+  showAlertLogout() {
+    Navigator.of(context).pop();
+    showDialog(
+        barrierDismissible: true,
+        context: context,
+        builder: (context) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(32.0))),
+              contentPadding: EdgeInsets.only(top: 10.0),
+              content: Container(
+                  width: 300.0,
+                  padding: const EdgeInsets.only(
+                    top: 20.0,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Column(
+                        // mainAxisAlignment: MainAxisAlignment.start,
+                        // // crossAxisAlignment: CrossAxisAlignment.stretch,
+                        // mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          new Text(
+                            "Perhatian".toUpperCase(),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 16.0),
+                          new Text(
+                            "Yakin ingin keluar akun?",
+                          ),
+                          SizedBox(height: 16.0),
+                        ],
+                      ),
+                      ButtonTheme(
+                        minWidth: 200.0,
+                        height: 60.0,
+                        child: new RaisedButton(
+                          color: const Color(0xFFff9977),
+                          elevation: 4.0,
+                          splashColor: Colors.blueGrey,
+                          onPressed: _signOut,
+                          shape: new RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(32.0),
+                                bottomRight: Radius.circular(32.0)),
+                          ),
+                          padding: const EdgeInsets.only(),
+                          child: Text(
+                            "Yakin",
+                            style: TextStyle(color: Colors.white),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )),
+            ));
   }
 
   void _signedIn() {
@@ -128,7 +201,8 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
-
+    FirebaseAdMob.instance
+        .initialize(appId: "ca-app-pub-9631895364890043~3439447130");
     getData();
     getDataUser();
 
@@ -229,6 +303,9 @@ class _DashboardState extends State<Dashboard> {
               title: new Text("Profil"),
               trailing: new Icon(Icons.person),
               onTap: () {
+                createInterstitialAd()
+                  ..load()
+                  ..show();
                 Navigator.of(context).pop();
                 Navigator.of(
                   context,
@@ -266,7 +343,7 @@ class _DashboardState extends State<Dashboard> {
             new ListTile(
               leading: Icon(Icons.input),
               title: new Text("Keluar"),
-              onTap: _signOut,
+              onTap: showAlertLogout,
             )
           ],
         )),
@@ -284,6 +361,9 @@ class _DashboardState extends State<Dashboard> {
                             color: Colors.white,
                           ),
                           onPressed: () {
+                            createInterstitialAd()
+                              ..load()
+                              ..show();
                             Navigator.of(
                               context,
                             ).push(MaterialPageRoute(
@@ -524,11 +604,10 @@ class CustomCard extends StatelessWidget {
       tglUpload,
       tglMulai,
       tglAkhir,
-      instansi,
-      jurusan;
+      instansi;
 
   final int kuota;
-  final List<String> requirementNya;
+  final List<String> requirementNya, jurusan;
 
   @override
   Widget build(BuildContext context) {
@@ -552,21 +631,26 @@ class CustomCard extends StatelessWidget {
               tag: idNya,
               child: Material(
                 child: InkWell(
-                  onTap: () => Navigator.of(context).push(new MaterialPageRoute(
-                        builder: (BuildContext context) => new DetailLowongan(
-                              tglUpload: tglUpload,
-                              kuota: kuota,
-                              instansi: instansi,
-                              tglAwal: tglMulai,
-                              tglAkhir: tglAkhir,
-                              requirementNya: requirementNya,
-                              deskripsiNya: deskripsiNya,
-                              idNya: idNya,
-                              judulNya: judulNya,
-                              jurusan: jurusan,
-                              linkPhoto: _linkPhoto,
-                            ),
-                      )),
+                  onTap: () {
+                    createInterstitialAd()
+                      ..load()
+                      ..show();
+                    Navigator.of(context).push(new MaterialPageRoute(
+                      builder: (BuildContext context) => new DetailLowongan(
+                            tglUpload: tglUpload,
+                            kuota: kuota,
+                            instansi: instansi,
+                            tglAwal: tglMulai,
+                            tglAkhir: tglAkhir,
+                            requirementNya: requirementNya,
+                            deskripsiNya: deskripsiNya,
+                            idNya: idNya,
+                            judulNya: judulNya,
+                            jurusan: jurusan,
+                            linkPhoto: _linkPhoto,
+                          ),
+                    ));
+                  },
                   child: new Card(
                     elevation: 2.0,
                     color: Colors.white,
@@ -704,18 +788,26 @@ class ListPage extends StatefulWidget {
 class _ListPageState extends State<ListPage> {
   DateTime dateNow = DateTime.now();
 
+  Future getLowongan() async {
+    var firestore = Firestore.instance;
+    QuerySnapshot qn = await firestore
+        .collection("vacancies")
+        .where("expiredAt", isGreaterThanOrEqualTo: dateNow)
+        .orderBy('expiredAt',
+            descending: true) //ini optional masih salah composite index
+        .orderBy('createdAt', descending: true)
+        .getDocuments();
+
+    return qn.documents;
+  }
+
   //composite expiredAt and createdAt
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: StreamBuilder(
-        stream: Firestore.instance
-            .collection('vacancies')
-            .where("expiredAt", isGreaterThanOrEqualTo: dateNow)
-            .orderBy('expiredAt', descending: true)
-            .orderBy('createdAt', descending: true)
-            .snapshots(),
+      child: FutureBuilder(
+        future: getLowongan(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
@@ -732,34 +824,49 @@ class _ListPageState extends State<ListPage> {
             return Center(child: new Text("Yah.. ada yang salah nih.."));
           } else {
             // print("ini jumlahnyaaaaaaaaa ${snapshot.data.documents.length}");
-            return ListView.builder(
-              itemCount: snapshot.data.documents.length,
-              itemBuilder: (_, index) {
-                DocumentSnapshot ds = snapshot.data.documents[index];
-                Timestamp _createdAtStamp = ds["createdAt"];
-                Timestamp _startInternStamp = ds["timeStartIntern"];
-                Timestamp _endInternStamp = ds["timeEndIntern"];
-                String uploadTglBaru = formatDate(
-                    _createdAtStamp.toDate(), [dd, ' ', MM, ' ', yyyy]);
-                String mulaiTglBaru = formatDate(
-                    _startInternStamp.toDate(), [dd, ' ', MM, ' ', yyyy]);
-                String akhirTglBaru = formatDate(
-                    _endInternStamp.toDate(), [dd, ' ', MM, ' ', yyyy]);
+            if (snapshot.data.length <= 0) {
+              return Center(
+                child: new Text(
+                  "Yah.. Belum ada lowongan..",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.grey),
+                ),
+              );
+            } else {
+              return ListView.builder(
+                itemCount: snapshot.data.length,
+                itemBuilder: (_, index) {
+                  // DocumentSnapshot ds = snapshot.data.documents[index];
+                  Timestamp _createdAtStamp =
+                      snapshot.data[index].data["createdAt"];
+                  Timestamp _startInternStamp =
+                      snapshot.data[index].data["timeStartIntern"];
+                  Timestamp _endInternStamp =
+                      snapshot.data[index].data["timeEndIntern"];
+                  String uploadTglBaru = formatDate(
+                      _createdAtStamp.toDate(), [dd, ' ', MM, ' ', yyyy]);
+                  String mulaiTglBaru = formatDate(
+                      _startInternStamp.toDate(), [dd, ' ', MM, ' ', yyyy]);
+                  String akhirTglBaru = formatDate(
+                      _endInternStamp.toDate(), [dd, ' ', MM, ' ', yyyy]);
 
-                return new CustomCard(
-                  jurusan: ds["departement"],
-                  instansi: ds["ownerAgency"],
-                  kuota: ds["quota"],
-                  idNya: ds["id"],
-                  judulNya: ds["title"],
-                  tglUpload: uploadTglBaru,
-                  tglAkhir: akhirTglBaru,
-                  tglMulai: mulaiTglBaru,
-                  deskripsiNya: ds["description"],
-                  requirementNya: List.from(ds["requirement"]),
-                );
-              },
-            );
+                  return new CustomCard(
+                    jurusan:
+                        List.from(snapshot.data[index].data["departement"]),
+                    instansi: snapshot.data[index].data["ownerAgency"],
+                    kuota: snapshot.data[index].data["quota"],
+                    idNya: snapshot.data[index].data["id"],
+                    judulNya: snapshot.data[index].data["title"],
+                    tglUpload: uploadTglBaru,
+                    tglAkhir: akhirTglBaru,
+                    tglMulai: mulaiTglBaru,
+                    deskripsiNya: snapshot.data[index].data["description"],
+                    requirementNya:
+                        List.from(snapshot.data[index].data["requirement"]),
+                  );
+                },
+              );
+            }
           }
         },
       ),

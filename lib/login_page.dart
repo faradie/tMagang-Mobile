@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter/services.dart';
 import 'auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:flutter_html_view/flutter_html_view.dart';
 
 class LoginPage extends StatefulWidget {
   //construct
@@ -240,10 +238,15 @@ class _LoginPageState extends State<LoginPage> {
                         Padding(
                           padding: const EdgeInsets.only(left: 20.0),
                         ),
-                        new Image.asset(
-                          'img/logoDoang.png',
-                          width: 200.0,
-                        ),
+                        new Text("TempatMagang.com",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontSize: 25.0))
+                        // new Image.asset(
+                        //   'img/logoDoang.png',
+                        //   width: 200.0,
+                        // ),
                       ],
                     ),
                     height: 60.0,
@@ -296,7 +299,7 @@ class _LoginPageState extends State<LoginPage> {
                   FlatButton(
                     onPressed: () {},
                     child: Text(
-                      "Tempatmagang.com Beta v1.0",
+                      "Temukan Tempat Magang Idealmu",
                       style: TextStyle(
                         fontSize: 12.0,
                         color: Color(0xFF006885),

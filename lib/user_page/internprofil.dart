@@ -28,6 +28,7 @@ class InternProfilState extends State<InternProfil> {
       _nim,
       _kontak,
       _linkPhoto,
+      _about,
       _alamat,
       _userViewId,
       _isActive;
@@ -49,6 +50,7 @@ class InternProfilState extends State<InternProfil> {
           name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
           _namaUser = name["displayName"];
           _linkPhoto = name["photoURL"];
+          _about = name["about"];
           _jurusan = name["departement"];
           _isActive = data.documents[0].data['isActive'] == true
               ? "Magang"
@@ -110,6 +112,7 @@ class InternProfilState extends State<InternProfil> {
                     onPressed: () {
                       Navigator.of(context).push(new MaterialPageRoute(
                         builder: (BuildContext context) => new EditProfil(
+                              about: _about == null ? "Kosong" : _about,
                               idMhs: widget.id,
                               namaUser:
                                   _namaUser == null ? "Kosong" : _namaUser,
@@ -278,6 +281,20 @@ class InternProfilState extends State<InternProfil> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           new Text(
+                            "Tentang saya",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          new Text(_about == null ? "Kosong" : _about)
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(
+                          top: 10.0, left: 10.0, right: 10.0),
+                      child: new Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          new Text(
                             "Alamat",
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
@@ -396,13 +413,15 @@ class EditProfil extends StatefulWidget {
       this.kontak,
       this.alamat,
       this.idMhs,
+      this.about,
       this.skills});
-  final namaUser,
+  final String namaUser,
       nimUser,
       jenisKelamin,
       kontak,
       alamat,
       jurusan,
+      about,
       idMhs,
       kampus,
       status;
@@ -416,6 +435,7 @@ class _EditProfilState extends State<EditProfil> {
   final TextEditingController _controlKontak = new TextEditingController();
   final TextEditingController _controlAlamat = new TextEditingController();
   final TextEditingController _controlSkills = new TextEditingController();
+  final TextEditingController _controlAbout = new TextEditingController();
   final formKeySave = new GlobalKey<FormState>();
   String _namaUser, _emailUser, _collegeID, _tmpJenisKelamin, _linkPhoto;
   var name;
@@ -508,6 +528,7 @@ class _EditProfilState extends State<EditProfil> {
       if (postSnapshot.exists) {
         await tx.update(favoritesReference, <String, dynamic>{
           'data': {
+            "about": _controlAbout.text,
             "studentIDNumber": _controlNIM.text,
             "skills": _controlSkills.text == "Skill belum diatur"
                 ? null
@@ -544,6 +565,7 @@ class _EditProfilState extends State<EditProfil> {
         if (postSnapshot.exists) {
           await tx.update(favoritesReference, <String, dynamic>{
             'data': {
+              "about": _controlAbout.text,
               "studentIDNumber": _controlNIM.text,
               "skills": _controlSkills.text == "Skill belum diatur"
                   ? null
@@ -585,6 +607,7 @@ class _EditProfilState extends State<EditProfil> {
     _controlNIM.text = widget.nimUser == "Kosong" ? "" : widget.nimUser;
     _controlKontak.text = widget.kontak == "Kosong" ? "" : widget.kontak;
     _controlAlamat.text = widget.alamat == "Kosong" ? "" : widget.alamat;
+    _controlAbout.text = widget.about == "Kosong" ? "" : widget.about;
     String s = widget.skills.join(',');
     _controlSkills.text = s;
     _tmpJenisKelamin = widget.jenisKelamin == "Laki-laki"
@@ -792,6 +815,29 @@ class _EditProfilState extends State<EditProfil> {
                               ),
                             ),
                           ],
+                        ),
+                      ),
+                      Container(
+                        child: new ConstrainedBox(
+                          constraints: BoxConstraints(maxHeight: 300.0),
+                          child: new Scrollbar(
+                            child: new SingleChildScrollView(
+                              scrollDirection: Axis.vertical,
+                              reverse: true,
+                              child: new TextFormField(
+                                controller: _controlAbout,
+                                keyboardType: TextInputType.multiline,
+                                maxLines: null,
+                                decoration: new InputDecoration(
+                                  border: new OutlineInputBorder(
+                                      borderRadius: const BorderRadius.all(
+                                    const Radius.circular(10.0),
+                                  )),
+                                  labelText: 'Tentang saya',
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                       new Container(

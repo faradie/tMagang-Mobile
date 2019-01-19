@@ -12,8 +12,8 @@ class EditLowongan extends StatefulWidget {
 }
 
 class _EditLowonganState extends State<EditLowongan> {
-  String _judulLowongan, _jurusanLowongan, _deskripsi;
-  List<dynamic> _require;
+  String _judulLowongan, _deskripsi;
+  List<dynamic> _require, _jurusanLowongan;
   int _kuota;
   bool tekan = true;
   Timestamp _tglMulai, _tglAkhir;
@@ -25,7 +25,7 @@ class _EditLowonganState extends State<EditLowongan> {
   final _controlDeskrip = new TextEditingController();
   final _controlTglMulai = new TextEditingController();
   final _controlTglAkhir = new TextEditingController();
-
+  List<dynamic> dummy = ["Posisi Jurusan belum diatur"];
   void _showToast(String pesan, Color warna) {
     Fluttertoast.showToast(
       msg: pesan,
@@ -86,16 +86,22 @@ class _EditLowonganState extends State<EditLowongan> {
       if (data.documents.length > 0) {
         setState(() {
           _judulLowongan = data.documents[0].data['title'];
-          _jurusanLowongan = data.documents[0].data['departement'];
+          _jurusanLowongan = List.from(
+              data.documents[0].data['departement'] == null
+                  ? dummy
+                  : data.documents[0].data['departement']);
+
           _deskripsi = data.documents[0].data['description'];
           _kuota = data.documents[0].data['quota'];
           _tglMulai = data.documents[0].data['timeStartIntern'];
           _tglAkhir = data.documents[0].data['timeEndIntern'];
           _require = data.documents[0].data['requirement'];
         });
+
         print("kuota $_kuota");
         _controlJudul.text = _judulLowongan == null ? "" : _judulLowongan;
-        _controlJurusan.text = _jurusanLowongan == null ? "" : _jurusanLowongan;
+        String jurs = _jurusanLowongan.join(',');
+        _controlJurusan.text = jurs;
         _controlKuota.text = _kuota.toString() == null ? "" : _kuota.toString();
         _controlTglMulai.text = _tglMulai.toDate().toString() == null
             ? ""
@@ -150,9 +156,17 @@ class _EditLowonganState extends State<EditLowongan> {
                     labelText: 'Judul Lowongan',
                     icon: new Icon(Icons.card_travel)),
               ),
+              SizedBox(height: 16.0),
+              new Divider(),
+              SizedBox(height: 16.0),
+              new Text(
+                "Jurusan dipisahkan dengan tanda koma ( , ) :",
+                style: TextStyle(color: Colors.grey),
+              ),
               new TextFormField(
                 controller: _controlJurusan,
-                onSaved: (value) => _jurusanLowongan = value,
+                onSaved: (value) =>
+                    _jurusanLowongan = List.from(value.split(",")),
                 validator: (value) =>
                     value.isEmpty ? 'Isikan Jurusan dahulu' : null,
                 keyboardType: TextInputType.text,

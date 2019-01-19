@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+const String testDevice = '';
+
 class DetailLowongan extends StatefulWidget {
   DetailLowongan(
       {this.judulNya,
@@ -25,12 +27,11 @@ class DetailLowongan extends StatefulWidget {
       tglUpload,
       tglAwal,
       tglAkhir,
-      jurusan,
       instansi;
 
   final int kuota;
 
-  final List<String> requirementNya;
+  final List<String> requirementNya, jurusan;
   _DetailLowonganState createState() => _DetailLowonganState();
 }
 
@@ -205,6 +206,11 @@ class _DetailLowonganState extends State<DetailLowongan> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -224,12 +230,12 @@ class _DetailLowonganState extends State<DetailLowongan> {
         ),
         title: new Text("Detail"),
         backgroundColor: const Color(0xFFe87c55),
-        actions: <Widget>[
-          new FlatButton(
-            child: new Icon(Icons.share, color: Colors.white),
-            onPressed: () {},
-          )
-        ],
+        // actions: <Widget>[
+        //   new FlatButton(
+        //     child: new Icon(Icons.share, color: Colors.white),
+        //     onPressed: () {},
+        //   )
+        // ],
       ),
       body: new ListView(
         children: <Widget>[

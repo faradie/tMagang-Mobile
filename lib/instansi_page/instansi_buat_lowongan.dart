@@ -55,49 +55,60 @@ class _InstansiBuatLowonganState extends State<InstansiBuatLowongan> {
     } else {
       if (dataSaveFire()) {
         if (_tmpMentor == null || _tmpMentor == "kosong") {
-          _showToast("Tetapkan mentor terlebih dahulu", Colors.pink);
+          _showToast("Tetapkan mentor terlebih dahulu", Colors.red);
         } else {
-          setState(() {
-            tekan = false;
-          });
-
-          var uuid = new Uuid();
-          bool _isActiveIntern = true;
-          String _idNya = uuid.v4();
-          var today = new DateTime.now();
-
-          var _validUntil = today.add(new Duration(days: _expiredAt - 1));
-          Map<String, dynamic> data = <String, dynamic>{
-            "SLA": _setuju,
-            "title": _controlJudul.text,
-            "departement": _controlJurusan.text,
-            "quota": int.parse(_controlKuota.text),
-            "id": _idNya,
-            "createdAt": new DateTime.now(),
-            "timeStartIntern": _tglMulai,
-            "timeEndIntern": _tglAkhir,
-            "isActiveIntern": _isActiveIntern,
-            "ownerAgency": widget.id,
-            "description": _controlDeskrip.text,
-            "requirement": _controlRequir.text.toLowerCase().split(","),
-            "expiredAt": _validUntil,
-            "mentorId": _tmpMentor
-          };
-
-          Firestore.instance
-              .collection("vacancies")
-              .document("$_idNya")
-              .setData(data)
-              .whenComplete(() {
-            _showToast("Berhasil buat Lowongan", Colors.greenAccent);
-            print("ini data lowongan $data");
+          final difference = _tglAkhir.difference(_tglMulai).inHours;
+          if (difference > 0) {
             setState(() {
-              tekan = true;
+              tekan = false;
             });
-            Navigator.of(context).pop();
-          }).catchError((e) {
-            print(e);
-          });
+
+            var uuid = new Uuid();
+            bool _isActiveIntern = true;
+            String _idNya = uuid.v4();
+            var today = new DateTime.now();
+
+            var col = _controlRequir.text.toLowerCase().split(",");
+            col.removeWhere((item) => item.length == 0);
+
+            var jur = _controlJurusan.text.toLowerCase().split(",");
+            jur.removeWhere((item) => item.length == 0);
+
+            var _validUntil = today.add(new Duration(days: _expiredAt - 1));
+            Map<String, dynamic> data = <String, dynamic>{
+              "SLA": _setuju,
+              "title": _controlJudul.text,
+              "departement": jur,
+              "quota": int.parse(_controlKuota.text),
+              "id": _idNya,
+              "createdAt": new DateTime.now(),
+              "timeStartIntern": _tglMulai,
+              "timeEndIntern": _tglAkhir,
+              "isActiveIntern": _isActiveIntern,
+              "ownerAgency": widget.id,
+              "description": _controlDeskrip.text,
+              "requirement": col,
+              "expiredAt": _validUntil,
+              "mentorId": _tmpMentor
+            };
+
+            Firestore.instance
+                .collection("vacancies")
+                .document("$_idNya")
+                .setData(data)
+                .whenComplete(() {
+              _showToast("Berhasil buat Lowongan", Colors.greenAccent);
+              print("ini data lowongan $data");
+              setState(() {
+                tekan = true;
+              });
+              Navigator.of(context).pop();
+            }).catchError((e) {
+              print(e);
+            });
+          } else {
+            _showToast("Periode magang tidak sesuai", Colors.red);
+          }
         }
       }
     }
@@ -471,6 +482,13 @@ class _InstansiBuatLowonganState extends State<InstansiBuatLowongan> {
                     labelText: 'Judul Lowongan',
                     icon: new Icon(Icons.card_travel)),
               ),
+              SizedBox(height: 16.0),
+              new Divider(),
+              SizedBox(height: 16.0),
+              new Text(
+                "Jurusan dipisahkan dengan tanda koma ( , ) :",
+                style: TextStyle(color: Colors.grey),
+              ),
               new TextFormField(
                 controller: _controlJurusan,
                 onSaved: (value) => _jurusanLowongan = value,
@@ -478,7 +496,7 @@ class _InstansiBuatLowonganState extends State<InstansiBuatLowongan> {
                     value.isEmpty ? 'Isikan Jurusan dahulu' : null,
                 keyboardType: TextInputType.text,
                 decoration: new InputDecoration(
-                    labelText: 'Jurusan Lowongan yang dibutuhkan',
+                    labelText: 'Jurusan dari posisi dibutuhkan',
                     icon: new Icon(Icons.account_balance_wallet)),
               ),
               new TextFormField(

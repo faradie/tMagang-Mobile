@@ -17,7 +17,7 @@ class InstansiOrCollegeProfil extends StatefulWidget {
 }
 
 class _InstansiOrCollegeProfilState extends State<InstansiOrCollegeProfil> {
-  String _userViewId, _namaUser, _linkPhoto, _kontak, _alamat;
+  String _userViewId, _namaUser, _linkPhoto, _kontak, _alamat, _about;
   String validUntilStr;
   Timestamp _accountExpiredAt;
   var name;
@@ -39,6 +39,7 @@ class _InstansiOrCollegeProfilState extends State<InstansiOrCollegeProfil> {
           _linkPhoto = name["photoURL"];
           _kontak = name["phoneNumber"];
           _alamat = name["address"];
+          _about = name["about"];
           _accountExpiredAt = data.documents[0].data['accountExpiredAt'];
           DateTime _valUntil = _accountExpiredAt.toDate();
           validUntilStr = formatDate(_valUntil, [
@@ -87,6 +88,7 @@ class _InstansiOrCollegeProfilState extends State<InstansiOrCollegeProfil> {
                     onPressed: () {
                       Navigator.of(context).push(new MaterialPageRoute(
                         builder: (BuildContext context) => new EditProfil(
+                              about: _about == null ? "Kosong" : _about,
                               idAccount: widget.id,
                               namaUser:
                                   _namaUser == null ? "Kosong" : _namaUser,
@@ -161,6 +163,22 @@ class _InstansiOrCollegeProfilState extends State<InstansiOrCollegeProfil> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    Container(
+                      margin: const EdgeInsets.only(
+                          top: 10.0, left: 10.0, right: 10.0),
+                      child: new Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          new Text(
+                            "Tentang",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          new Text(_about == null
+                              ? "Silahkan lengkapi data"
+                              : _about)
+                        ],
+                      ),
+                    ),
                     Container(
                       margin: const EdgeInsets.only(
                           top: 10.0, left: 10.0, right: 10.0),
@@ -246,8 +264,9 @@ class EditProfil extends StatefulWidget {
       this.namaUser,
       this.kontak,
       this.alamat,
+      this.about,
       this.accountExpiredAt});
-  final String namaUser, kontak, alamat, idAccount;
+  final String namaUser, kontak, alamat, idAccount, about;
   final Timestamp accountExpiredAt;
 
   _EditProfilState createState() => _EditProfilState();
@@ -258,6 +277,7 @@ class _EditProfilState extends State<EditProfil> {
 
   final TextEditingController _controlKontak = new TextEditingController();
   final TextEditingController _controlAlamat = new TextEditingController();
+  final TextEditingController _controlAbout = new TextEditingController();
 
   final formKeySave = new GlobalKey<FormState>();
   String _namaUser, _emailUser, _linkPhoto;
@@ -332,6 +352,7 @@ class _EditProfilState extends State<EditProfil> {
       "photoURL": url,
       "phoneNumber": _controlKontak.text,
       "email": _emailUser,
+      "about": _controlAbout.text,
       "displayName": _controlName.text,
       "address": _controlAlamat.text
     };
@@ -363,6 +384,7 @@ class _EditProfilState extends State<EditProfil> {
         "photoURL": _linkPhoto,
         "phoneNumber": _controlKontak.text,
         "email": _emailUser,
+        "about": _controlAbout.text,
         "displayName": _controlName.text,
         "address": _controlAlamat.text
       };
@@ -391,7 +413,7 @@ class _EditProfilState extends State<EditProfil> {
     _controlName.text = widget.namaUser;
     _controlKontak.text = widget.kontak == "Kosong" ? "" : widget.kontak;
     _controlAlamat.text = widget.alamat == "Kosong" ? "" : widget.alamat;
-
+    _controlAbout.text = widget.about == "Kosong" ? "" : widget.about;
     super.initState();
     getDataUser();
   }
@@ -490,6 +512,29 @@ class _EditProfilState extends State<EditProfil> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
+                      Container(
+                        child: new ConstrainedBox(
+                          constraints: BoxConstraints(maxHeight: 300.0),
+                          child: new Scrollbar(
+                            child: new SingleChildScrollView(
+                              scrollDirection: Axis.vertical,
+                              reverse: true,
+                              child: new TextFormField(
+                                controller: _controlAbout,
+                                keyboardType: TextInputType.multiline,
+                                maxLines: null,
+                                decoration: new InputDecoration(
+                                  border: new OutlineInputBorder(
+                                      borderRadius: const BorderRadius.all(
+                                    const Radius.circular(10.0),
+                                  )),
+                                  labelText: 'Tentang saya',
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                       Container(
                         margin: const EdgeInsets.only(
                             top: 10.0, left: 10.0, right: 10.0),

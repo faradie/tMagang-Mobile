@@ -15,7 +15,10 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="Tempat Magang"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/t_magang">
+        <meta-data
+                android:name="com.google.android.gms.ads.APPLICATION_ID"
+                android:value="ca-app-pub-9631895364890043~3439447130"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -30,6 +33,7 @@
             <meta-data
                 android:name="io.flutter.app.android.SplashScreenUntilFirstFrame"
                 android:value="true" />
+                
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

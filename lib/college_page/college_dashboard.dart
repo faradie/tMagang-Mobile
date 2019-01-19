@@ -1,7 +1,7 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +14,22 @@ final loadingLoad = CircularProgressIndicator(
   backgroundColor: Colors.deepOrange,
   strokeWidth: 1.5,
 );
+
+MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
+  testDevices: <String>[],
+  keywords: <String>['magang', 'kampus', 'industri', 'lowongan', 'kerja'],
+);
+
+// InterstitialAd _interstitialAd;
+
+InterstitialAd createInterstitialAd() {
+  return new InterstitialAd(
+      adUnitId: "ca-app-pub-9631895364890043/3877720394",
+      targetingInfo: targetingInfo,
+      listener: (MobileAdEvent event) {
+        print("intertiat ad $event");
+      });
+}
 
 class CollegeDashboard extends StatefulWidget {
   CollegeDashboard({this.auth, this.onSignedOut, this.wew});
@@ -48,9 +64,72 @@ class _CollegeDashboardState extends State<CollegeDashboard> {
     });
   }
 
+  showAlertLogout() {
+    Navigator.of(context).pop();
+    showDialog(
+        barrierDismissible: true,
+        context: context,
+        builder: (context) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(32.0))),
+              contentPadding: EdgeInsets.only(top: 10.0),
+              content: Container(
+                  width: 300.0,
+                  padding: const EdgeInsets.only(
+                    top: 20.0,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Column(
+                        // mainAxisAlignment: MainAxisAlignment.start,
+                        // // crossAxisAlignment: CrossAxisAlignment.stretch,
+                        // mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          new Text(
+                            "Perhatian".toUpperCase(),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 16.0),
+                          new Text(
+                            "Yakin ingin keluar akun?",
+                          ),
+                          SizedBox(height: 16.0),
+                        ],
+                      ),
+                      ButtonTheme(
+                        minWidth: 200.0,
+                        height: 60.0,
+                        child: new RaisedButton(
+                          color: const Color(0xFFff9977),
+                          elevation: 4.0,
+                          splashColor: Colors.blueGrey,
+                          onPressed: _signOut,
+                          shape: new RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(32.0),
+                                bottomRight: Radius.circular(32.0)),
+                          ),
+                          padding: const EdgeInsets.only(),
+                          child: Text(
+                            "Yakin",
+                            style: TextStyle(color: Colors.white),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )),
+            ));
+  }
+
   void _signOut() async {
     try {
       await widget.auth.signOut();
+      Navigator.of(context).pop();
       widget.onSignedOut();
     } catch (e) {
       print(e);
@@ -134,6 +213,9 @@ class _CollegeDashboardState extends State<CollegeDashboard> {
               title: new Text("Manajemen Mahasiswa"),
               trailing: new Icon(Icons.people_outline),
               onTap: () {
+                createInterstitialAd()
+                  ..load()
+                  ..show();
                 Navigator.of(context).pop();
                 Navigator.of(
                   context,
@@ -160,6 +242,9 @@ class _CollegeDashboardState extends State<CollegeDashboard> {
               title: new Text("Profil"),
               trailing: new Icon(Icons.person),
               onTap: () {
+                createInterstitialAd()
+                  ..load()
+                  ..show();
                 Navigator.of(context).pop();
                 Navigator.of(
                   context,
@@ -177,7 +262,7 @@ class _CollegeDashboardState extends State<CollegeDashboard> {
             new ListTile(
               leading: Icon(Icons.input),
               title: new Text("Keluar"),
-              onTap: _signOut,
+              onTap: showAlertLogout,
             )
           ],
         )),
