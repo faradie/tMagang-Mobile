@@ -31,7 +31,6 @@ dependencies:
   datetime_picker_formfield: ^0.1.7
   csv: ^4.0.1
   uuid:
-  flutter_html_view: ^0.5.10
   cloud_functions:
   firebase_storage:
   image_picker: ^0.4.10

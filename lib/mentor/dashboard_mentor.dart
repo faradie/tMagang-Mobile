@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tempat_magang/auth.dart';
+import 'package:tempat_magang/global_page/bantuan.dart';
 import 'package:tempat_magang/mentor/listMagangMentor.dart';
 import 'package:tempat_magang/mentor/profilMentor.dart';
 
@@ -213,7 +214,13 @@ class _MentorDashboardState extends State<MentorDashboard> {
             new ListTile(
               leading: Icon(Icons.help),
               title: new Text("Bantuan"),
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(
+                    builder: (BuildContext context) => new Bantuan()));
+              },
             ),
             new ListTile(
               leading: Icon(Icons.input),

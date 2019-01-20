@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:tempat_magang/auth.dart';
 import 'package:tempat_magang/college_page/listMagangMhs.dart';
 import 'package:tempat_magang/college_page/manajemen_pemagang.dart';
+import 'package:tempat_magang/global_page/bantuan.dart';
 import 'package:tempat_magang/instansi_page/instansiOrCollegeProfil.dart';
 
 final loadingLoad = CircularProgressIndicator(
@@ -16,10 +17,13 @@ final loadingLoad = CircularProgressIndicator(
 );
 
 MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
-  testDevices: <String>[],
-  keywords: <String>['magang', 'kampus', 'industri', 'lowongan', 'kerja'],
-);
-
+    testDevices: <String>[],
+    keywords: <String>['magang', 'kampus', 'industri', 'lowongan', 'kerja'],
+    birthday: DateTime.now(),
+    gender: MobileAdGender.unknown,
+    childDirected: false,
+    nonPersonalizedAds: false,
+    designedForFamilies: true);
 // InterstitialAd _interstitialAd;
 
 InterstitialAd createInterstitialAd() {
@@ -257,7 +261,13 @@ class _CollegeDashboardState extends State<CollegeDashboard> {
             new ListTile(
               leading: Icon(Icons.help),
               title: new Text("Bantuan"),
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(
+                    builder: (BuildContext context) => new Bantuan()));
+              },
             ),
             new ListTile(
               leading: Icon(Icons.input),

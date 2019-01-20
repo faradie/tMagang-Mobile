@@ -156,10 +156,22 @@ class InternProfilState extends State<InternProfil> {
                                       color: Colors.white),
                                 ),
                               )
-                            : new CircleAvatar(
-                                radius: 40.0,
-                                backgroundImage: NetworkImage(_linkPhoto),
-                              ),
+                            : _linkPhoto == ""
+                                ? new CircleAvatar(
+                                    radius: 40.0,
+                                    backgroundColor: const Color(0xFFe87c55),
+                                    child: new Text(
+                                      "T",
+                                      style: TextStyle(
+                                          fontSize: 20.0,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white),
+                                    ),
+                                  )
+                                : new CircleAvatar(
+                                    radius: 40.0,
+                                    backgroundImage: NetworkImage(_linkPhoto),
+                                  ),
                         Padding(
                           padding: const EdgeInsets.only(left: 10.0),
                         ),
@@ -662,10 +674,24 @@ class _EditProfilState extends State<EditProfil> {
                                             color: Colors.white),
                                       ),
                                     )
-                                  : new CircleAvatar(
-                                      radius: 40.0,
-                                      backgroundImage: NetworkImage(_linkPhoto),
-                                    )
+                                  : _linkPhoto == ""
+                                      ? new CircleAvatar(
+                                          radius: 40.0,
+                                          backgroundColor:
+                                              const Color(0xFFe87c55),
+                                          child: new Text(
+                                            "T",
+                                            style: TextStyle(
+                                                fontSize: 20.0,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white),
+                                          ),
+                                        )
+                                      : new CircleAvatar(
+                                          radius: 40.0,
+                                          backgroundImage:
+                                              NetworkImage(_linkPhoto),
+                                        )
                               : new CircleAvatar(
                                   radius: 40.0,
                                   backgroundImage: FileImage(image),
@@ -817,6 +843,7 @@ class _EditProfilState extends State<EditProfil> {
                           ],
                         ),
                       ),
+                      SizedBox(height: 16.0),
                       Container(
                         child: new ConstrainedBox(
                           constraints: BoxConstraints(maxHeight: 300.0),

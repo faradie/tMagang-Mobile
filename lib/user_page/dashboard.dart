@@ -1,12 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:tempat_magang/auth.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
+import 'package:tempat_magang/global_page/bantuan.dart';
 import 'package:tempat_magang/user_page/detailLowongan.dart';
 import 'package:tempat_magang/user_page/internprofil.dart';
 import 'package:tempat_magang/user_page/lamaran_pemagang.dart';
@@ -17,9 +17,13 @@ final loadingLoad = CircularProgressIndicator(
 );
 
 MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
-  testDevices: <String>[],
-  keywords: <String>['magang', 'kampus', 'industri', 'lowongan', 'kerja'],
-);
+    testDevices: <String>[],
+    keywords: <String>['magang', 'kampus', 'industri', 'lowongan', 'kerja'],
+    birthday: DateTime.now(),
+    gender: MobileAdGender.unknown,
+    childDirected: false,
+    nonPersonalizedAds: false,
+    designedForFamilies: true);
 
 // InterstitialAd _interstitialAd;
 
@@ -338,7 +342,13 @@ class _DashboardState extends State<Dashboard> {
             new ListTile(
               title: new Text("Bantuan"),
               leading: Icon(Icons.help),
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(
+                    builder: (BuildContext context) => new Bantuan()));
+              },
             ),
             new ListTile(
               leading: Icon(Icons.input),

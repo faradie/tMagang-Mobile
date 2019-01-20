@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:tempat_magang/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tempat_magang/global_page/bantuan.dart';
 import 'package:tempat_magang/instansi_page/instansiOrCollegeProfil.dart';
 import 'package:tempat_magang/instansi_page/instansi_buat_lowongan.dart';
 import 'package:tempat_magang/instansi_page/manajemenLowonganInstansi.dart';
@@ -272,7 +273,13 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
             new ListTile(
               leading: Icon(Icons.help),
               title: new Text("Bantuan"),
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(
+                    builder: (BuildContext context) => new Bantuan()));
+              },
             ),
             new ListTile(
               leading: Icon(Icons.input),

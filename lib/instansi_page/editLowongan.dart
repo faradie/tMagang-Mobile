@@ -5,6 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
+final loadingLoad = CircularProgressIndicator(
+  backgroundColor: Colors.deepOrange,
+  strokeWidth: 1.5,
+);
+
 class EditLowongan extends StatefulWidget {
   EditLowongan({this.idLowongan});
   final String idLowongan;
@@ -12,7 +17,7 @@ class EditLowongan extends StatefulWidget {
 }
 
 class _EditLowonganState extends State<EditLowongan> {
-  String _judulLowongan, _deskripsi;
+  String _judulLowongan, _deskripsi, _tmpMentor, _ownerAgency;
   List<dynamic> _require, _jurusanLowongan;
   int _kuota;
   bool tekan = true;
@@ -47,31 +52,46 @@ class _EditLowonganState extends State<EditLowongan> {
   }
 
   void _inPressed() {
-    setState(() {
-      tekan = false;
-    });
     if (dataSaveFire()) {
-      Map<String, dynamic> data = <String, dynamic>{
-        "title": _controlJudul.text,
-        "departement": _controlJurusan.text,
-        "quota": int.parse(_controlKuota.text),
-        "timeStartIntern": _tglMulai,
-        "timeEndIntern": _tglAkhir,
-        "requirement": _controlRequir.text.split(","),
-        "description": _controlDeskrip.text
-      };
+      if (_tmpMentor == null || _tmpMentor == "kosong") {
+        _showToast("Tetapkan mentor terlebih dahulu", Colors.red);
+      } else {
+        final difference =
+            _tglAkhir.toDate().difference(_tglMulai.toDate()).inHours;
+        if (difference > 0) {
+          setState(() {
+            tekan = false;
+          });
+          var col = _controlRequir.text.toLowerCase().split(",");
+          col.removeWhere((item) => item.length == 0);
 
-      Firestore.instance
-          .collection("vacancies")
-          .document("${widget.idLowongan}")
-          .updateData(data)
-          .whenComplete(() {
-        Navigator.of(this.context).pop();
-        Navigator.of(this.context).pop();
-        _showToast("Berhasil Update Lowongan", Colors.blue);
-      }).catchError((e) {
-        print(e);
-      });
+          var jur = _controlJurusan.text.toLowerCase().split(",");
+          jur.removeWhere((item) => item.length == 0);
+          Map<String, dynamic> data = <String, dynamic>{
+            "title": _controlJudul.text,
+            "departement": jur,
+            "quota": int.parse(_controlKuota.text),
+            "timeStartIntern": _tglMulai,
+            "timeEndIntern": _tglAkhir,
+            "requirement": col,
+            "description": _controlDeskrip.text
+          };
+
+          Firestore.instance
+              .collection("vacancies")
+              .document("${widget.idLowongan}")
+              .updateData(data)
+              .whenComplete(() {
+            Navigator.of(this.context).pop();
+            Navigator.of(this.context).pop();
+            _showToast("Berhasil Update Lowongan", Colors.blue);
+          }).catchError((e) {
+            print(e);
+          });
+        } else {
+          _showToast("Periode magang tidak sesuai", Colors.red);
+        }
+      }
     }
   }
 
@@ -96,9 +116,10 @@ class _EditLowonganState extends State<EditLowongan> {
           _tglMulai = data.documents[0].data['timeStartIntern'];
           _tglAkhir = data.documents[0].data['timeEndIntern'];
           _require = data.documents[0].data['requirement'];
+          _tmpMentor = data.documents[0].data['mentorId'];
+          _ownerAgency = data.documents[0].data['ownerAgency'];
         });
 
-        print("kuota $_kuota");
         _controlJudul.text = _judulLowongan == null ? "" : _judulLowongan;
         String jurs = _jurusanLowongan.join(',');
         _controlJurusan.text = jurs;
@@ -116,6 +137,13 @@ class _EditLowonganState extends State<EditLowongan> {
     });
   }
 
+  static const menutItem = <String>['kosong'];
+  final List<DropdownMenuItem<String>> _dropDownJenisKel = menutItem
+      .map((String value) => DropdownMenuItem<String>(
+            value: value,
+            child: new Text("Belum ada Mentor"),
+          ))
+      .toList();
   @override
   void initState() {
     super.initState();
@@ -184,6 +212,64 @@ class _EditLowonganState extends State<EditLowongan> {
                     labelText: 'Kuota Lowongan',
                     icon: new Icon(Icons.looks_one)),
               ),
+              SizedBox(height: 16.0),
+              new Divider(),
+              new StreamBuilder<QuerySnapshot>(
+                  stream: Firestore.instance
+                      .collection('users')
+                      .where('data.agencyId', isEqualTo: _ownerAgency)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            loadingLoad,
+                            Text("Loading Data..")
+                          ],
+                        ),
+                      );
+                    } else {
+                      return new Container(
+                        child: new Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            new Text(
+                                "Total ${snapshot.data.documents.length} Mentor tersedia: "),
+                            new DropdownButton<String>(
+                              value: _tmpMentor,
+                              isDense: true,
+                              onChanged: (String newValue) {
+                                setState(() {
+                                  _tmpMentor = newValue;
+                                });
+                              },
+                              items: snapshot.data.documents.length > 0
+                                  ? snapshot.data.documents
+                                      .map((DocumentSnapshot document) {
+                                      var wew = document.data['data'];
+                                      return new DropdownMenuItem<String>(
+                                          value: document.data['uid'] == null
+                                              ? ""
+                                              : document.data['uid'],
+                                          child: new Container(
+                                            child: new Text(
+                                              wew['displayName'] == null
+                                                  ? ""
+                                                  : wew['displayName'],
+                                            ),
+                                          ));
+                                    }).toList()
+                                  : this._dropDownJenisKel,
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  }),
               SizedBox(height: 16.0),
               new Divider(),
               SizedBox(height: 16.0),
