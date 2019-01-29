@@ -40,8 +40,11 @@ class _InstansiOrCollegeProfilState extends State<InstansiOrCollegeProfil> {
           _kontak = name["phoneNumber"];
           _alamat = name["address"];
           _about = name["about"];
+
           _accountExpiredAt = data.documents[0].data['accountExpiredAt'];
-          DateTime _valUntil = _accountExpiredAt.toDate();
+          DateTime _valUntil = _accountExpiredAt == null
+              ? DateTime.now()
+              : _accountExpiredAt.toDate();
           validUntilStr = formatDate(_valUntil, [
             dd,
             ' ',
@@ -53,6 +56,7 @@ class _InstansiOrCollegeProfilState extends State<InstansiOrCollegeProfil> {
             ':',
             nn,
           ]);
+          // print("ini tgl ${DateTime.now()}");
         });
       }
     });

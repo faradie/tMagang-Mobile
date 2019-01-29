@@ -69,7 +69,7 @@ class _EditLowonganState extends State<EditLowongan> {
           jur.removeWhere((item) => item.length == 0);
           Map<String, dynamic> data = <String, dynamic>{
             "title": _controlJudul.text,
-            "departement": jur,
+            "department": jur,
             "quota": int.parse(_controlKuota.text),
             "timeStartIntern": _tglMulai,
             "timeEndIntern": _tglAkhir,
@@ -107,9 +107,9 @@ class _EditLowonganState extends State<EditLowongan> {
         setState(() {
           _judulLowongan = data.documents[0].data['title'];
           _jurusanLowongan = List.from(
-              data.documents[0].data['departement'] == null
+              data.documents[0].data['department'] == null
                   ? dummy
-                  : data.documents[0].data['departement']);
+                  : data.documents[0].data['department']);
 
           _deskripsi = data.documents[0].data['description'];
           _kuota = data.documents[0].data['quota'];

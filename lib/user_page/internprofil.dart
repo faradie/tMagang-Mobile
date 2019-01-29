@@ -51,7 +51,7 @@ class InternProfilState extends State<InternProfil> {
           _namaUser = name["displayName"];
           _linkPhoto = name["photoURL"];
           _about = name["about"];
-          _jurusan = name["departement"];
+          _jurusan = name["department"];
           _isActive = data.documents[0].data['isActive'] == true
               ? "Magang"
               : "Tidak Magang";
@@ -526,7 +526,7 @@ class _EditProfilState extends State<EditProfil> {
     //   "email": _emailUser,
     //   "displayName": _controlName.text,
     //   "collegeId": _collegeID,
-    //   "departement": widget.jurusan,
+    //   "department": widget.jurusan,
     //   "address": _controlAlamat.text
     // };
 
@@ -552,7 +552,7 @@ class _EditProfilState extends State<EditProfil> {
             "email": _emailUser,
             "displayName": _controlName.text,
             "collegeId": _collegeID,
-            "departement": widget.jurusan,
+            "department": widget.jurusan,
             "address": _controlAlamat.text
           }
         });
@@ -589,7 +589,7 @@ class _EditProfilState extends State<EditProfil> {
               "email": _emailUser,
               "displayName": _controlName.text,
               "collegeId": _collegeID,
-              "departement": widget.jurusan,
+              "department": widget.jurusan,
               "address": _controlAlamat.text
             }
           });

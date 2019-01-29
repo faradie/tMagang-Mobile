@@ -861,8 +861,7 @@ class _ListPageState extends State<ListPage> {
                       _endInternStamp.toDate(), [dd, ' ', MM, ' ', yyyy]);
 
                   return new CustomCard(
-                    jurusan:
-                        List.from(snapshot.data[index].data["departement"]),
+                    jurusan: List.from(snapshot.data[index].data["department"]),
                     instansi: snapshot.data[index].data["ownerAgency"],
                     kuota: snapshot.data[index].data["quota"],
                     idNya: snapshot.data[index].data["id"],

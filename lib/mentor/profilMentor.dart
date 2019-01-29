@@ -359,7 +359,7 @@ class _EditProfilMentorState extends State<EditProfilMentor> {
     //   "email": _emailUser,
     //   "displayName": _controlName.text,
     //   "collegeId": _collegeID,
-    //   "departement": widget.jurusan,
+    //   "department": widget.jurusan,
     //   "address": _controlAlamat.text
     // };
 

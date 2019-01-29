@@ -77,7 +77,7 @@ class _InstansiBuatLowonganState extends State<InstansiBuatLowongan> {
             Map<String, dynamic> data = <String, dynamic>{
               "SLA": _setuju,
               "title": _controlJudul.text,
-              "departement": jur,
+              "department": jur,
               "quota": int.parse(_controlKuota.text),
               "id": _idNya,
               "createdAt": new DateTime.now(),

@@ -582,7 +582,7 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                                         padding: const EdgeInsets.all(8.0),
                                       ),
                                       new Text(
-                                        "Jurusan : ${snapshot.data['departement']}",
+                                        "Jurusan : ${snapshot.data['department']}",
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                         ),
