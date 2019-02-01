@@ -114,7 +114,10 @@ class _RootPageState extends State<RootPage> {
         wew: _statusUser,
       );
     } else {
-      return Scaffold();
+      return new LoginPage(
+        auth: widget.auth,
+        onSignedIn: _signedIn,
+      );
     }
   }
 }

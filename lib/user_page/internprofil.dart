@@ -452,7 +452,6 @@ class _EditProfilState extends State<EditProfil> {
   String _namaUser, _emailUser, _collegeID, _tmpJenisKelamin, _linkPhoto;
   var name;
   bool tekan = true;
-  bool _addSkill = false;
 
   File image;
 
@@ -482,7 +481,6 @@ class _EditProfilState extends State<EditProfil> {
           _emailUser = name["email"];
           _linkPhoto = name["photoURL"];
           _collegeID = name["collegeId"];
-          _addSkill = name["addSkill"] == null ? false : name["addSkill"];
         });
       }
     });
@@ -878,34 +876,15 @@ class _EditProfilState extends State<EditProfil> {
                         margin: const EdgeInsets.only(left: 10.0, right: 10.0),
                         child: new Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: _addSkill == false
-                              ? <Widget>[
-                                  new TextFormField(
-                                    controller: _controlSkills,
-                                    keyboardType: TextInputType.text,
-                                    decoration: new InputDecoration(
-                                      labelText: 'Skill Pemagang',
-                                    ),
-                                  )
-                                ]
-                              : <Widget>[
-                                  new Text(
-                                    "Skills",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.only(top: 8.0),
-                                    child: Container(
-                                        height: 25.0,
-                                        color: Colors.transparent,
-                                        child: Requir(
-                                          req: widget.skills == null
-                                              ? ["Silahkan lengkapi data"]
-                                              : widget.skills,
-                                        )),
-                                  ),
-                                ],
+                          children: <Widget>[
+                            new TextFormField(
+                              controller: _controlSkills,
+                              keyboardType: TextInputType.text,
+                              decoration: new InputDecoration(
+                                labelText: 'Skill Pemagang',
+                              ),
+                            )
+                          ],
                         ),
                       ),
                       Padding(

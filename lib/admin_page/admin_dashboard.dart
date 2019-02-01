@@ -303,6 +303,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 ),
               ],
             ),
+            new ListTile(
+              leading: Icon(Icons.input),
+              title: new Text("Keluar"),
+              onTap: showAlertLogout,
+            )
           ],
         )),
         appBar: AppBar(
@@ -313,12 +318,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
             child:
                 Text("${_statusUser == null ? "" : _statusUser}".toUpperCase()),
           ),
-          actions: <Widget>[
-            new FlatButton(
-              child: new Icon(Icons.input, color: Colors.white),
-              onPressed: showAlertLogout,
-            )
-          ],
         ),
         body: adminGridView);
   }

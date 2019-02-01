@@ -40,7 +40,6 @@ class _InstansiOrCollegeProfilState extends State<InstansiOrCollegeProfil> {
           _kontak = name["phoneNumber"];
           _alamat = name["address"];
           _about = name["about"];
-
           _accountExpiredAt = data.documents[0].data['accountExpiredAt'];
           DateTime _valUntil = _accountExpiredAt == null
               ? DateTime.now()

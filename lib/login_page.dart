@@ -129,8 +129,8 @@ class _LoginPageState extends State<LoginPage> {
       "icon": Icons.power_input,
       "warna": Color(0xFF006885),
       "isi": <String>[
-        "Untuk dapat menggunakan aplikasi Tempatmagang, institusi Pendidikan anda harus terdaftar di aplikasi Tempatmagang. Untuk keterangan kerjasama dapat menghubungi support@tempatmagang.com",
-        "Untuk mendaftar sebagai penyedia magang, silahkan menghubungi client support kami di support@tempatmagang.com"
+        "Untuk dapat menggunakan aplikasi Tempatmagang, institusi Pendidikan anda harus terdaftar di aplikasi Tempatmagang. Untuk keterangan kerjasama dapat menghubungi tempatmagangtm@gmail.com",
+        "Untuk mendaftar sebagai penyedia magang, silahkan menghubungi client support kami di tempatmagangtm@gmail.com"
       ]
     },
     {
