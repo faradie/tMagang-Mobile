@@ -536,13 +536,15 @@ class _EditProfilState extends State<EditProfil> {
     Firestore.instance.runTransaction((Transaction tx) async {
       DocumentSnapshot postSnapshot = await tx.get(favoritesReference);
       if (postSnapshot.exists) {
+        var skl = _controlSkills.text == "Skill belum diatur"
+            ? null
+            : _controlSkills.text.toLowerCase().split(",");
+        skl.removeWhere((item) => item.length == 0);
         await tx.update(favoritesReference, <String, dynamic>{
           'data': {
             "about": _controlAbout.text,
             "studentIDNumber": _controlNIM.text,
-            "skills": _controlSkills.text == "Skill belum diatur"
-                ? null
-                : _controlSkills.text.toLowerCase().split(","),
+            "skills": skl,
             "photoURL": url,
             "phoneNumber": _controlKontak.text,
             "addSkill": true,
@@ -573,13 +575,15 @@ class _EditProfilState extends State<EditProfil> {
       Firestore.instance.runTransaction((Transaction tx) async {
         DocumentSnapshot postSnapshot = await tx.get(favoritesReference);
         if (postSnapshot.exists) {
+          var skl = _controlSkills.text == "Skill belum diatur"
+              ? null
+              : _controlSkills.text.toLowerCase().split(",");
+          skl.removeWhere((item) => item.length == 0);
           await tx.update(favoritesReference, <String, dynamic>{
             'data': {
               "about": _controlAbout.text,
               "studentIDNumber": _controlNIM.text,
-              "skills": _controlSkills.text == "Skill belum diatur"
-                  ? null
-                  : _controlSkills.text.toLowerCase().split(","),
+              "skills": skl,
               "photoURL": _linkPhoto,
               "phoneNumber": _controlKontak.text,
               "addSkill": true,

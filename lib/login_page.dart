@@ -12,7 +12,7 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
-enum FormType { login, register }
+enum FormType { login, forgot }
 
 class _LoginPageState extends State<LoginPage> {
   final formKey = new GlobalKey<FormState>();
@@ -50,6 +50,18 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<bool> checkUserAndNavigate(BuildContext context) async {
     return false;
+  }
+
+  void forgotPressed() async {
+    try {
+      await widget.auth.forgotPass(_emailLoginController.text).whenComplete(() {
+        _showToast("Reset Link Terkirim");
+      }).catchError((e) {
+        _showToast(e);
+      });
+    } catch (e) {
+      _showToast(e);
+    }
   }
 
   void validateAndSubmit() async {
@@ -100,16 +112,20 @@ class _LoginPageState extends State<LoginPage> {
 
   void notSubmit() {}
 
-  void moveToRegister() {
+  void moveToForgot() {
     formKey.currentState.reset();
+    _emailLoginController.clear();
+    _passLoginController.clear();
     setState(() {
-      _formType = FormType.register;
+      _formType = FormType.forgot;
     });
   }
 
   void moveToLogin() {
     formKey.currentState.reset();
     setState(() {
+      _emailLoginController.clear();
+      _passLoginController.clear();
       _formType = FormType.login;
     });
   }
@@ -129,8 +145,8 @@ class _LoginPageState extends State<LoginPage> {
       "icon": Icons.power_input,
       "warna": Color(0xFF006885),
       "isi": <String>[
-        "Untuk dapat menggunakan aplikasi Tempatmagang, institusi Pendidikan anda harus terdaftar di aplikasi Tempatmagang. Untuk keterangan kerjasama dapat menghubungi tempatmagangtm@gmail.com",
-        "Untuk mendaftar sebagai penyedia magang, silahkan menghubungi client support kami di tempatmagangtm@gmail.com"
+        "Untuk dapat menggunakan aplikasi Tempatmagang, institusi Pendidikan anda harus terdaftar di aplikasi Tempatmagang. Untuk keterangan kerjasama dapat menghubungi support@tempatmagang.com",
+        "Untuk mendaftar sebagai penyedia magang, silahkan menghubungi client support kami di support@tempatmagang.com"
       ]
     },
     {
@@ -282,14 +298,20 @@ class _LoginPageState extends State<LoginPage> {
                             ))),
                         child: new Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
-                          children: buildInputs() + buildSubmitBtn(),
+                          children: buildInputs() +
+                              buildSubmitBtn() +
+                              forgotPassButton(),
                         ),
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 100.0),
-                  ),
+                  _formType == FormType.login
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 50.0),
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.only(top: 122.0),
+                        ),
                   Container(
                     padding: const EdgeInsets.only(left: 5.0, right: 5.0),
                     child: new Divider(
@@ -297,7 +319,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   FlatButton(
-                    onPressed: () {},
+                    onPressed: null,
                     child: Text(
                       "Temukan Tempat Magang Idealmu",
                       style: TextStyle(
@@ -360,8 +382,9 @@ class _LoginPageState extends State<LoginPage> {
       ];
     } else {
       return [
-        new TextFormField(
-          onSaved: (value) => _email = value,
+        new TextField(
+          controller: _emailLoginController,
+          onChanged: (value) => value == null ? _email = null : _email = value,
           // validator: (value) => value.isEmpty ? 'Isikan Email dahulu' : null,
           keyboardType: TextInputType.emailAddress,
           decoration: new InputDecoration(
@@ -369,24 +392,40 @@ class _LoginPageState extends State<LoginPage> {
               // labelStyle: TextStyle(color: Color(0xFFEAC324)),
               suffixIcon: Icon(
                 Icons.email,
-                color: Color(0xFFEAC324),
+                color: Color(0xFF006885),
               )),
         ),
-        Padding(
-          padding: const EdgeInsets.all(5.0),
+      ];
+    }
+  }
+
+  List<Widget> forgotPassButton() {
+    if (_formType == FormType.login) {
+      return [
+        FlatButton(
+          onPressed: moveToForgot,
+          child: Text(
+            "Lupa Password?",
+            style: TextStyle(
+              fontSize: 12.0,
+              color: Color(0xFF006885),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
-        new TextFormField(
-          onSaved: (value) => _pass = value,
-          // validator: (value) => value.isEmpty ? 'Isikan Password dahulu' : null,
-          obscureText: true,
-          keyboardType: TextInputType.text,
-          decoration: new InputDecoration(
-              labelText: 'Password',
-              // labelStyle: TextStyle(color: Color(0xFFEAC324)),
-              suffixIcon: Icon(
-                Icons.lock,
-                color: Color(0xFF3f51b5),
-              )),
+      ];
+    } else {
+      return [
+        FlatButton(
+          onPressed: moveToLogin,
+          child: Text(
+            "Login",
+            style: TextStyle(
+              fontSize: 12.0,
+              color: Color(0xFF006885),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ];
     }
@@ -432,49 +471,23 @@ class _LoginPageState extends State<LoginPage> {
           minWidth: 200.0,
           height: 60.0,
           child: new RaisedButton(
-            color: const Color(0xFFE59B1A),
+            color: const Color(0xFFff9977),
             elevation: 4.0,
             splashColor: Colors.blueGrey,
-            onPressed: validateAndSubmit,
+            onPressed: tekan == false
+                ? null
+                : _emailLoginController.text.trim() == ""
+                    ? null
+                    : forgotPressed,
             shape: new RoundedRectangleBorder(
                 borderRadius: new BorderRadius.circular(30.0)),
             padding: const EdgeInsets.only(),
-            child: new Text(
-              'Buat Akun'.toUpperCase(),
-              style: TextStyle(fontSize: 20.0, color: Colors.white),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-        ),
-        Container(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              FlatButton(
-                onPressed: () {},
-                child: Text(
-                  "lupa password?",
-                  style: TextStyle(
-                      fontSize: 12.0,
-                      color: Color(0xFFEAC324),
-                      fontWeight: FontWeight.w300,
-                      letterSpacing: 0.5),
-                ),
-              ),
-              FlatButton(
-                onPressed: moveToLogin,
-                child: Text(
-                  "Masuk",
-                  style: TextStyle(
-                      fontSize: 12.0,
-                      color: Color(0xFFEAC324),
-                      fontWeight: FontWeight.w300,
-                      letterSpacing: 0.5),
-                ),
-              ),
-            ],
+            child: tekan == false
+                ? loadingLoad
+                : new Text(
+                    'Reset'.toUpperCase(),
+                    style: TextStyle(fontSize: 20.0, color: Colors.white),
+                  ),
           ),
         ),
       ];
