@@ -26,6 +26,7 @@ class _RootPageState extends State<RootPage> {
 
   void initState() {
     super.initState();
+    
     widget.auth.currentUser().then((userId) {
       setState(() {
         // if(userId==null){
@@ -51,7 +52,7 @@ class _RootPageState extends State<RootPage> {
   void getUser() async {
     var user = await FirebaseAuth.instance.currentUser();
     var firestore = Firestore.instance;
-    await firestore.settings(timestampsInSnapshotsEnabled: true);
+    
     var userQuery = firestore
         .collection('users')
         .where('uid', isEqualTo: user.uid)

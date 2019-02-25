@@ -18,6 +18,10 @@ class Bantuan extends StatelessWidget {
     return DefaultTabController(
       length: 5,
       child: new Scaffold(
+          bottomNavigationBar: Container(
+            height: 50.0,
+            color: Colors.white,
+          ),
           appBar: AppBar(
             elevation:
                 defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,

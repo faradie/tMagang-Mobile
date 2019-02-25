@@ -153,6 +153,10 @@ class _EditLowonganState extends State<EditLowongan> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        bottomNavigationBar: Container(
+          height: 50.0,
+          color: Colors.white,
+        ),
         // resizeToAvoidBottomPadding: false,
         appBar: AppBar(
           elevation:

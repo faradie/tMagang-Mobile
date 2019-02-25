@@ -10,7 +10,8 @@ description: Buat dan Temukan Tempat Magang Idealmu.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.0.0 <3.0.0"
+  # sdk: ">=2.0.0-dev.58.0 <3.0.0"
 
 # dependency_overrides:
 #   cloud_functions:
@@ -22,17 +23,17 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  firebase_auth:
+  firebase_core: 
+  firebase_auth: 
   splashscreen:
-  firebase_admob: 0.6.1+1
+  firebase_admob: 
   fluttertoast: ^2.1.1
-  cloud_firestore:
+  cloud_firestore: 
   date_format: ^1.0.5
-  datetime_picker_formfield: ^0.1.7
+  datetime_picker_formfield:
   csv: ^4.0.1
   uuid:
-  cloud_functions:
-  firebase_storage:
+  firebase_storage: 
   image_picker: ^0.4.10
   path_provider: ^0.4.1
   image: ^2.0.5

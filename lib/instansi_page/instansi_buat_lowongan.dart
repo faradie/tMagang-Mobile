@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
 
+
 final loadingLoad = CircularProgressIndicator(
   backgroundColor: Colors.deepOrange,
   strokeWidth: 1.5,
@@ -25,7 +26,6 @@ class _InstansiBuatLowonganState extends State<InstansiBuatLowongan> {
   int _kuota, _expiredAt;
   bool tekan = true;
   DateTime _tglMulai, _tglAkhir;
-  var _queryCat;
 
   final _controlJudul = new TextEditingController();
   final _controlJurusan = new TextEditingController();
@@ -447,9 +447,24 @@ class _InstansiBuatLowonganState extends State<InstansiBuatLowongan> {
             ));
   }
 
+  // Show some different formats.
+  final formats = {
+    InputType.both: DateFormat("EEEE, MMMM d, yyyy 'at' h:mma"),
+    InputType.date: DateFormat('yyyy-MM-dd'),
+    InputType.time: DateFormat("HH:mm"),
+  };
+
+  // Changeable in demo
+  InputType inputType = InputType.date;
+  bool editable = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        bottomNavigationBar: Container(
+          height: 50.0,
+          color: Colors.white,
+        ),
         // resizeToAvoidBottomPadding: false,
         appBar: AppBar(
           elevation:
@@ -588,19 +603,24 @@ class _InstansiBuatLowonganState extends State<InstansiBuatLowongan> {
               new Divider(),
               SizedBox(height: 16.0),
               new Text("Periode :"),
+              
               DateTimePickerFormField(
                 controller: _controlTglMulai,
+                inputType: inputType,
+                format: formats[inputType],
+                editable: editable,
+                decoration: InputDecoration(
+                    labelText: 'Tanggal Mulai', hasFloatingPlaceholder: false),
                 onChanged: (mli) => setState(() => _tglMulai = mli),
-                format: DateFormat("EEEE, d MMMM yyyy - h:mm a"),
-                keyboardType: TextInputType.datetime,
-                decoration: InputDecoration(labelText: 'Tanggal Mulai'),
               ),
               DateTimePickerFormField(
                 controller: _controlTglAkhir,
-                onChanged: (akhr) => setState(() => _tglAkhir = akhr),
-                format: DateFormat("EEEE, d MMMM yyyy - h:mm a"),
-                keyboardType: TextInputType.datetime,
-                decoration: InputDecoration(labelText: 'Tanggal Berakhir'),
+                inputType: inputType,
+                format: formats[inputType],
+                editable: editable,
+                decoration: InputDecoration(
+                    labelText: 'Tanggal Berakhir', hasFloatingPlaceholder: false),
+                onChanged: (akhr) => setState(() => _tglAkhir  = akhr),
               ),
               SizedBox(height: 16.0),
               new Divider(),

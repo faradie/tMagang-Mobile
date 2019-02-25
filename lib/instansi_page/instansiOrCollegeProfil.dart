@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:date_format/date_format.dart';
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image/image.dart' as Img;
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,6 +9,34 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+
+MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
+    testDevices: <String>[],
+    keywords: <String>[
+      'magang',
+      'kampus',
+      'industri',
+      'lowongan',
+      'kerja',
+      'pendidikan',
+      'kompetensi'
+    ],
+    birthday: DateTime.now(),
+    gender: MobileAdGender.unknown,
+    childDirected: false,
+    nonPersonalizedAds: false,
+    designedForFamilies: true);
+
+InterstitialAd _interstitialAd;
+
+InterstitialAd createInterstitialAd() {
+  return new InterstitialAd(
+      adUnitId: "ca-app-pub-9631895364890043/3877720394",
+      targetingInfo: targetingInfo,
+      listener: (MobileAdEvent event) {
+        print("intertiat ad $event");
+      });
+}
 
 class InstansiOrCollegeProfil extends StatefulWidget {
   InstansiOrCollegeProfil({this.id});
@@ -70,6 +99,10 @@ class _InstansiOrCollegeProfilState extends State<InstansiOrCollegeProfil> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+        bottomNavigationBar: Container(
+          height: 50.0,
+          color: Colors.white,
+        ),
         appBar: AppBar(
           elevation:
               defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
@@ -372,9 +405,18 @@ class _EditProfilState extends State<EditProfil> {
       Navigator.of(this.context).pop();
       Navigator.of(this.context).pop();
       _showToast("Berhasil Update Profil", Colors.blue);
+      createInterstitialAd()
+        ..load()
+        ..show();
     }).catchError((e) {
       print(e);
     });
+  }
+
+  @override
+  void dispose() {
+    _interstitialAd.dispose();
+    super.dispose();
   }
 
   void isPressed() {
@@ -403,6 +445,9 @@ class _EditProfilState extends State<EditProfil> {
         Navigator.of(this.context).pop();
         Navigator.of(this.context).pop();
         _showToast("Berhasil Update Profil", Colors.blue);
+        createInterstitialAd()
+          ..load()
+          ..show();
       }).catchError((e) {
         print(e);
       });
@@ -413,6 +458,8 @@ class _EditProfilState extends State<EditProfil> {
 
   @override
   void initState() {
+    FirebaseAdMob.instance
+        .initialize(appId: "ca-app-pub-9631895364890043~3439447130");
     _controlName.text = widget.namaUser;
     _controlKontak.text = widget.kontak == "Kosong" ? "" : widget.kontak;
     _controlAlamat.text = widget.alamat == "Kosong" ? "" : widget.alamat;
@@ -424,6 +471,10 @@ class _EditProfilState extends State<EditProfil> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+        bottomNavigationBar: Container(
+          height: 50.0,
+          color: Colors.white,
+        ),
         appBar: AppBar(
           elevation:
               defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,

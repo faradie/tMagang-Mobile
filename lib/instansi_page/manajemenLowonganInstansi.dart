@@ -29,6 +29,10 @@ class _ManajemenLowonganInstansiState extends State<ManajemenLowonganInstansi> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+        bottomNavigationBar: Container(
+          height: 50.0,
+          color: Colors.white,
+        ),
         appBar: AppBar(
           elevation:
               defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
@@ -289,7 +293,7 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
     QuerySnapshot qn = await firestore
         .collection('registerIntern')
         .where('vacanciesId', isEqualTo: widget.idLowongan)
-        .where('status', isEqualTo: true)
+        .where('status', isEqualTo: 'review')
         .getDocuments();
 
     return qn.documents;
@@ -304,6 +308,10 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
     return DefaultTabController(
       length: 3,
       child: new Scaffold(
+          bottomNavigationBar: Container(
+            height: 50.0,
+            color: Colors.white,
+          ),
           appBar: AppBar(
             elevation:
                 defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
@@ -399,6 +407,7 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                     Timestamp _startIntern = snapshot.data['timeStartIntern'];
                     Timestamp _endIntern = snapshot.data['timeEndIntern'];
                     Timestamp _createtAt = snapshot.data['createdAt'];
+                    print('ini cratedAt ${_createtAt.toDate()}');
                     String uploadPada = formatDate(_createtAt.toDate(), [
                       dd,
                       ' ',
@@ -777,8 +786,12 @@ class _TilePendaftarState extends State<TilePendaftar> {
   }
 
   void _hasilTolak() {
+    DateTime dateNow = DateTime.now();
     String _idRegist = "${widget.idUser}_${widget.idLowongan}";
-    Map<String, dynamic> statsTolak = <String, dynamic>{"status": false};
+    Map<String, dynamic> statsTolak = <String, dynamic>{
+      "status": 'rejected',
+      "rejectedAt": dateNow
+    };
     Firestore.instance
         .collection("registerIntern")
         .document("$_idRegist")
@@ -808,8 +821,9 @@ class _TilePendaftarState extends State<TilePendaftar> {
         });
 
         var getMaxIntern = firestore
-            .collection('internship')
-            .where('vacanciesId', isEqualTo: widget.idLowongan);
+            .collection('registerIntern')
+            .where('vacanciesId', isEqualTo: widget.idLowongan)
+            .where('status', isEqualTo: 'accepted');
 
         getMaxIntern.getDocuments().then((data) {
           if (data.documents.length > 0) {
@@ -825,16 +839,17 @@ class _TilePendaftarState extends State<TilePendaftar> {
         if (_maxInternship <= _kuotaMax) {
           if (_maxInternship == _kuotaMax) {
             print("Sama dengan : $_maxInternship dan ini $_kuotaMax");
-            String _idInternship = "${widget.idLowongan}_${widget.idUser}";
+            String _idInternship = "${widget.idUser}_${widget.idLowongan}";
 
             DateTime dateNow = DateTime.now();
             Map<String, dynamic> data = <String, dynamic>{
-              "userId": widget.idUser,
-              "vacanciesId": widget.idLowongan,
+              // "userId": widget.idUser,
+              // "vacanciesId": widget.idLowongan,
+              "status": 'accepted',
               "acceptedAt": dateNow,
               "timeStartIntern": _timeStartIntern,
               "timeEndIntern": _timeEndIntern,
-              "ownerAgency": _owner,
+              // "ownerAgency": _owner,
               "mentorId": _mentorID,
               "collegeId": _collegeId
             };
@@ -847,9 +862,9 @@ class _TilePendaftarState extends State<TilePendaftar> {
                 .updateData(user)
                 .whenComplete(() {
               Firestore.instance
-                  .collection("internship")
+                  .collection("registerIntern")
                   .document("$_idInternship")
-                  .setData(data)
+                  .updateData(data)
                   .whenComplete(() {
                 _showToast("Berhasil Menerima", Color(0xFFe87c55));
               }).catchError((e) {
@@ -863,12 +878,14 @@ class _TilePendaftarState extends State<TilePendaftar> {
             Firestore.instance
                 .collection("registerIntern")
                 .where("userId", isEqualTo: widget.idUser)
+                .where('status', isEqualTo: 'review')
                 .getDocuments()
                 .then((data) {
               data.documents.forEach((doc) {
-                //update masing-masing status false di register dari for each doc
+                //update masing-masing status rejected di register dari for each doc
                 Map<String, dynamic> statFalse = <String, dynamic>{
-                  "status": false
+                  "status": 'rejected',
+                  "rejectedAt": dateNow
                 };
                 String docID =
                     "${doc.data["userId"]}_${doc.data["vacanciesId"]}";
@@ -894,7 +911,8 @@ class _TilePendaftarState extends State<TilePendaftar> {
               data.documents.forEach((doc) {
                 //update masing-masing status false di register dari for each doc
                 Map<String, dynamic> statusFalse = <String, dynamic>{
-                  "status": false
+                  "status": 'rejected',
+                  "rejectedAt": dateNow
                 };
                 String docsID =
                     "${doc.data["userId"]}_${doc.data["vacanciesId"]}";
@@ -911,17 +929,19 @@ class _TilePendaftarState extends State<TilePendaftar> {
               });
             });
           } else {
-            String _idInternship = "${widget.idLowongan}_${widget.idUser}";
+            String _idInternship = "${widget.idUser}_${widget.idLowongan}";
 
             DateTime dateNow = DateTime.now();
             Map<String, dynamic> data = <String, dynamic>{
-              "userId": widget.idUser,
-              "vacanciesId": widget.idLowongan,
+              // "userId": widget.idUser,
+              // "vacanciesId": widget.idLowongan,
               "acceptedAt": dateNow,
+              "status": 'accepted',
               "timeStartIntern": _timeStartIntern,
               "timeEndIntern": _timeEndIntern,
-              "ownerAgency": _owner,
-              "mentorId": _mentorID
+              // "ownerAgency": _owner,
+              "mentorId": _mentorID,
+              "collegeId": _collegeId
             };
 
             Map<String, dynamic> user = <String, dynamic>{"isActive": true};
@@ -932,9 +952,9 @@ class _TilePendaftarState extends State<TilePendaftar> {
                 .updateData(user)
                 .whenComplete(() {
               Firestore.instance
-                  .collection("internship")
+                  .collection("registerIntern")
                   .document("$_idInternship")
-                  .setData(data)
+                  .updateData(data)
                   .whenComplete(() {
                 _showToast("Berhasil Menerima", Color(0xFFe87c55));
               }).catchError((e) {
@@ -948,12 +968,14 @@ class _TilePendaftarState extends State<TilePendaftar> {
             Firestore.instance
                 .collection("registerIntern")
                 .where("userId", isEqualTo: widget.idUser)
+                .where('status', isEqualTo: 'review')
                 .getDocuments()
                 .then((data) {
               data.documents.forEach((doc) {
                 //update masing-masing status false di register dari for each doc
                 Map<String, dynamic> statFalse = <String, dynamic>{
-                  "status": false
+                  "status": 'rejected',
+                  "rejectedAt": dateNow
                 };
                 String docID =
                     "${doc.data["userId"]}_${doc.data["vacanciesId"]}";
@@ -1110,7 +1132,8 @@ class _TilePendaftarState extends State<TilePendaftar> {
                           _selectVal = newValue;
                           if (_selectVal == "Terima") {
                             if (penerimaan == false) {
-                              _showToast("Belum saatnya", Colors.red);
+                              _showToast(
+                                  "Belum saatnya penerimaan", Colors.red);
                             } else {
                               _isPressed();
                             }

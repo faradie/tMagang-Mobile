@@ -1,16 +1,47 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+
 const String testDevice = '';
+
+MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
+    testDevices: <String>[],
+    keywords: <String>[
+      'magang',
+      'kampus',
+      'industri',
+      'lowongan',
+      'kerja',
+      'pendidikan',
+      'kompetensi'
+    ],
+    birthday: DateTime.now(),
+    gender: MobileAdGender.unknown,
+    childDirected: false,
+    nonPersonalizedAds: false,
+    designedForFamilies: true);
+
+InterstitialAd _interstitialAd;
+
+InterstitialAd createInterstitialAd() {
+  return new InterstitialAd(
+      adUnitId: "ca-app-pub-9631895364890043/9973776335",
+      targetingInfo: targetingInfo,
+      listener: (MobileAdEvent event) {
+        print("intertiat ad $event");
+      });
+}
 
 class DetailLowongan extends StatefulWidget {
   DetailLowongan(
       {this.judulNya,
       this.kuota,
+      this.uid,
       this.tglUpload,
       this.instansi,
       this.tglAkhir,
@@ -20,7 +51,7 @@ class DetailLowongan extends StatefulWidget {
       this.deskripsiNya,
       this.requirementNya,
       this.idNya});
-  final String judulNya,
+  final String judulNya,uid,
       deskripsiNya,
       idNya,
       linkPhoto,
@@ -39,9 +70,7 @@ class _DetailLowonganState extends State<DetailLowongan> {
   List<String> _skills;
   bool _terDaftar;
   var name;
-  String _idUser;
   bool tekan = false;
-
   showAlertPersetujuan() {
     showDialog(
         barrierDismissible: false,
@@ -136,11 +165,9 @@ class _DetailLowonganState extends State<DetailLowongan> {
         setState(() {
           name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
           _skills = List.from(name["skills"] == null ? dummy : name["skills"]);
-          _idUser = data.documents[0].data['uid'];
         });
       }
     });
-    print("dataUsernya $_idUser");
     var userQuery2 = firestore
         .collection('registerIntern')
         .document('${user.uid}_${widget.idNya}');
@@ -156,57 +183,130 @@ class _DetailLowonganState extends State<DetailLowongan> {
     });
   }
 
+  void _showAlertNoUid() {
+    Navigator.of(context).pop();
+    showDialog(
+        barrierDismissible: true,
+        context: context,
+        builder: (context) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(32.0))),
+              contentPadding: EdgeInsets.only(top: 10.0),
+              content: Container(
+                  width: 300.0,
+                  padding: const EdgeInsets.only(
+                    top: 20.0,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Column(
+                        children: <Widget>[
+                          new Text(
+                            "Perhatian".toUpperCase(),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 16.0),
+                          new Text(
+                            "Segera daftarkan kampus / instansi mu!",
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: 16.0),
+                        ],
+                      ),
+                      ButtonTheme(
+                        minWidth: 200.0,
+                        height: 60.0,
+                        child: new RaisedButton(
+                          color: const Color(0xFFff9977),
+                          elevation: 4.0,
+                          splashColor: Colors.blueGrey,
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          shape: new RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(32.0),
+                                bottomRight: Radius.circular(32.0)),
+                          ),
+                          padding: const EdgeInsets.only(),
+                          child: Text(
+                            "Terimakasih",
+                            style: TextStyle(color: Colors.white),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )),
+            ));
+  }
+
   void _inPressed() {
-    if (_skills[0] == "Skill belum diatur") {
-      _showToast("Atur skill anda terlebih dahulu", Colors.red);
+    if (widget.uid == null) {
+      _showAlertNoUid();
     } else {
-      setState(() {
-        tekan = false;
-      });
-      if (_idUser == null) {
-        _showToast("Harap bersabar", Colors.red);
+      if (_skills[0] == "Skill belum diatur") {
+        _showToast("Atur skill anda terlebih dahulu", Colors.red);
       } else {
-        String _idRegister = "${_idUser}_${widget.idNya}";
-        var today = new DateTime.now();
-
-        Map<String, dynamic> data = <String, dynamic>{
-          "userId": _idUser,
-          "vacanciesId": widget.idNya,
-          "registerAt": today,
-          "requirement": widget.requirementNya,
-          "skills": _skills,
-          "ownerAgency": widget.instansi,
-          "status": true
-        };
-
-        Firestore.instance
-            .collection("registerIntern")
-            .document("$_idRegister")
-            .setData(data)
-            .whenComplete(() {
-          _showToast("Berhasil Mengajukan", Color(0xFFe87c55));
-          Navigator.of(context).pop();
-          Navigator.of(context).pop();
-        }).catchError((e) {
-          print(e);
+        setState(() {
+          tekan = false;
         });
+        if (widget.uid == null) {
+          _showToast("Harap bersabar", Colors.red);
+        } else {
+          String _idRegister = "${widget.uid}_${widget.idNya}";
+          var today = new DateTime.now();
+
+          Map<String, dynamic> data = <String, dynamic>{
+            "userId": widget.uid,
+            "vacanciesId": widget.idNya,
+            "registerAt": today,
+            "requirement": widget.requirementNya,
+            "skills": _skills,
+            "ownerAgency": widget.instansi,
+            "status": 'review'
+          };
+
+          Firestore.instance
+              .collection("registerIntern")
+              .document("$_idRegister")
+              .setData(data)
+              .whenComplete(() {
+            _showToast("Berhasil Mengajukan", Color(0xFFe87c55));
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
+            createInterstitialAd()
+              ..load()
+              ..show();
+          }).catchError((e) {
+            print(e);
+          });
+        }
       }
     }
   }
 
   final loadingLoad = CircularProgressIndicator(
     backgroundColor: Colors.white,
+    valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
     strokeWidth: 1.5,
   );
 
   @override
   void initState() {
+    FirebaseAdMob.instance
+        .initialize(appId: "ca-app-pub-9631895364890043~3439447130");
     super.initState();
     getDataUser();
   }
 
   @override
   void dispose() {
+    _interstitialAd.dispose();
     super.dispose();
   }
 
@@ -217,6 +317,10 @@ class _DetailLowonganState extends State<DetailLowongan> {
       DeviceOrientation.portraitDown,
     ]);
     return new Scaffold(
+      bottomNavigationBar: Container(
+        height: 50.0,
+        color: Colors.white,
+      ),
       appBar: AppBar(
         elevation: defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
         leading: InkWell(
@@ -303,15 +407,11 @@ class _DetailLowonganState extends State<DetailLowongan> {
                                       color: const Color(0xFFff9977),
                                       elevation: 4.0,
                                       splashColor: Colors.blueGrey,
-                                      onPressed: _idUser == null
-                                          ? null
-                                          : _terDaftar == true
-                                              ? null
-                                              : tekan == false
-                                                  ? null
-                                                  : showAlertPersetujuan,
-                                      child: _idUser == null
-                                          ? loadingLoad
+                                      onPressed: widget.uid == null ? showAlertPersetujuan :tekan==false? null : _terDaftar == true? null :showAlertPersetujuan,
+                                      child: widget.uid == null
+                                          ? new Text('Ajukan'.toUpperCase(),style: TextStyle(
+                                                      fontSize: 15.0,
+                                                      color: Colors.white),)
                                           : _terDaftar == null
                                               ? loadingLoad
                                               : new Text(

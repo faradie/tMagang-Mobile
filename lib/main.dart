@@ -7,7 +7,9 @@ import 'package:tempat_magang/auth.dart';
 import 'package:tempat_magang/global_page/loaders.dart';
 import 'root_page.dart';
 
-void main() {
+void main() async {
+  final Firestore firestore = Firestore();
+  await firestore.settings(timestampsInSnapshotsEnabled: true);
   runApp(new MyApp());
 }
 
@@ -81,7 +83,7 @@ class _SplashNyaState extends State<SplashNya> {
     // _animationController.forward();
 
     Timer(
-        Duration(seconds: 10),
+        Duration(seconds: 5),
         () => Navigator.pushReplacement(
             context,
             PageRouteBuilder(
@@ -116,7 +118,7 @@ class _SplashNyaState extends State<SplashNya> {
             padding: EdgeInsets.only(top: 10.0),
           ),
           Text(
-            "Temukan Tempat Magang Idealmu",
+            "Buat dan Temukan Tempat Magang Idealmu",
             style: TextStyle(
               color: Colors.grey,
               fontSize: 15.0,

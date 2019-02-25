@@ -18,21 +18,30 @@ final loadingLoad = CircularProgressIndicator(
 
 MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
     testDevices: <String>[],
-    keywords: <String>['magang', 'kampus', 'industri', 'lowongan', 'kerja'],
+    keywords: <String>[
+      'magang',
+      'kampus',
+      'industri',
+      'lowongan',
+      'kerja',
+      'pendidikan',
+      'kompetensi'
+    ],
     birthday: DateTime.now(),
     gender: MobileAdGender.unknown,
     childDirected: false,
     nonPersonalizedAds: false,
     designedForFamilies: true);
 
-// InterstitialAd _interstitialAd;
+BannerAd _bannerAd;
 
-InterstitialAd createInterstitialAd() {
-  return new InterstitialAd(
-      adUnitId: "ca-app-pub-9631895364890043/9973776335",
+BannerAd createBannerAd() {
+  return new BannerAd(
+      adUnitId: "ca-app-pub-9631895364890043/8958927150",
       targetingInfo: targetingInfo,
+      size: AdSize.smartBanner,
       listener: (MobileAdEvent event) {
-        print("intertiat ad $event");
+        print("intern banner ad $event");
       });
 }
 
@@ -207,6 +216,9 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
     FirebaseAdMob.instance
         .initialize(appId: "ca-app-pub-9631895364890043~3439447130");
+    _bannerAd = createBannerAd()
+      ..load()
+      ..show();
     getData();
     getDataUser();
 
@@ -231,8 +243,18 @@ class _DashboardState extends State<Dashboard> {
   }
 
   @override
+  void dispose() {
+    _bannerAd?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return new Scaffold(
+        bottomNavigationBar: Container(
+          height: 50.0,
+          color: Colors.white,
+        ),
         floatingActionButton: _statusUser == null
             ? null
             : _statusUser == false
@@ -307,9 +329,6 @@ class _DashboardState extends State<Dashboard> {
               title: new Text("Profil"),
               trailing: new Icon(Icons.person),
               onTap: () {
-                createInterstitialAd()
-                  ..load()
-                  ..show();
                 Navigator.of(context).pop();
                 Navigator.of(
                   context,
@@ -371,9 +390,6 @@ class _DashboardState extends State<Dashboard> {
                             color: Colors.white,
                           ),
                           onPressed: () {
-                            createInterstitialAd()
-                              ..load()
-                              ..show();
                             Navigator.of(
                               context,
                             ).push(MaterialPageRoute(
@@ -605,6 +621,7 @@ class CustomCard extends StatelessWidget {
       this.tglAkhir,
       this.jurusan,
       this.tglMulai,
+      this.uid,
       this.deskripsiNya,
       this.requirementNya,
       this.idNya});
@@ -614,7 +631,7 @@ class CustomCard extends StatelessWidget {
       tglUpload,
       tglMulai,
       tglAkhir,
-      instansi;
+      instansi,uid;
 
   final int kuota;
   final List<String> requirementNya, jurusan;
@@ -642,13 +659,11 @@ class CustomCard extends StatelessWidget {
               child: Material(
                 child: InkWell(
                   onTap: () {
-                    createInterstitialAd()
-                      ..load()
-                      ..show();
                     Navigator.of(context).push(new MaterialPageRoute(
                       builder: (BuildContext context) => new DetailLowongan(
                             tglUpload: tglUpload,
                             kuota: kuota,
+                            uid: uid,
                             instansi: instansi,
                             tglAwal: tglMulai,
                             tglAkhir: tglAkhir,
@@ -797,6 +812,7 @@ class ListPage extends StatefulWidget {
 
 class _ListPageState extends State<ListPage> {
   DateTime dateNow = DateTime.now();
+  var user;
 
   Future getLowongan() async {
     var firestore = Firestore.instance;
@@ -809,6 +825,18 @@ class _ListPageState extends State<ListPage> {
         .getDocuments();
 
     return qn.documents;
+  }
+
+  Future getDataUser() async {
+     await FirebaseAuth.instance.currentUser().then((id){
+       user = id.uid;
+     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getDataUser();
   }
 
   //composite expiredAt and createdAt
@@ -861,6 +889,7 @@ class _ListPageState extends State<ListPage> {
                       _endInternStamp.toDate(), [dd, ' ', MM, ' ', yyyy]);
 
                   return new CustomCard(
+                    uid: user,
                     jurusan: List.from(snapshot.data[index].data["department"]),
                     instansi: snapshot.data[index].data["ownerAgency"],
                     kuota: snapshot.data[index].data["quota"],

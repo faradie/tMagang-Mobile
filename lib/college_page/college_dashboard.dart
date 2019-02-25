@@ -11,29 +11,39 @@ import 'package:tempat_magang/college_page/manajemen_pemagang.dart';
 import 'package:tempat_magang/global_page/bantuan.dart';
 import 'package:tempat_magang/instansi_page/instansiOrCollegeProfil.dart';
 
-final loadingLoad = CircularProgressIndicator(
-  backgroundColor: Colors.deepOrange,
-  strokeWidth: 1.5,
-);
-
 MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
     testDevices: <String>[],
-    keywords: <String>['magang', 'kampus', 'industri', 'lowongan', 'kerja'],
+    keywords: <String>[
+      'magang',
+      'kampus',
+      'industri',
+      'lowongan',
+      'kerja',
+      'pendidikan',
+      'kompetensi'
+    ],
     birthday: DateTime.now(),
     gender: MobileAdGender.unknown,
     childDirected: false,
     nonPersonalizedAds: false,
     designedForFamilies: true);
-// InterstitialAd _interstitialAd;
 
-InterstitialAd createInterstitialAd() {
-  return new InterstitialAd(
-      adUnitId: "ca-app-pub-9631895364890043/3877720394",
+BannerAd _bannerAd;
+
+BannerAd createBannerAd() {
+  return new BannerAd(
+      adUnitId: "ca-app-pub-9631895364890043/6799080943",
       targetingInfo: targetingInfo,
+      size: AdSize.smartBanner,
       listener: (MobileAdEvent event) {
-        print("intertiat ad $event");
+        print("College banner ad $event");
       });
 }
+
+final loadingLoad = CircularProgressIndicator(
+  backgroundColor: Colors.deepOrange,
+  strokeWidth: 1.5,
+);
 
 class CollegeDashboard extends StatefulWidget {
   CollegeDashboard({this.auth, this.onSignedOut, this.wew});
@@ -148,13 +158,28 @@ class _CollegeDashboardState extends State<CollegeDashboard> {
 
   @override
   void initState() {
+    FirebaseAdMob.instance
+        .initialize(appId: "ca-app-pub-9631895364890043~3439447130");
+    _bannerAd = createBannerAd()
+      ..load()
+      ..show();
     super.initState();
     getDataUser();
   }
 
   @override
+  void dispose() {
+    _bannerAd?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+        bottomNavigationBar: Container(
+          height: 50.0,
+          color: Colors.white,
+        ),
         drawer: new Drawer(
             child: ListView(
           children: <Widget>[
@@ -217,9 +242,6 @@ class _CollegeDashboardState extends State<CollegeDashboard> {
               title: new Text("Manajemen Mahasiswa"),
               trailing: new Icon(Icons.people_outline),
               onTap: () {
-                createInterstitialAd()
-                  ..load()
-                  ..show();
                 Navigator.of(context).pop();
                 Navigator.of(
                   context,
@@ -246,9 +268,6 @@ class _CollegeDashboardState extends State<CollegeDashboard> {
               title: new Text("Profil"),
               trailing: new Icon(Icons.person),
               onTap: () {
-                createInterstitialAd()
-                  ..load()
-                  ..show();
                 Navigator.of(context).pop();
                 Navigator.of(
                   context,

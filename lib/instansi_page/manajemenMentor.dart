@@ -21,6 +21,10 @@ class _ManajemenMentorState extends State<ManajemenMentor> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: Container(
+        height: 50.0,
+        color: Colors.white,
+      ),
       appBar: AppBar(
         elevation: defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
         backgroundColor: const Color(0xFFe87c55),

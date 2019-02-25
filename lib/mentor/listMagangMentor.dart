@@ -31,6 +31,10 @@ class _ListMagangMentorState extends State<ListMagangMentor> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+        bottomNavigationBar: Container(
+          height: 50.0,
+          color: Colors.white,
+        ),
         appBar: AppBar(
           elevation:
               defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
@@ -307,6 +311,10 @@ class _DetailMentoringState extends State<DetailMentoring> {
     return DefaultTabController(
       length: 2,
       child: new Scaffold(
+          bottomNavigationBar: Container(
+            height: 50.0,
+            color: Colors.white,
+          ),
           appBar: AppBar(
             elevation:
                 defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,

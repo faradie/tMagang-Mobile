@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:tempat_magang/global_page/listLowongan.dart';
 import 'auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -110,8 +111,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void notSubmit() {}
-
   void moveToForgot() {
     formKey.currentState.reset();
     _emailLoginController.clear();
@@ -172,6 +171,7 @@ class _LoginPageState extends State<LoginPage> {
   ];
   final loadingLoad = CircularProgressIndicator(
     backgroundColor: Colors.deepOrange,
+    valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
     strokeWidth: 1.5,
   );
   List<Container> listMyWidgets() {
@@ -229,20 +229,61 @@ class _LoginPageState extends State<LoginPage> {
     ));
     return Scaffold(
       // resizeToAvoidBottomPadding: false,
+      bottomNavigationBar: Container(
+        height: 120.0,
+        child: Column(
+          children: <Widget>[
+            FlatButton(
+              onPressed: () {
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(
+                    builder: (BuildContext context) =>
+                        new ListLowonganGlobal()));
+              },
+              child: Text(
+                "Lihat Lowongan Tersedia",
+                style: TextStyle(
+                  fontSize: 12.0,
+                  color: Color(0xFF006885),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+              child: new Divider(
+                color: Color(0xFF006885),
+              ),
+            ),
+            FlatButton(
+              onPressed: null,
+              child: Text(
+                "Buat dan Temukan Tempat Magang Idealmu",
+                style: TextStyle(
+                  fontSize: 12.0,
+                  color: Color(0xFF006885),
+                  fontWeight: FontWeight.w300,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
       body: Container(
-        decoration: BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage('img/background.png'), fit: BoxFit.fitWidth)),
+        // decoration: BoxDecoration(
+        //     image: DecorationImage(
+        //         image: AssetImage('img/background.png'), fit: BoxFit.fitWidth)),
         child: Container(
-          // color: Colors.red,
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  colors: [
-                Color.fromRGBO(0, 0, 0, 0),
-                Color.fromRGBO(255, 221, 255, 0.3),
-              ],
-                  begin: FractionalOffset.topCenter,
-                  end: FractionalOffset.bottomCenter)),
+          // // color: Colors.red,
+          // decoration: BoxDecoration(
+          //     gradient: LinearGradient(
+          //         colors: [
+          //       Color.fromRGBO(0, 0, 0, 0),
+          //       Color.fromRGBO(255, 221, 255, 0.3),
+          //     ],
+          //         begin: FractionalOffset.topCenter,
+          //         end: FractionalOffset.bottomCenter)),
           child: Stack(
             alignment: AlignmentDirectional.bottomCenter,
             children: <Widget>[
@@ -312,23 +353,6 @@ class _LoginPageState extends State<LoginPage> {
                       : Padding(
                           padding: const EdgeInsets.only(top: 122.0),
                         ),
-                  Container(
-                    padding: const EdgeInsets.only(left: 5.0, right: 5.0),
-                    child: new Divider(
-                      color: Color(0xFF006885),
-                    ),
-                  ),
-                  FlatButton(
-                    onPressed: null,
-                    child: Text(
-                      "Temukan Tempat Magang Idealmu",
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        color: Color(0xFF006885),
-                        fontWeight: FontWeight.w300,
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ],
