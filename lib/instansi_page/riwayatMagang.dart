@@ -40,7 +40,7 @@ class _RiwayatMagangState extends State<RiwayatMagang> {
       body: new Container(
         child: StreamBuilder(
           stream: Firestore.instance
-              .collection("internship")
+              .collection("registerIntern")
               .where('ownerAgency', isEqualTo: widget.id)
               .snapshots(),
           builder: (context, snapshot) {
@@ -131,7 +131,7 @@ class TileLowonganState extends State<TileLowongan> {
     });
 
     var queryTotal = firestore
-        .collection('internship')
+        .collection('registerIntern')
         .where('vacanciesId', isEqualTo: widget.idLowongan)
         .limit(1);
     queryTotal.getDocuments().then((data) {

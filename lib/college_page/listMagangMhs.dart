@@ -59,7 +59,7 @@ class ListMagangState extends State<ListMagang> {
   Future getMagang() async {
     var firestore = Firestore.instance;
     QuerySnapshot qn = await firestore
-        .collection('internship')
+        .collection('registerIntern')
         .where('collegeId', isEqualTo: widget.id)
         .getDocuments();
 

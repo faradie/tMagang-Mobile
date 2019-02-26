@@ -271,9 +271,10 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
       body: Container(
-        // decoration: BoxDecoration(
-        //     image: DecorationImage(
-        //         image: AssetImage('img/background.png'), fit: BoxFit.fitWidth)),
+        decoration: BoxDecoration(
+            image: DecorationImage(
+                colorFilter: new ColorFilter.mode(Colors.black.withOpacity(0.15), BlendMode.dstATop),
+                image: AssetImage('img/background.png'), fit: BoxFit.fitWidth)),
         child: Container(
           // // color: Colors.red,
           // decoration: BoxDecoration(
