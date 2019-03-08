@@ -43,8 +43,8 @@ android {
         minSdkVersion 16
         targetSdkVersion 27
         multiDexEnabled true
-        versionCode 6
-        versionName "1.4.0"
+        versionCode 7
+        versionName "1.4.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -75,6 +75,8 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    // Add the In-App Messaging dependency:
+    implementation 'com.google.firebase:firebase-inappmessaging-display:17.0.5'
 }
 
 apply plugin: 'com.google.gms.google-services'

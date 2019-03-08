@@ -25,6 +25,7 @@ dependencies:
     sdk: flutter
   firebase_core: 
   firebase_auth: 
+  firebase_messaging: ^4.0.0+1
   splashscreen:
   firebase_admob: 
   fluttertoast: ^2.1.1

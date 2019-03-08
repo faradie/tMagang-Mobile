@@ -40,7 +40,7 @@ class _RiwayatMagangState extends State<RiwayatMagang> {
       body: new Container(
         child: StreamBuilder(
           stream: Firestore.instance
-              .collection("registerIntern")
+              .collection("vacancies")
               .where('ownerAgency', isEqualTo: widget.id)
               .snapshots(),
           builder: (context, snapshot) {
@@ -65,6 +65,8 @@ class _RiwayatMagangState extends State<RiwayatMagang> {
                   itemBuilder: (_, index) {
                     DocumentSnapshot ds = snapshot.data.documents[index];
                     Timestamp _validUntil = ds["timeEndIntern"];
+                    String _title = ds["title"];
+                    print('banyaknya ${snapshot.data.documents.length}');
                     DateTime _until = _validUntil.toDate();
 
                     final difference = dateNow.difference(_until).inDays;
@@ -76,7 +78,7 @@ class _RiwayatMagangState extends State<RiwayatMagang> {
                       _colors = Colors.blue;
                     }
                     return TileLowongan(
-                      idLowongan: ds["vacanciesId"],
+                      idLowongan: ds["id"],
                       no: (index + 1).toString(),
                       iconData: _icon,
                       warna: _colors,
