@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,17 +22,15 @@ MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
       'pendidikan',
       'kompetensi'
     ],
-    birthday: DateTime.now(),
-    gender: MobileAdGender.unknown,
     childDirected: false,
     nonPersonalizedAds: false,
-    designedForFamilies: true);
+    );
 
 InterstitialAd _interstitialAd;
 
 InterstitialAd createInterstitialAd() {
   return new InterstitialAd(
-      adUnitId: "ca-app-pub-9631895364890043/9973776335",
+      adUnitId: InterstitialAd.testAdUnitId,
       targetingInfo: targetingInfo,
       listener: (MobileAdEvent event) {
         print("intertiat ad $event");
@@ -71,7 +71,7 @@ class _DetailLowonganState extends State<DetailLowongan> {
   bool _terDaftar;
   var name;
   bool tekan = false;
-  showAlertPersetujuan() {
+  _showAlertPersetujuan() {
     showDialog(
         barrierDismissible: false,
         context: context,
@@ -123,7 +123,7 @@ class _DetailLowonganState extends State<DetailLowongan> {
                             color: const Color(0xFFff9977),
                             elevation: 4.0,
                             splashColor: Colors.blueGrey,
-                            onPressed: _inPressed,
+                            onPressed: _pengajuanLowongan,
                             padding: const EdgeInsets.only(),
                             child: new Text(
                               'Yakin'.toUpperCase(),
@@ -245,7 +245,7 @@ class _DetailLowonganState extends State<DetailLowongan> {
             ));
   }
 
-  void _inPressed() {
+  void _pengajuanLowongan() {
     if (widget.uid == null) {
       _showAlertNoUid();
     } else {
@@ -299,7 +299,7 @@ class _DetailLowonganState extends State<DetailLowongan> {
   @override
   void initState() {
     FirebaseAdMob.instance
-        .initialize(appId: "ca-app-pub-9631895364890043~3439447130");
+        .initialize(appId: FirebaseAdMob.testAppId);
     super.initState();
     getDataUser();
   }
@@ -407,7 +407,7 @@ class _DetailLowonganState extends State<DetailLowongan> {
                                       color: const Color(0xFFff9977),
                                       elevation: 4.0,
                                       splashColor: Colors.blueGrey,
-                                      onPressed: widget.uid == null ? showAlertPersetujuan :tekan==false? null : _terDaftar == true? null :showAlertPersetujuan,
+                                      onPressed: widget.uid == null ? _showAlertPersetujuan :tekan==false? null : _terDaftar == true? null :_showAlertPersetujuan,
                                       child: widget.uid == null
                                           ? new Text('Ajukan'.toUpperCase(),style: TextStyle(
                                                       fontSize: 15.0,

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +67,6 @@ class _RiwayatMagangState extends State<RiwayatMagang> {
                   itemBuilder: (_, index) {
                     DocumentSnapshot ds = snapshot.data.documents[index];
                     Timestamp _validUntil = ds["timeEndIntern"];
-                    String _title = ds["title"];
                     print('banyaknya ${snapshot.data.documents.length}');
                     DateTime _until = _validUntil.toDate();
 

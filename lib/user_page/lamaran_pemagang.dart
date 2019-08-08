@@ -1,17 +1,19 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class LamaranPemagang extends StatefulWidget {
+class InternSubmission extends StatefulWidget {
   @override
-  LamaranPemagangState createState() {
-    return new LamaranPemagangState();
+  InternSubmissionState createState() {
+    return new InternSubmissionState();
   }
 }
 
-class LamaranPemagangState extends State<LamaranPemagang> {
+class InternSubmissionState extends State<InternSubmission> {
   String _userId;
 
   Future getDataUser() async {
@@ -21,7 +23,7 @@ class LamaranPemagangState extends State<LamaranPemagang> {
     });
   }
 
-  Future getLamaran() async {
+  Future _getSubmission() async {
     var firestore = Firestore.instance;
     QuerySnapshot qn = await firestore
         .collection('registerIntern')
@@ -67,7 +69,7 @@ class LamaranPemagangState extends State<LamaranPemagang> {
         body: new Container(
           margin: const EdgeInsets.only(top: 10.0),
           child: FutureBuilder(
-            future: getLamaran(),
+            future: _getSubmission(),
             builder: (_, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(

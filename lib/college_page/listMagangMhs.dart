@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -7,13 +9,13 @@ final loadingLoad = CircularProgressIndicator(
   strokeWidth: 1.5,
 );
 
-class ListMagangMhs extends StatefulWidget {
-  ListMagangMhs({this.idCollege});
+class InternshipList extends StatefulWidget {
+  InternshipList({this.idCollege});
   final String idCollege;
-  _ListMagangMhsState createState() => _ListMagangMhsState();
+  _InternshipListState createState() => _InternshipListState();
 }
 
-class _ListMagangMhsState extends State<ListMagangMhs> {
+class _InternshipListState extends State<InternshipList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +26,7 @@ class _ListMagangMhsState extends State<ListMagangMhs> {
       appBar: AppBar(
         elevation: defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
         backgroundColor: const Color(0xFFe87c55),
-        title: new Text("List Magang"),
+        title: new Text("List Magang Aktif"),
         leading: InkWell(
           onTap: () {
             Navigator.of(context).pop();
@@ -60,6 +62,8 @@ class ListMagangState extends State<ListMagang> {
     var firestore = Firestore.instance;
     QuerySnapshot qn = await firestore
         .collection('registerIntern')
+        .where('status', isEqualTo: 'accepted')
+        .where('timeEndIntern', isGreaterThanOrEqualTo: dateNow)
         .where('collegeId', isEqualTo: widget.id)
         .getDocuments();
 
@@ -119,7 +123,7 @@ class TimePemagang extends StatefulWidget {
 class TimePemagangState extends State<TimePemagang> {
   var name, agency;
   String _namaUser, _namaAgency;
-  Future getDatInternship() async {
+  Future getInternship() async {
     var firestore = Firestore.instance;
     var userQuery = firestore
         .collection('users')
@@ -155,7 +159,7 @@ class TimePemagangState extends State<TimePemagang> {
   @override
   void initState() {
     super.initState();
-    getDatInternship();
+    getInternship();
   }
 
   @override

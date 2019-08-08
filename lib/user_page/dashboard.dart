@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -27,17 +28,15 @@ MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
       'pendidikan',
       'kompetensi'
     ],
-    birthday: DateTime.now(),
-    gender: MobileAdGender.unknown,
     childDirected: false,
     nonPersonalizedAds: false,
-    designedForFamilies: true);
+);
 
 BannerAd _bannerAd;
 
 BannerAd createBannerAd() {
   return new BannerAd(
-      adUnitId: "ca-app-pub-9631895364890043/8958927150",
+      adUnitId: BannerAd.testAdUnitId,
       targetingInfo: targetingInfo,
       size: AdSize.smartBanner,
       listener: (MobileAdEvent event) {
@@ -45,27 +44,20 @@ BannerAd createBannerAd() {
       });
 }
 
-class Dashboard extends StatefulWidget {
-  Dashboard({this.auth, this.onSignedOut});
+class InternDashboard extends StatefulWidget {
+  InternDashboard({this.auth, this.onSignedOut});
   final BaseAuth auth;
   final VoidCallback onSignedOut;
 
   @override
-  _DashboardState createState() => _DashboardState();
+  _InternDashboardState createState() => _InternDashboardState();
 }
 
 enum AuthStatus { notSignedIn, signedIn }
 
-class _DashboardState extends State<Dashboard> {
-  AuthStatus authStatus = AuthStatus.notSignedIn;
-  String _currentEmail,
-      _namaUser,
-      _idUser,
-      _role,
-      _linkPhoto,
-      vacanciesIdInternship;
+class _InternDashboardState extends State<InternDashboard> {
+  String _namaUser, _idUser, _role;
   bool _statusUser;
-  ScrollController _hideButtonController;
   var name;
 
   void _signOut() async {
@@ -140,12 +132,6 @@ class _DashboardState extends State<Dashboard> {
             ));
   }
 
-  void _signedIn() {
-    setState(() {
-      authStatus = AuthStatus.signedIn;
-    });
-  }
-
   void _showToast(String pesan, MaterialColor warna) {
     Fluttertoast.showToast(
       msg: pesan,
@@ -157,21 +143,7 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  void _signedOut() {
-    setState(() {
-      authStatus = AuthStatus.notSignedIn;
-    });
-  }
-
-  void getData() async {
-    await widget.auth.getUser().then((value) {
-      setState(() {
-        _currentEmail = value.email;
-      });
-    });
-  }
-
-  Future getDataUser() async {
+  Future _getDataUser() async {
     var user = await FirebaseAuth.instance.currentUser();
     var firestore = Firestore.instance;
     var userQuery = firestore
@@ -184,11 +156,10 @@ class _DashboardState extends State<Dashboard> {
         setState(() {
           name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
           _namaUser = name["displayName"];
-          _linkPhoto = name["photoURL"];
           _idUser = data.documents[0].data['uid'];
-          _statusUser = data.documents[0].data['isActive'];
+          _statusUser = data.documents[0].data['inIntern'];
           _role = data.documents[0].data['role'];
-        });
+        }); 
 
         //ini id vacancies null query, perbaiki lg
         // if (_statusUser == true) {
@@ -214,13 +185,11 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
-    FirebaseAdMob.instance
-        .initialize(appId: "ca-app-pub-9631895364890043~3439447130");
+    FirebaseAdMob.instance.initialize(appId: FirebaseAdMob.testAppId);
     _bannerAd = createBannerAd()
       ..load()
       ..show();
-    getData();
-    getDataUser();
+    _getDataUser();
 
     // _isVisible = true;
     // _hideButtonController = new ScrollController();
@@ -323,6 +292,21 @@ class _DashboardState extends State<Dashboard> {
                                   backgroundImage:
                                       NetworkImage(name["photoURL"])),
                     );
+                  } else {
+                    return new UserAccountsDrawerHeader(
+                      decoration: BoxDecoration(color: const Color(0xFFe87c55)
+                          //     image: DecorationImage(
+                          //   image: ExactAssetImage('img/selamatdatang.png'),
+                          //   fit: BoxFit.cover,
+                          // )
+                          ),
+                      accountEmail: new Text("Mengambil data"),
+                      accountName: new Text("Mengambil data"),
+                      currentAccountPicture: new CircleAvatar(
+                          backgroundColor: Colors.white,
+                          child:
+                              new Text("T", style: TextStyle(fontSize: 25.0))),
+                    );
                   }
                 }),
             new ListTile(
@@ -346,7 +330,7 @@ class _DashboardState extends State<Dashboard> {
                 Navigator.of(
                   context,
                 ).push(MaterialPageRoute(
-                    builder: (BuildContext context) => new LamaranPemagang()));
+                    builder: (BuildContext context) => new InternSubmission()));
               },
             ),
             new ListTile(
@@ -631,7 +615,8 @@ class CustomCard extends StatelessWidget {
       tglUpload,
       tglMulai,
       tglAkhir,
-      instansi,uid;
+      instansi,
+      uid;
 
   final int kuota;
   final List<String> requirementNya, jurusan;
@@ -661,19 +646,19 @@ class CustomCard extends StatelessWidget {
                   onTap: () {
                     Navigator.of(context).push(new MaterialPageRoute(
                       builder: (BuildContext context) => new DetailLowongan(
-                            tglUpload: tglUpload,
-                            kuota: kuota,
-                            uid: uid,
-                            instansi: instansi,
-                            tglAwal: tglMulai,
-                            tglAkhir: tglAkhir,
-                            requirementNya: requirementNya,
-                            deskripsiNya: deskripsiNya,
-                            idNya: idNya,
-                            judulNya: judulNya,
-                            jurusan: jurusan,
-                            linkPhoto: _linkPhoto,
-                          ),
+                        tglUpload: tglUpload,
+                        kuota: kuota,
+                        uid: uid,
+                        instansi: instansi,
+                        tglAwal: tglMulai,
+                        tglAkhir: tglAkhir,
+                        requirementNya: requirementNya,
+                        deskripsiNya: deskripsiNya,
+                        idNya: idNya,
+                        judulNya: judulNya,
+                        jurusan: jurusan,
+                        linkPhoto: _linkPhoto,
+                      ),
                     ));
                   },
                   child: new Card(
@@ -828,9 +813,9 @@ class _ListPageState extends State<ListPage> {
   }
 
   Future getDataUser() async {
-     await FirebaseAuth.instance.currentUser().then((id){
-       user = id.uid;
-     });
+    await FirebaseAuth.instance.currentUser().then((id) {
+      user = id.uid;
+    });
   }
 
   @override

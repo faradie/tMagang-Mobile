@@ -7,7 +7,7 @@ description: Buat dan Temukan Tempat Magang Idealmu.
 # Both the version and the builder number may be overridden in flutter
 # build by specifying --build-name and --build-number, respectively.
 # Read more about versioning at semver.org.
-version: 1.0.0+1
+version: 1.0.0+7
 
 environment:
   sdk: ">=2.0.0 <3.0.0"
@@ -23,27 +23,29 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  firebase_core: 
-  firebase_auth: 
-  firebase_messaging: ^4.0.0+1
+  firebase_core: ^0.4.0+8
+  firebase_auth: ^0.14.0
+  firebase_messaging: ^5.1.2
   splashscreen:
-  firebase_admob: 
-  fluttertoast: ^2.1.1
-  cloud_firestore: 
+  firebase_admob: ^0.9.0+3
+  fluttertoast: ^3.1.0
+  cloud_firestore: ^0.12.9
   date_format: ^1.0.5
   datetime_picker_formfield:
   csv: ^4.0.1
   uuid:
   firebase_storage: 
-  image_picker: ^0.4.10
+  image_picker: ^0.6.1
   path_provider: ^0.4.1
   image: ^2.0.5
   # firebase_analytics: ^0.3.3
   connectivity: ^0.3.2
   smooth_star_rating: ^1.0.1
+  dcdg: ^2.0.1
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
+  cloud_functions: ^0.4.1
 
 dev_dependencies:
   flutter_test:

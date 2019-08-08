@@ -12,17 +12,17 @@ import 'package:tempat_magang/auth.dart';
 import 'package:tempat_magang/instansi_page/instansi_buat_lowongan.dart';
 
 class AdminDashboard extends StatefulWidget {
-  AdminDashboard({this.auth, this.onSignedOut, this.wew});
+  AdminDashboard({this.auth, this.onSignedOut, this.stats});
   final BaseAuth auth;
   final VoidCallback onSignedOut;
-  final String wew;
+  final String stats;
   @override
   _AdminDashboardState createState() => _AdminDashboardState();
 }
 
 class _AdminDashboardState extends State<AdminDashboard> {
   String _currentEmail, _statusUser, _namaUser, _uid;
-  var name;
+  var tmp;
   DateTime dateNow = DateTime.now();
 
   Future getDataUser() async {
@@ -36,8 +36,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
     userQuery.getDocuments().then((data) {
       if (data.documents.length > 0) {
         setState(() {
-          name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
-          _namaUser = name["displayName"];
+          tmp = data.documents[0].data['data'] as Map<dynamic, dynamic>;
+          _namaUser = tmp["displayName"];
           _statusUser = data.documents[0].data['role'];
           _uid = user.uid;
         });
@@ -252,7 +252,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 Navigator.of(
                   context,
                 ).push(MaterialPageRoute(
-                    builder: (BuildContext context) => new InstansiBuatLowongan(
+                    builder: (BuildContext context) => new AgencyCreateVacancies(
                           id: _uid,
                         )));
               },

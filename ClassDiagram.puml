@@ -1,0 +1,1567 @@
+@startuml
+set namespaceSeparator ::
+
+class "tempat_magang::admin_page::admin_dashboard.dart::AdminDashboard" {
+  +BaseAuth auth
+  +void Function() onSignedOut
+  +String wew
+  +_AdminDashboardState createState()
+}
+
+"tempat_magang::admin_page::admin_dashboard.dart::AdminDashboard" o-- "tempat_magang::auth.dart::BaseAuth"
+"tempat_magang::admin_page::admin_dashboard.dart::AdminDashboard" o-- "dart::ui::void Function()"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::admin_page::admin_dashboard.dart::AdminDashboard"
+
+class "tempat_magang::admin_page::admin_dashboard.dart::_AdminDashboardState" {
+  -String _currentEmail
+  -String _statusUser
+  -String _namaUser
+  -String _uid
+  +dynamic name
+  +DateTime dateNow
+  +Future getDataUser()
+  +dynamic showAlertLogout()
+  -void _signOut()
+  +dynamic setNamanya()
+  +void getData()
+  +void initState()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::admin_page::admin_dashboard.dart::_AdminDashboardState"
+
+class "tempat_magang::admin_page::data_instansi.dart::InstansiData" {
+  +_InstansiDataState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::admin_page::data_instansi.dart::InstansiData"
+
+class "tempat_magang::admin_page::data_instansi.dart::_InstansiDataState" {
+  -Future _getInstansi()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::admin_page::data_instansi.dart::_InstansiDataState"
+
+class "tempat_magang::admin_page::manajemen_lowongan.dart::InternManage" {
+  +_InternManageState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::admin_page::manajemen_lowongan.dart::InternManage"
+
+class "tempat_magang::admin_page::manajemen_lowongan.dart::_InternManageState" {
+  +DateTime dateNow
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::admin_page::manajemen_lowongan.dart::_InternManageState"
+
+class "tempat_magang::admin_page::manajemen_lowongan.dart::ListLowongan" {
+  +ListLowonganState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::admin_page::manajemen_lowongan.dart::ListLowongan"
+
+class "tempat_magang::admin_page::manajemen_lowongan.dart::ListLowonganState" {
+  +DateTime dateNow
+  -IconData _icon
+  -MaterialColor _colors
+  +CircularProgressIndicator loadingLoad
+  +Future getLowongan()
+  +Widget build()
+}
+
+"tempat_magang::admin_page::manajemen_lowongan.dart::ListLowonganState" o-- "flutter::src::widgets::icon_data.dart::IconData"
+"tempat_magang::admin_page::manajemen_lowongan.dart::ListLowonganState" o-- "flutter::src::material::colors.dart::MaterialColor"
+"tempat_magang::admin_page::manajemen_lowongan.dart::ListLowonganState" o-- "flutter::src::material::progress_indicator.dart::CircularProgressIndicator"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::admin_page::manajemen_lowongan.dart::ListLowonganState"
+
+class "tempat_magang::admin_page::manajemen_lowongan.dart::TileLowongan" {
+  +String judul
+  +String penyelenggara
+  +String no
+  +String idLowongan
+  +IconData iconData
+  +MaterialColor warna
+  +TileLowonganState createState()
+}
+
+"tempat_magang::admin_page::manajemen_lowongan.dart::TileLowongan" o-- "flutter::src::widgets::icon_data.dart::IconData"
+"tempat_magang::admin_page::manajemen_lowongan.dart::TileLowongan" o-- "flutter::src::material::colors.dart::MaterialColor"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::admin_page::manajemen_lowongan.dart::TileLowongan"
+
+class "tempat_magang::admin_page::manajemen_lowongan.dart::TileLowonganState" {
+  +dynamic name
+  -String _namaUser
+  +Future getDataUser()
+  +void initState()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::admin_page::manajemen_lowongan.dart::TileLowonganState"
+
+class "tempat_magang::admin_page::manajemen_lowongan.dart::DetailLowonganInstansi" {
+  +String judul
+  +String idLowongan
+  +_DetailLowonganInstansiState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::admin_page::manajemen_lowongan.dart::DetailLowonganInstansi"
+
+class "tempat_magang::admin_page::manajemen_lowongan.dart::_DetailLowonganInstansiState" {
+  -String _namaUser
+  +dynamic name
+  +CircularProgressIndicator loadingLoad
+  -Future _getLowonganSaya()
+  +Widget build()
+}
+
+"tempat_magang::admin_page::manajemen_lowongan.dart::_DetailLowonganInstansiState" o-- "flutter::src::material::progress_indicator.dart::CircularProgressIndicator"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::admin_page::manajemen_lowongan.dart::_DetailLowonganInstansiState"
+
+class "tempat_magang::admin_page::manajemen_lowongan.dart::Requir" {
+  +List<String> req
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "tempat_magang::admin_page::manajemen_lowongan.dart::Requir"
+
+class "tempat_magang::admin_page::manajemen_lowongan.dart::KompetensiUser" {
+  +String judulKompetensi
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "tempat_magang::admin_page::manajemen_lowongan.dart::KompetensiUser"
+
+class "tempat_magang::admin_page::manajemen_lowongan.dart::TilePendaftar" {
+  +String idUser
+  +String no
+  +String idLowongan
+  +_TilePendaftarState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::admin_page::manajemen_lowongan.dart::TilePendaftar"
+
+class "tempat_magang::admin_page::manajemen_lowongan.dart::_TilePendaftarState" {
+  -String _namaUser
+  -String _kampus
+  -String _owner
+  -Timestamp _timeEndInternStamp
+  -Timestamp _timeStartInternStamp
+  -Timestamp _expiredAtStamp
+  -DateTime _timeEndIntern
+  -DateTime _timeStartIntern
+  -DateTime _expiredAt
+  +dynamic name
+  +dynamic mapKampus
+  +bool tekan
+  +bool penerimaan
+  {static} +List<String> menuItems
+  -String _selectVal
+  -List<PopupMenuItem<String>> _popUpTerimaItem
+  -void _showToast()
+  -void _hasilTolak()
+  -void _isPressed()
+  +Future getStatus()
+  +Future getDataUser()
+  +void initState()
+  +Widget build()
+}
+
+"tempat_magang::admin_page::manajemen_lowongan.dart::_TilePendaftarState" o-- "cloud_firestore::cloud_firestore.dart::Timestamp"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::admin_page::manajemen_lowongan.dart::_TilePendaftarState"
+
+class "tempat_magang::admin_page::tambah_pemagang.dart::CreateIntern" {
+  +_CreateInternState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::admin_page::tambah_pemagang.dart::CreateIntern"
+
+class "tempat_magang::admin_page::tambah_pemagang.dart::_CreateInternState" {
+  -TextEditingController _controlEmail
+  -TextEditingController _controlPassword
+  -TextEditingController _controlConfirmPass
+  -TextEditingController _controlNoTelp
+  -TextEditingController _controlNamaPemagang
+  +GlobalKey<FormState> formKeySave
+  +void showAlert()
+  +bool dataSaveFire()
+  +void initState()
+  +Widget build()
+}
+
+"tempat_magang::admin_page::tambah_pemagang.dart::_CreateInternState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"tempat_magang::admin_page::tambah_pemagang.dart::_CreateInternState" o-- "flutter::src::widgets::framework.dart::GlobalKey<FormState>"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::admin_page::tambah_pemagang.dart::_CreateInternState"
+
+abstract class "tempat_magang::auth.dart::BaseAuth" {
+  +Future signInWithEmailAndPassword()
+  +Future createUserWithEmailAndPassword()
+  +Future currentUser()
+  +Future forgotPass()
+  +Future signOut()
+  +Future getUser()
+}
+
+class "tempat_magang::auth.dart::Auth" {
+  -FirebaseAuth _firebaseAuth
+  +Future signInWithEmailAndPassword()
+  +Future forgotPass()
+  +Future createUserWithEmailAndPassword()
+  +Future currentUser()
+  +Future signOut()
+  +Future getUser()
+}
+
+"tempat_magang::auth.dart::Auth" o-- "firebase_auth::firebase_auth.dart::FirebaseAuth"
+"tempat_magang::auth.dart::BaseAuth" <|-- "tempat_magang::auth.dart::Auth"
+
+class "tempat_magang::college_page::college_dashboard.dart::CollegeDashboard" {
+  +BaseAuth auth
+  +void Function() onSignedOut
+  +String wew
+  +_CollegeDashboardState createState()
+}
+
+"tempat_magang::college_page::college_dashboard.dart::CollegeDashboard" o-- "tempat_magang::auth.dart::BaseAuth"
+"tempat_magang::college_page::college_dashboard.dart::CollegeDashboard" o-- "dart::ui::void Function()"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::college_page::college_dashboard.dart::CollegeDashboard"
+
+class "tempat_magang::college_page::college_dashboard.dart::_CollegeDashboardState" {
+  -String _statusUser
+  -String _namaUser
+  -String _idUser
+  +dynamic name
+  +Future getDataUser()
+  +dynamic showAlertLogout()
+  -void _signOut()
+  +dynamic setNamanya()
+  +void initState()
+  +void dispose()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::college_page::college_dashboard.dart::_CollegeDashboardState"
+
+class "tempat_magang::college_page::listMagangMhs.dart::ListMagangMhs" {
+  +String idCollege
+  +_ListMagangMhsState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::college_page::listMagangMhs.dart::ListMagangMhs"
+
+class "tempat_magang::college_page::listMagangMhs.dart::_ListMagangMhsState" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::college_page::listMagangMhs.dart::_ListMagangMhsState"
+
+class "tempat_magang::college_page::listMagangMhs.dart::ListMagang" {
+  +String id
+  +ListMagangState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::college_page::listMagangMhs.dart::ListMagang"
+
+class "tempat_magang::college_page::listMagangMhs.dart::ListMagangState" {
+  +DateTime dateNow
+  +Future getMagang()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::college_page::listMagangMhs.dart::ListMagangState"
+
+class "tempat_magang::college_page::listMagangMhs.dart::TimePemagang" {
+  +String userId
+  +String ownerAgency
+  +String no
+  +TimePemagangState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::college_page::listMagangMhs.dart::TimePemagang"
+
+class "tempat_magang::college_page::listMagangMhs.dart::TimePemagangState" {
+  +dynamic name
+  +dynamic agency
+  -String _namaUser
+  -String _namaAgency
+  +Future getDatInternship()
+  +void initState()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::college_page::listMagangMhs.dart::TimePemagangState"
+
+class "tempat_magang::college_page::manajemen_pemagang.dart::ManajemenPemagang" {
+  +String idCollege
+  +_ManajemenPemagangState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::college_page::manajemen_pemagang.dart::ManajemenPemagang"
+
+class "tempat_magang::college_page::manajemen_pemagang.dart::_ManajemenPemagangState" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::college_page::manajemen_pemagang.dart::_ManajemenPemagangState"
+
+class "tempat_magang::college_page::manajemen_pemagang.dart::ListMhs" {
+  +String id
+  +ListMhsState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::college_page::manajemen_pemagang.dart::ListMhs"
+
+class "tempat_magang::college_page::manajemen_pemagang.dart::ListMhsState" {
+  +DateTime dateNow
+  +Future getMagang()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::college_page::manajemen_pemagang.dart::ListMhsState"
+
+class "tempat_magang::college_page::manajemen_pemagang.dart::TilePemagang" {
+  +String userId
+  +String no
+  +TilePemagangState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::college_page::manajemen_pemagang.dart::TilePemagang"
+
+class "tempat_magang::college_page::manajemen_pemagang.dart::TilePemagangState" {
+  +dynamic name
+  +dynamic agency
+  -String _namaUser
+  -String _nimNya
+  +Future getDatInternship()
+  +void initState()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::college_page::manajemen_pemagang.dart::TilePemagangState"
+
+class "tempat_magang::global_page::bantuan.dart::Bantuan" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "tempat_magang::global_page::bantuan.dart::Bantuan"
+
+class "tempat_magang::global_page::bantuan.dart::MyBullet" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "tempat_magang::global_page::bantuan.dart::MyBullet"
+
+class "tempat_magang::global_page::listLowongan.dart::ListLowonganGlobal" {
+  +ListLowonganGlobalState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::global_page::listLowongan.dart::ListLowonganGlobal"
+
+class "tempat_magang::global_page::listLowongan.dart::ListLowonganGlobalState" {
+  +void initState()
+  +void dispose()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::global_page::listLowongan.dart::ListLowonganGlobalState"
+
+class "tempat_magang::global_page::listLowongan.dart::ListPage" {
+  +_ListPageState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::global_page::listLowongan.dart::ListPage"
+
+class "tempat_magang::global_page::listLowongan.dart::_ListPageState" {
+  +DateTime dateNow
+  +Future getLowongan()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::global_page::listLowongan.dart::_ListPageState"
+
+class "tempat_magang::global_page::listLowongan.dart::CustomCard" {
+  +String judulNya
+  +String deskripsiNya
+  +String idNya
+  +String tglUpload
+  +String tglMulai
+  +String tglAkhir
+  +String instansi
+  +int kuota
+  +List<String> requirementNya
+  +List<String> jurusan
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "tempat_magang::global_page::listLowongan.dart::CustomCard"
+
+class "tempat_magang::global_page::listLowongan.dart::Deskrips" {
+  +String des
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "tempat_magang::global_page::listLowongan.dart::Deskrips"
+
+class "tempat_magang::global_page::loaders.dart::ColorLoader3" {
+  +double radius
+  +double dotRadius
+  +_ColorLoader3State createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::global_page::loaders.dart::ColorLoader3"
+
+class "tempat_magang::global_page::loaders.dart::_ColorLoader3State" {
+  +Animation<double> animationRotation
+  +Animation<double> animationRadiusIn
+  +Animation<double> animationRadiusOut
+  +AnimationController controller
+  +double radius
+  +double dotRadius
+  +void initState()
+  +Widget build()
+  +void dispose()
+}
+
+"tempat_magang::global_page::loaders.dart::_ColorLoader3State" o-- "flutter::src::animation::animation.dart::Animation<double>"
+"tempat_magang::global_page::loaders.dart::_ColorLoader3State" o-- "flutter::src::animation::animation_controller.dart::AnimationController"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::global_page::loaders.dart::_ColorLoader3State"
+"flutter::src::widgets::ticker_provider.dart::SingleTickerProviderStateMixin<T>" <|-- "tempat_magang::global_page::loaders.dart::_ColorLoader3State"
+
+class "tempat_magang::global_page::loaders.dart::Dot" {
+  +double radius
+  +Color color
+  +Widget build()
+}
+
+"tempat_magang::global_page::loaders.dart::Dot" o-- "dart::ui::Color"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "tempat_magang::global_page::loaders.dart::Dot"
+
+class "tempat_magang::instansi_page::dashboard_instansi.dart::InstansiDashboard" {
+  +BaseAuth auth
+  +void Function() onSignedOut
+  +String wew
+  +_InstansiDashboardState createState()
+}
+
+"tempat_magang::instansi_page::dashboard_instansi.dart::InstansiDashboard" o-- "tempat_magang::auth.dart::BaseAuth"
+"tempat_magang::instansi_page::dashboard_instansi.dart::InstansiDashboard" o-- "dart::ui::void Function()"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::instansi_page::dashboard_instansi.dart::InstansiDashboard"
+
+class "tempat_magang::instansi_page::dashboard_instansi.dart::_InstansiDashboardState" {
+  -_MySearchDelegate _delegate
+  +List<String> lowonganNya
+  -String _namaUser
+  -String _statusUser
+  -String _idUser
+  +dynamic name
+  +List<String> wew
+  +Future getDataUser()
+  +dynamic showAlertLogout()
+  -void _signOut()
+  +dynamic setNamanya()
+  +void initState()
+  +void dispose()
+  +Widget build()
+}
+
+"tempat_magang::instansi_page::dashboard_instansi.dart::_InstansiDashboardState" o-- "tempat_magang::instansi_page::dashboard_instansi.dart::_MySearchDelegate"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::instansi_page::dashboard_instansi.dart::_InstansiDashboardState"
+
+class "tempat_magang::instansi_page::dashboard_instansi.dart::_MySearchDelegate" {
+  -List<String> _words
+  -List<String> _history
+  +Widget buildLeading()
+  +Widget buildResults()
+  +Widget buildSuggestions()
+  +List buildActions()
+}
+
+"flutter::src::material::search.dart::SearchDelegate<T>" <|-- "tempat_magang::instansi_page::dashboard_instansi.dart::_MySearchDelegate"
+
+class "tempat_magang::instansi_page::dashboard_instansi.dart::_SugestionList" {
+  +List<String> suggestions
+  +String query
+  +void Function(String) onSelected
+  +Widget build()
+}
+
+"tempat_magang::instansi_page::dashboard_instansi.dart::_SugestionList" o-- "flutter::src::foundation::basic_types.dart::void Function(String)"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "tempat_magang::instansi_page::dashboard_instansi.dart::_SugestionList"
+
+class "tempat_magang::instansi_page::dashboard_instansi.dart::ListPage" {
+  +String idUser
+  +_ListPageState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::instansi_page::dashboard_instansi.dart::ListPage"
+
+class "tempat_magang::instansi_page::dashboard_instansi.dart::_ListPageState" {
+  +DateTime dateNow
+  +CircularProgressIndicator loadingLoad
+  +Widget build()
+}
+
+"tempat_magang::instansi_page::dashboard_instansi.dart::_ListPageState" o-- "flutter::src::material::progress_indicator.dart::CircularProgressIndicator"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::instansi_page::dashboard_instansi.dart::_ListPageState"
+
+class "tempat_magang::instansi_page::dashboard_instansi.dart::TileLowongan" {
+  +String idLowongan
+  +String no
+  +TileLowonganState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::instansi_page::dashboard_instansi.dart::TileLowongan"
+
+class "tempat_magang::instansi_page::dashboard_instansi.dart::TileLowonganState" {
+  -String _judulLowongan
+  -String _idMentor
+  -String _namaMentor
+  -dynamic _name
+  +Future getDataUser()
+  +void initState()
+  +void dispose()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::instansi_page::dashboard_instansi.dart::TileLowonganState"
+
+class "tempat_magang::instansi_page::editLowongan.dart::EditLowongan" {
+  +String idLowongan
+  +_EditLowonganState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::instansi_page::editLowongan.dart::EditLowongan"
+
+class "tempat_magang::instansi_page::editLowongan.dart::_EditLowonganState" {
+  -String _judulLowongan
+  -String _deskripsi
+  -String _tmpMentor
+  -String _ownerAgency
+  -List _require
+  -List _jurusanLowongan
+  -int _kuota
+  +bool tekan
+  -Timestamp _tglMulai
+  -Timestamp _tglAkhir
+  +GlobalKey<FormState> formKeySave
+  -TextEditingController _controlJudul
+  -TextEditingController _controlJurusan
+  -TextEditingController _controlKuota
+  -TextEditingController _controlRequir
+  -TextEditingController _controlDeskrip
+  -TextEditingController _controlTglMulai
+  -TextEditingController _controlTglAkhir
+  +List dummy
+  {static} +List<String> menutItem
+  -List<DropdownMenuItem<String>> _dropDownJenisKel
+  -void _showToast()
+  +bool dataSaveFire()
+  -void _inPressed()
+  +Future getDataLowongan()
+  +void initState()
+  +Widget build()
+}
+
+"tempat_magang::instansi_page::editLowongan.dart::_EditLowonganState" o-- "cloud_firestore::cloud_firestore.dart::Timestamp"
+"tempat_magang::instansi_page::editLowongan.dart::_EditLowonganState" o-- "flutter::src::widgets::framework.dart::GlobalKey<FormState>"
+"tempat_magang::instansi_page::editLowongan.dart::_EditLowonganState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::instansi_page::editLowongan.dart::_EditLowonganState"
+
+class "tempat_magang::instansi_page::instansiOrCollegeProfil.dart::InstansiOrCollegeProfil" {
+  +String id
+  +_InstansiOrCollegeProfilState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::instansi_page::instansiOrCollegeProfil.dart::InstansiOrCollegeProfil"
+
+class "tempat_magang::instansi_page::instansiOrCollegeProfil.dart::_InstansiOrCollegeProfilState" {
+  -String _userViewId
+  -String _namaUser
+  -String _linkPhoto
+  -String _kontak
+  -String _alamat
+  -String _about
+  +String validUntilStr
+  -Timestamp _accountExpiredAt
+  +dynamic name
+  +Future getDataUser()
+  +void initState()
+  +Widget build()
+}
+
+"tempat_magang::instansi_page::instansiOrCollegeProfil.dart::_InstansiOrCollegeProfilState" o-- "cloud_firestore::cloud_firestore.dart::Timestamp"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::instansi_page::instansiOrCollegeProfil.dart::_InstansiOrCollegeProfilState"
+
+class "tempat_magang::instansi_page::instansiOrCollegeProfil.dart::EditProfil" {
+  +String namaUser
+  +String kontak
+  +String alamat
+  +String idAccount
+  +String about
+  +Timestamp accountExpiredAt
+  +_EditProfilState createState()
+}
+
+"tempat_magang::instansi_page::instansiOrCollegeProfil.dart::EditProfil" o-- "cloud_firestore::cloud_firestore.dart::Timestamp"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::instansi_page::instansiOrCollegeProfil.dart::EditProfil"
+
+class "tempat_magang::instansi_page::instansiOrCollegeProfil.dart::_EditProfilState" {
+  -TextEditingController _controlName
+  -TextEditingController _controlKontak
+  -TextEditingController _controlAlamat
+  -TextEditingController _controlAbout
+  +GlobalKey<FormState> formKeySave
+  -String _namaUser
+  -String _emailUser
+  -String _linkPhoto
+  +dynamic name
+  +bool tekan
+  +File image
+  -void _showToast()
+  +Future getDataUser()
+  -Future _ambilGambar()
+  +dynamic uploadImage()
+  +void dispose()
+  +void isPressed()
+  +void initState()
+  +Widget build()
+}
+
+"tempat_magang::instansi_page::instansiOrCollegeProfil.dart::_EditProfilState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"tempat_magang::instansi_page::instansiOrCollegeProfil.dart::_EditProfilState" o-- "flutter::src::widgets::framework.dart::GlobalKey<FormState>"
+"tempat_magang::instansi_page::instansiOrCollegeProfil.dart::_EditProfilState" o-- "dart::io::File"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::instansi_page::instansiOrCollegeProfil.dart::_EditProfilState"
+
+class "tempat_magang::instansi_page::instansi_buat_lowongan.dart::InstansiBuatLowongan" {
+  +String id
+  +_InstansiBuatLowonganState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::instansi_page::instansi_buat_lowongan.dart::InstansiBuatLowongan"
+
+class "tempat_magang::instansi_page::instansi_buat_lowongan.dart::_InstansiBuatLowonganState" {
+  -String _judulLowongan
+  -String _jurusanLowongan
+  -String _require
+  -String _deskripsi
+  -String _tmpMentor
+  -int _kuota
+  -int _expiredAt
+  +bool tekan
+  -DateTime _tglMulai
+  -DateTime _tglAkhir
+  -TextEditingController _controlJudul
+  -TextEditingController _controlJurusan
+  -TextEditingController _controlKuota
+  -TextEditingController _controlRequir
+  -TextEditingController _controlDeskrip
+  -TextEditingController _controlTglMulai
+  -TextEditingController _controlTglAkhir
+  -TextEditingController _controlExpiredAt
+  -bool _setuju
+  +GlobalKey<FormState> formKeySave
+  {static} +List<String> menutItem
+  -List<DropdownMenuItem<String>> _dropDownJenisKel
+  +Map<InputType, DateFormat> formats
+  +InputType inputType
+  +bool editable
+  +bool dataSaveFire()
+  -void _inPressed()
+  +void initState()
+  -void _showToast()
+  +void showAlert()
+  +Widget build()
+}
+
+"tempat_magang::instansi_page::instansi_buat_lowongan.dart::_InstansiBuatLowonganState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"tempat_magang::instansi_page::instansi_buat_lowongan.dart::_InstansiBuatLowonganState" o-- "flutter::src::widgets::framework.dart::GlobalKey<FormState>"
+"tempat_magang::instansi_page::instansi_buat_lowongan.dart::_InstansiBuatLowonganState" o-- "datetime_picker_formfield::datetime_picker_formfield.dart::InputType"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::instansi_page::instansi_buat_lowongan.dart::_InstansiBuatLowonganState"
+
+class "tempat_magang::instansi_page::manajemenLowonganInstansi.dart::ManajemenLowonganInstansi" {
+  +String idAgency
+  +_ManajemenLowonganInstansiState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::instansi_page::manajemenLowonganInstansi.dart::ManajemenLowonganInstansi"
+
+class "tempat_magang::instansi_page::manajemenLowonganInstansi.dart::_ManajemenLowonganInstansiState" {
+  +DateTime dateNow
+  +void initState()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::instansi_page::manajemenLowonganInstansi.dart::_ManajemenLowonganInstansiState"
+
+class "tempat_magang::instansi_page::manajemenLowonganInstansi.dart::ListLowongan" {
+  +String id
+  +ListLowonganState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::instansi_page::manajemenLowonganInstansi.dart::ListLowongan"
+
+class "tempat_magang::instansi_page::manajemenLowonganInstansi.dart::ListLowonganState" {
+  +DateTime dateNow
+  -IconData _icon
+  -MaterialColor _colors
+  +CircularProgressIndicator loadingLoad
+  +Future getLowongan()
+  +Widget build()
+}
+
+"tempat_magang::instansi_page::manajemenLowonganInstansi.dart::ListLowonganState" o-- "flutter::src::widgets::icon_data.dart::IconData"
+"tempat_magang::instansi_page::manajemenLowonganInstansi.dart::ListLowonganState" o-- "flutter::src::material::colors.dart::MaterialColor"
+"tempat_magang::instansi_page::manajemenLowonganInstansi.dart::ListLowonganState" o-- "flutter::src::material::progress_indicator.dart::CircularProgressIndicator"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::instansi_page::manajemenLowonganInstansi.dart::ListLowonganState"
+
+class "tempat_magang::instansi_page::manajemenLowonganInstansi.dart::TileLowongan" {
+  +String judul
+  +String no
+  +String idLowongan
+  +Timestamp created
+  +IconData iconData
+  +MaterialColor warna
+  +TileLowonganState createState()
+}
+
+"tempat_magang::instansi_page::manajemenLowonganInstansi.dart::TileLowongan" o-- "cloud_firestore::cloud_firestore.dart::Timestamp"
+"tempat_magang::instansi_page::manajemenLowonganInstansi.dart::TileLowongan" o-- "flutter::src::widgets::icon_data.dart::IconData"
+"tempat_magang::instansi_page::manajemenLowonganInstansi.dart::TileLowongan" o-- "flutter::src::material::colors.dart::MaterialColor"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::instansi_page::manajemenLowonganInstansi.dart::TileLowongan"
+
+class "tempat_magang::instansi_page::manajemenLowonganInstansi.dart::TileLowonganState" {
+  +dynamic name
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::instansi_page::manajemenLowonganInstansi.dart::TileLowonganState"
+
+class "tempat_magang::instansi_page::manajemenLowonganInstansi.dart::DetailLowonganInstansi" {
+  +String judul
+  +String idLowongan
+  +_DetailLowonganInstansiState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::instansi_page::manajemenLowonganInstansi.dart::DetailLowonganInstansi"
+
+class "tempat_magang::instansi_page::manajemenLowonganInstansi.dart::_DetailLowonganInstansiState" {
+  -String _namaUser
+  +dynamic name
+  -Future _getLowonganSaya()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::instansi_page::manajemenLowonganInstansi.dart::_DetailLowonganInstansiState"
+
+class "tempat_magang::instansi_page::manajemenLowonganInstansi.dart::Requir" {
+  +List<String> req
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "tempat_magang::instansi_page::manajemenLowonganInstansi.dart::Requir"
+
+class "tempat_magang::instansi_page::manajemenLowonganInstansi.dart::KompetensiUser" {
+  +String judulKompetensi
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "tempat_magang::instansi_page::manajemenLowonganInstansi.dart::KompetensiUser"
+
+class "tempat_magang::instansi_page::manajemenLowonganInstansi.dart::TilePendaftar" {
+  +String idUser
+  +String no
+  +String idLowongan
+  +_TilePendaftarState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::instansi_page::manajemenLowonganInstansi.dart::TilePendaftar"
+
+class "tempat_magang::instansi_page::manajemenLowonganInstansi.dart::_TilePendaftarState" {
+  -String _namaUser
+  -String _kampus
+  -String _owner
+  -String _collegeId
+  -String _mentorID
+  -Timestamp _timeEndInternStamp
+  -Timestamp _timeStartInternStamp
+  -Timestamp _expiredAtStamp
+  -DateTime _timeEndIntern
+  -DateTime _timeStartIntern
+  -DateTime _expiredAt
+  +dynamic name
+  +dynamic mapKampus
+  +bool tekan
+  +bool penerimaan
+  -int _kuotaMax
+  -int _maxInternship
+  {static} +List<String> menuItems
+  -String _selectVal
+  -List<PopupMenuItem<String>> _popUpTerimaItem
+  -void _showToast()
+  -void _hasilTolak()
+  -void _isPressed()
+  +Future getStatus()
+  +Future getDataUser()
+  +void initState()
+  +Widget build()
+}
+
+"tempat_magang::instansi_page::manajemenLowonganInstansi.dart::_TilePendaftarState" o-- "cloud_firestore::cloud_firestore.dart::Timestamp"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::instansi_page::manajemenLowonganInstansi.dart::_TilePendaftarState"
+
+class "tempat_magang::instansi_page::manajemenMentor.dart::ManajemenMentor" {
+  +String id
+  +_ManajemenMentorState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::instansi_page::manajemenMentor.dart::ManajemenMentor"
+
+class "tempat_magang::instansi_page::manajemenMentor.dart::_ManajemenMentorState" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::instansi_page::manajemenMentor.dart::_ManajemenMentorState"
+
+class "tempat_magang::instansi_page::manajemenMentor.dart::TileMentor" {
+  +String idMentor
+  +String no
+  +TileMentorState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::instansi_page::manajemenMentor.dart::TileMentor"
+
+class "tempat_magang::instansi_page::manajemenMentor.dart::TileMentorState" {
+  -String _namaMentor
+  +dynamic dataNya
+  +int totPemagang
+  +Future getLowongan()
+  +void initState()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::instansi_page::manajemenMentor.dart::TileMentorState"
+
+class "tempat_magang::instansi_page::riwayatMagang.dart::RiwayatMagang" {
+  +String id
+  +_RiwayatMagangState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::instansi_page::riwayatMagang.dart::RiwayatMagang"
+
+class "tempat_magang::instansi_page::riwayatMagang.dart::_RiwayatMagangState" {
+  +DateTime dateNow
+  -IconData _icon
+  -MaterialColor _colors
+  +CircularProgressIndicator loadingLoad
+  +Widget build()
+}
+
+"tempat_magang::instansi_page::riwayatMagang.dart::_RiwayatMagangState" o-- "flutter::src::widgets::icon_data.dart::IconData"
+"tempat_magang::instansi_page::riwayatMagang.dart::_RiwayatMagangState" o-- "flutter::src::material::colors.dart::MaterialColor"
+"tempat_magang::instansi_page::riwayatMagang.dart::_RiwayatMagangState" o-- "flutter::src::material::progress_indicator.dart::CircularProgressIndicator"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::instansi_page::riwayatMagang.dart::_RiwayatMagangState"
+
+class "tempat_magang::instansi_page::riwayatMagang.dart::TileLowongan" {
+  +String idLowongan
+  +String no
+  +IconData iconData
+  +MaterialColor warna
+  +TileLowonganState createState()
+}
+
+"tempat_magang::instansi_page::riwayatMagang.dart::TileLowongan" o-- "flutter::src::widgets::icon_data.dart::IconData"
+"tempat_magang::instansi_page::riwayatMagang.dart::TileLowongan" o-- "flutter::src::material::colors.dart::MaterialColor"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::instansi_page::riwayatMagang.dart::TileLowongan"
+
+class "tempat_magang::instansi_page::riwayatMagang.dart::TileLowonganState" {
+  -String _judulLowongan
+  +int totPemagang
+  +Future getLowongan()
+  +void initState()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::instansi_page::riwayatMagang.dart::TileLowonganState"
+
+class "tempat_magang::login_page.dart::FormType" {
+  +int index
+  {static} +List<FormType> values
+  {static} +FormType login
+  {static} +FormType forgot
+}
+
+"tempat_magang::login_page.dart::FormType" o-- "tempat_magang::login_page.dart::FormType"
+
+class "tempat_magang::login_page.dart::LoginPage" {
+  +BaseAuth auth
+  +void Function() onSignedIn
+  +_LoginPageState createState()
+}
+
+"tempat_magang::login_page.dart::LoginPage" o-- "tempat_magang::auth.dart::BaseAuth"
+"tempat_magang::login_page.dart::LoginPage" o-- "dart::ui::void Function()"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::login_page.dart::LoginPage"
+
+class "tempat_magang::login_page.dart::_LoginPageState" {
+  +GlobalKey<FormState> formKey
+  -TextEditingController _emailLoginController
+  -TextEditingController _passLoginController
+  -String _email
+  -String _pass
+  -FormType _formType
+  +bool tekan
+  +List<Map<String, Object>> iconicon
+  +CircularProgressIndicator loadingLoad
+  -bool _obsecureText
+  +bool validateAndSave()
+  +void initState()
+  -void _showToast()
+  +Future checkUserAndNavigate()
+  +void forgotPressed()
+  +void validateAndSubmit()
+  +void moveToForgot()
+  +void moveToLogin()
+  +List listMyWidgets()
+  +Widget build()
+  +List buildInputs()
+  +List forgotPassButton()
+  +List buildSubmitBtn()
+}
+
+"tempat_magang::login_page.dart::_LoginPageState" o-- "flutter::src::widgets::framework.dart::GlobalKey<FormState>"
+"tempat_magang::login_page.dart::_LoginPageState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"tempat_magang::login_page.dart::_LoginPageState" o-- "tempat_magang::login_page.dart::FormType"
+"tempat_magang::login_page.dart::_LoginPageState" o-- "flutter::src::material::progress_indicator.dart::CircularProgressIndicator"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::login_page.dart::_LoginPageState"
+
+class "tempat_magang::login_page.dart::_PageSelector" {
+  +String judulNya
+  +List<String> icons
+  +IconData iconDetail
+  +Color warnaDetail
+  -void _handleArrowButtonPress()
+  +Widget build()
+}
+
+"tempat_magang::login_page.dart::_PageSelector" o-- "flutter::src::widgets::icon_data.dart::IconData"
+"tempat_magang::login_page.dart::_PageSelector" o-- "dart::ui::Color"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "tempat_magang::login_page.dart::_PageSelector"
+
+class "tempat_magang::login_page.dart::Detail" {
+  +String judulDetail
+  +List<String> isiDetail
+  +IconData iconDetail
+  +Color warnaDetail
+  +Widget build()
+}
+
+"tempat_magang::login_page.dart::Detail" o-- "flutter::src::widgets::icon_data.dart::IconData"
+"tempat_magang::login_page.dart::Detail" o-- "dart::ui::Color"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "tempat_magang::login_page.dart::Detail"
+
+class "tempat_magang::main.dart::MyApp" {
+  +MyAppState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::main.dart::MyApp"
+
+class "tempat_magang::main.dart::MyAppState" {
+  +bool isOffline
+  +Firestore firestore
+  +void initState()
+  +void dispose()
+  +Widget build()
+}
+
+"tempat_magang::main.dart::MyAppState" o-- "cloud_firestore::cloud_firestore.dart::Firestore"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::main.dart::MyAppState"
+
+class "tempat_magang::main.dart::SplashNya" {
+  +_SplashNyaState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::main.dart::SplashNya"
+
+class "tempat_magang::main.dart::_SplashNyaState" {
+  +Future getConn()
+  +void initState()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::main.dart::_SplashNyaState"
+
+class "tempat_magang::mentor::dashboard_mentor.dart::MentorDashboard" {
+  +BaseAuth auth
+  +void Function() onSignedOut
+  +String wew
+  +_MentorDashboardState createState()
+}
+
+"tempat_magang::mentor::dashboard_mentor.dart::MentorDashboard" o-- "tempat_magang::auth.dart::BaseAuth"
+"tempat_magang::mentor::dashboard_mentor.dart::MentorDashboard" o-- "dart::ui::void Function()"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::mentor::dashboard_mentor.dart::MentorDashboard"
+
+class "tempat_magang::mentor::dashboard_mentor.dart::_MentorDashboardState" {
+  -String _statusUser
+  -String _idUser
+  -String _agencyId
+  +dynamic name
+  +Future getDataUser()
+  +dynamic showAlertLogout()
+  -void _signOut()
+  +void initState()
+  +void dispose()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::mentor::dashboard_mentor.dart::_MentorDashboardState"
+
+class "tempat_magang::mentor::listMagangMentor.dart::ListMagangMentor" {
+  +String idMentor
+  +_ListMagangMentorState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::mentor::listMagangMentor.dart::ListMagangMentor"
+
+class "tempat_magang::mentor::listMagangMentor.dart::_ListMagangMentorState" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::mentor::listMagangMentor.dart::_ListMagangMentorState"
+
+class "tempat_magang::mentor::listMagangMentor.dart::ListMentoring" {
+  +String id
+  +ListMentoringState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::mentor::listMagangMentor.dart::ListMentoring"
+
+class "tempat_magang::mentor::listMagangMentor.dart::ListMentoringState" {
+  +DateTime dateNow
+  -IconData _icon
+  -MaterialColor _colors
+  +Future getLowongan()
+  +Widget build()
+}
+
+"tempat_magang::mentor::listMagangMentor.dart::ListMentoringState" o-- "flutter::src::widgets::icon_data.dart::IconData"
+"tempat_magang::mentor::listMagangMentor.dart::ListMentoringState" o-- "flutter::src::material::colors.dart::MaterialColor"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::mentor::listMagangMentor.dart::ListMentoringState"
+
+class "tempat_magang::mentor::listMagangMentor.dart::TileLowongan" {
+  +String no
+  +String idLowongan
+  +DateTime timeEndIntern
+  +IconData iconData
+  +MaterialColor warna
+  +TileLowonganState createState()
+}
+
+"tempat_magang::mentor::listMagangMentor.dart::TileLowongan" o-- "flutter::src::widgets::icon_data.dart::IconData"
+"tempat_magang::mentor::listMagangMentor.dart::TileLowongan" o-- "flutter::src::material::colors.dart::MaterialColor"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::mentor::listMagangMentor.dart::TileLowongan"
+
+class "tempat_magang::mentor::listMagangMentor.dart::TileLowonganState" {
+  -String _namaLowongan
+  -String _timeEndIntern
+  +Future getDataUser()
+  +void initState()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::mentor::listMagangMentor.dart::TileLowonganState"
+
+class "tempat_magang::mentor::listMagangMentor.dart::DetailMentoring" {
+  +String judul
+  +String idLowongan
+  +_DetailMentoringState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::mentor::listMagangMentor.dart::DetailMentoring"
+
+class "tempat_magang::mentor::listMagangMentor.dart::_DetailMentoringState" {
+  +double rating
+  -String _namaUser
+  +dynamic name
+  -Future _getPemagang()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::mentor::listMagangMentor.dart::_DetailMentoringState"
+
+class "tempat_magang::mentor::listMagangMentor.dart::Requir" {
+  +List<String> req
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "tempat_magang::mentor::listMagangMentor.dart::Requir"
+
+class "tempat_magang::mentor::listMagangMentor.dart::KompetensiUser" {
+  +String judulKompetensi
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "tempat_magang::mentor::listMagangMentor.dart::KompetensiUser"
+
+class "tempat_magang::mentor::listMagangMentor.dart::RatingStarFull" {
+  +int starCount
+  +double rating
+  +void Function(double) onRatingChanged
+  +Color color
+  +State createState()
+}
+
+"tempat_magang::mentor::listMagangMentor.dart::RatingStarFull" o-- "smooth_star_rating::smooth_star_rating.dart::void Function(double)"
+"tempat_magang::mentor::listMagangMentor.dart::RatingStarFull" o-- "dart::ui::Color"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::mentor::listMagangMentor.dart::RatingStarFull"
+
+class "tempat_magang::mentor::listMagangMentor.dart::_RatingStarState" {
+  +int starCount
+  +double rating
+  +void Function(double) onRatingChanged
+  +Color color
+  +Widget buildStar()
+  +Widget build()
+}
+
+"tempat_magang::mentor::listMagangMentor.dart::_RatingStarState" o-- "smooth_star_rating::smooth_star_rating.dart::void Function(double)"
+"tempat_magang::mentor::listMagangMentor.dart::_RatingStarState" o-- "dart::ui::Color"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::mentor::listMagangMentor.dart::_RatingStarState"
+
+class "tempat_magang::mentor::listMagangMentor.dart::TilePemagang" {
+  +String idUser
+  +String no
+  +String idLowongan
+  +String idMentor
+  +String owner
+  +Timestamp endIntern
+  +_TilePemagangState createState()
+}
+
+"tempat_magang::mentor::listMagangMentor.dart::TilePemagang" o-- "cloud_firestore::cloud_firestore.dart::Timestamp"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::mentor::listMagangMentor.dart::TilePemagang"
+
+class "tempat_magang::mentor::listMagangMentor.dart::_TilePemagangState" {
+  -DateTime _endMagang
+  +DateTime dateNow
+  +dynamic name
+  +dynamic mapKampus
+  +bool penerimaan
+  +bool tekan
+  +bool tekanList
+  -String _namaUser
+  -String _kampus
+  -double _ratDisiplin
+  -double _ratTanggungJawab
+  -double _ratTeamWork
+  -double _ratPlanningSkill
+  -double _ratLeadership
+  -double _ratProbandDecis
+  -double _ratKepatuhan
+  -double _ratKejujuran
+  -double _ratinisiatif
+  -double _ratselfMotivation
+  -double _ratAnaliticalThink
+  -double _ratAchivement
+  -double _ratInovatif
+  -void _prosesNilai()
+  +Future getDataUser()
+  +void showAlert()
+  +void initState()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::mentor::listMagangMentor.dart::_TilePemagangState"
+
+class "tempat_magang::mentor::profilMentor.dart::ProfilMentor" {
+  +String iduser
+  +_ProfilMentorState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::mentor::profilMentor.dart::ProfilMentor"
+
+class "tempat_magang::mentor::profilMentor.dart::_ProfilMentorState" {
+  +dynamic name
+  +List dummy
+  -String _namaUser
+  -String _collegeName
+  -String _collegeId
+  -String _jenisKel
+  -String _kontak
+  -String _linkPhoto
+  -String _alamat
+  -String _userViewId
+  -String _isActive
+  -String _abouts
+  +Future getDataUser()
+  +void initState()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::mentor::profilMentor.dart::_ProfilMentorState"
+
+class "tempat_magang::mentor::profilMentor.dart::EditProfilMentor" {
+  +String agencyName
+  +String idMentor
+  +String agencyId
+  +String stats
+  +String namaUser
+  +String jenisKelamin
+  +String kontak
+  +String alamat
+  +String about
+  +_EditProfilMentorState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::mentor::profilMentor.dart::EditProfilMentor"
+
+class "tempat_magang::mentor::profilMentor.dart::_EditProfilMentorState" {
+  -TextEditingController _controlName
+  -TextEditingController _controlAbout
+  -TextEditingController _controlKontak
+  -TextEditingController _controlAlamat
+  -String _linkPhoto
+  -String _namaUser
+  -String _tmpJenisKelamin
+  -String _agencyId
+  -String _emailUser
+  -dynamic _setting
+  -dynamic _shortcut
+  +File image
+  +dynamic name
+  +bool tekan
+  {static} +List<String> menutItem
+  -List<DropdownMenuItem<String>> _dropDownJenisKel
+  -void _showToast()
+  +dynamic uploadImage()
+  +void dispose()
+  +void isPressed()
+  -Future _ambilGambar()
+  +Future getDataUser()
+  +void initState()
+  +Widget build()
+}
+
+"tempat_magang::mentor::profilMentor.dart::_EditProfilMentorState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"tempat_magang::mentor::profilMentor.dart::_EditProfilMentorState" o-- "dart::io::File"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::mentor::profilMentor.dart::_EditProfilMentorState"
+
+class "tempat_magang::root_page.dart::AuthStatus" {
+  +int index
+  {static} +List<AuthStatus> values
+  {static} +AuthStatus notSignedIn
+  {static} +AuthStatus signedIn
+}
+
+"tempat_magang::root_page.dart::AuthStatus" o-- "tempat_magang::root_page.dart::AuthStatus"
+
+class "tempat_magang::root_page.dart::RootPage" {
+  +BaseAuth auth
+  +State createState()
+}
+
+"tempat_magang::root_page.dart::RootPage" o-- "tempat_magang::auth.dart::BaseAuth"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::root_page.dart::RootPage"
+
+class "tempat_magang::root_page.dart::_RootPageState" {
+  +AuthStatus authStatus
+  -String _statusUser
+  +void initState()
+  -void _signedIn()
+  +void getUser()
+  -void _signedOut()
+  +void dispose()
+  +Widget build()
+}
+
+"tempat_magang::root_page.dart::_RootPageState" o-- "tempat_magang::root_page.dart::AuthStatus"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::root_page.dart::_RootPageState"
+
+class "tempat_magang::user_page::dashboard.dart::AuthStatus" {
+  +int index
+  {static} +List<AuthStatus> values
+  {static} +AuthStatus notSignedIn
+  {static} +AuthStatus signedIn
+}
+
+"tempat_magang::user_page::dashboard.dart::AuthStatus" o-- "tempat_magang::user_page::dashboard.dart::AuthStatus"
+
+class "tempat_magang::user_page::dashboard.dart::Dashboard" {
+  +BaseAuth auth
+  +void Function() onSignedOut
+  +_DashboardState createState()
+}
+
+"tempat_magang::user_page::dashboard.dart::Dashboard" o-- "tempat_magang::auth.dart::BaseAuth"
+"tempat_magang::user_page::dashboard.dart::Dashboard" o-- "dart::ui::void Function()"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::user_page::dashboard.dart::Dashboard"
+
+class "tempat_magang::user_page::dashboard.dart::_DashboardState" {
+  +AuthStatus authStatus
+  -String _currentEmail
+  -String _namaUser
+  -String _idUser
+  -String _role
+  -String _linkPhoto
+  +String vacanciesIdInternship
+  -bool _statusUser
+  +dynamic name
+  -bool _isVisible
+  -void _signOut()
+  +dynamic showAlertLogout()
+  -void _signedIn()
+  -void _showToast()
+  -void _signedOut()
+  +void getData()
+  +Future getDataUser()
+  +void initState()
+  +void dispose()
+  +Widget build()
+  +dynamic setNamanya()
+}
+
+"tempat_magang::user_page::dashboard.dart::_DashboardState" o-- "tempat_magang::user_page::dashboard.dart::AuthStatus"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::user_page::dashboard.dart::_DashboardState"
+
+class "tempat_magang::user_page::dashboard.dart::Deskrips" {
+  +String des
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "tempat_magang::user_page::dashboard.dart::Deskrips"
+
+class "tempat_magang::user_page::dashboard.dart::CustomCard" {
+  +String judulNya
+  +String deskripsiNya
+  +String idNya
+  +String tglUpload
+  +String tglMulai
+  +String tglAkhir
+  +String instansi
+  +String uid
+  +int kuota
+  +List<String> requirementNya
+  +List<String> jurusan
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "tempat_magang::user_page::dashboard.dart::CustomCard"
+
+class "tempat_magang::user_page::dashboard.dart::KompetensiUser" {
+  +String judulKompetensi
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "tempat_magang::user_page::dashboard.dart::KompetensiUser"
+
+class "tempat_magang::user_page::dashboard.dart::Requir" {
+  +List<String> req
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "tempat_magang::user_page::dashboard.dart::Requir"
+
+class "tempat_magang::user_page::dashboard.dart::ListPage" {
+  +_ListPageState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::user_page::dashboard.dart::ListPage"
+
+class "tempat_magang::user_page::dashboard.dart::_ListPageState" {
+  +DateTime dateNow
+  +dynamic user
+  +Future getLowongan()
+  +Future getDataUser()
+  +void initState()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::user_page::dashboard.dart::_ListPageState"
+
+class "tempat_magang::user_page::detailLowongan.dart::DetailLowongan" {
+  +String judulNya
+  +String uid
+  +String deskripsiNya
+  +String idNya
+  +String linkPhoto
+  +String tglUpload
+  +String tglAwal
+  +String tglAkhir
+  +String instansi
+  +int kuota
+  +List<String> requirementNya
+  +List<String> jurusan
+  +_DetailLowonganState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::user_page::detailLowongan.dart::DetailLowongan"
+
+class "tempat_magang::user_page::detailLowongan.dart::_DetailLowonganState" {
+  -List<String> _skills
+  -bool _terDaftar
+  +dynamic name
+  +bool tekan
+  +CircularProgressIndicator loadingLoad
+  +dynamic showAlertPersetujuan()
+  -void _showToast()
+  +Future getDataUser()
+  -void _showAlertNoUid()
+  -void _inPressed()
+  +void initState()
+  +void dispose()
+  +Widget build()
+}
+
+"tempat_magang::user_page::detailLowongan.dart::_DetailLowonganState" o-- "flutter::src::material::progress_indicator.dart::CircularProgressIndicator"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::user_page::detailLowongan.dart::_DetailLowonganState"
+
+class "tempat_magang::user_page::detailLowongan.dart::Requir" {
+  +List<String> req
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "tempat_magang::user_page::detailLowongan.dart::Requir"
+
+class "tempat_magang::user_page::detailLowongan.dart::KompetensiUser" {
+  +String judulKompetensi
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "tempat_magang::user_page::detailLowongan.dart::KompetensiUser"
+
+class "tempat_magang::user_page::internprofil.dart::InternProfil" {
+  +String id
+  +InternProfilState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::user_page::internprofil.dart::InternProfil"
+
+class "tempat_magang::user_page::internprofil.dart::InternProfilState" {
+  +dynamic name
+  +List dummy
+  -String _namaUser
+  -String _collegeName
+  -String _collegeId
+  -String _jurusan
+  -String _jenisKel
+  -String _nim
+  -String _kontak
+  -String _linkPhoto
+  -String _about
+  -String _alamat
+  -String _userViewId
+  -String _isActive
+  -List<String> _requirementNya
+  +Future getDataUser()
+  +void initState()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::user_page::internprofil.dart::InternProfilState"
+
+class "tempat_magang::user_page::internprofil.dart::Requir" {
+  +List<String> req
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "tempat_magang::user_page::internprofil.dart::Requir"
+
+class "tempat_magang::user_page::internprofil.dart::KompetensiUser" {
+  +String judulKompetensi
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "tempat_magang::user_page::internprofil.dart::KompetensiUser"
+
+class "tempat_magang::user_page::internprofil.dart::EditProfil" {
+  +String namaUser
+  +String nimUser
+  +String jenisKelamin
+  +String kontak
+  +String alamat
+  +String jurusan
+  +String about
+  +String idMhs
+  +String kampus
+  +String status
+  +List<String> skills
+  +_EditProfilState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::user_page::internprofil.dart::EditProfil"
+
+class "tempat_magang::user_page::internprofil.dart::_EditProfilState" {
+  -TextEditingController _controlName
+  -TextEditingController _controlNIM
+  -TextEditingController _controlKontak
+  -TextEditingController _controlAlamat
+  -TextEditingController _controlSkills
+  -TextEditingController _controlAbout
+  +GlobalKey<FormState> formKeySave
+  -String _namaUser
+  -String _emailUser
+  -String _collegeID
+  -String _tmpJenisKelamin
+  -String _linkPhoto
+  +dynamic name
+  +bool tekan
+  +File image
+  {static} +List<String> menutItem
+  -List<DropdownMenuItem<String>> _dropDownJenisKel
+  -void _showToast()
+  +Future getDataUser()
+  -Future _ambilGambar()
+  +dynamic uploadImage()
+  +void dispose()
+  +void isPressed()
+  +void initState()
+  +Widget build()
+}
+
+"tempat_magang::user_page::internprofil.dart::_EditProfilState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"tempat_magang::user_page::internprofil.dart::_EditProfilState" o-- "flutter::src::widgets::framework.dart::GlobalKey<FormState>"
+"tempat_magang::user_page::internprofil.dart::_EditProfilState" o-- "dart::io::File"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::user_page::internprofil.dart::_EditProfilState"
+
+class "tempat_magang::user_page::lamaran_pemagang.dart::LamaranPemagang" {
+  +LamaranPemagangState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::user_page::lamaran_pemagang.dart::LamaranPemagang"
+
+class "tempat_magang::user_page::lamaran_pemagang.dart::LamaranPemagangState" {
+  -String _userId
+  +CircularProgressIndicator loadingLoad
+  +Future getDataUser()
+  +Future getLamaran()
+  +void initState()
+  +Widget build()
+}
+
+"tempat_magang::user_page::lamaran_pemagang.dart::LamaranPemagangState" o-- "flutter::src::material::progress_indicator.dart::CircularProgressIndicator"
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::user_page::lamaran_pemagang.dart::LamaranPemagangState"
+
+class "tempat_magang::user_page::lamaran_pemagang.dart::TileLowongan" {
+  +String vacanciesId
+  +String status
+  +Timestamp registeAt
+  +TileLowonganState createState()
+}
+
+"tempat_magang::user_page::lamaran_pemagang.dart::TileLowongan" o-- "cloud_firestore::cloud_firestore.dart::Timestamp"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "tempat_magang::user_page::lamaran_pemagang.dart::TileLowongan"
+
+class "tempat_magang::user_page::lamaran_pemagang.dart::TileLowonganState" {
+  +dynamic name
+  -String _nameLamaran
+  +String regAt
+  +Future getDataUser()
+  +void initState()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State<T>" <|-- "tempat_magang::user_page::lamaran_pemagang.dart::TileLowonganState"
+
+
+@enduml

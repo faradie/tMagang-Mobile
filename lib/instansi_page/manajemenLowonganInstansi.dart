@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/foundation.dart';
@@ -331,8 +333,8 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                 onPressed: () {
                   Navigator.of(context).push(new MaterialPageRoute(
                     builder: (BuildContext context) => new EditLowongan(
-                          idLowongan: widget.idLowongan,
-                        ),
+                      idLowongan: widget.idLowongan,
+                    ),
                   ));
                 },
               )
@@ -642,6 +644,21 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                               );
+                                            } else {
+                                              return Center(
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.max,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: <Widget>[
+                                                    loadingLoad,
+                                                    Text("Loading Data..")
+                                                  ],
+                                                ),
+                                              );
                                             }
                                           }),
                                       SizedBox(height: 10.0),
@@ -671,6 +688,15 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                           ),
                         ),
                       ],
+                    );
+                  } else {
+                    return Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[loadingLoad, Text("Loading Data..")],
+                      ),
                     );
                   }
                 },
@@ -766,7 +792,7 @@ class TilePendaftar extends StatefulWidget {
 }
 
 class _TilePendaftarState extends State<TilePendaftar> {
-  String _namaUser, _kampus, _owner, _collegeId, _mentorID;
+  String _namaUser, _kampus, _collegeId, _mentorID;
   Timestamp _timeEndInternStamp, _timeStartInternStamp, _expiredAtStamp;
   DateTime _timeEndIntern, _timeStartIntern, _expiredAt;
 
@@ -854,7 +880,7 @@ class _TilePendaftarState extends State<TilePendaftar> {
               "collegeId": _collegeId
             };
 
-            Map<String, dynamic> user = <String, dynamic>{"isActive": true};
+            Map<String, dynamic> user = <String, dynamic>{"inIntern": true};
 
             Firestore.instance
                 .collection("users")
@@ -944,7 +970,7 @@ class _TilePendaftarState extends State<TilePendaftar> {
               "collegeId": _collegeId
             };
 
-            Map<String, dynamic> user = <String, dynamic>{"isActive": true};
+            Map<String, dynamic> user = <String, dynamic>{"inIntern": true};
 
             Firestore.instance
                 .collection("users")
@@ -1015,7 +1041,6 @@ class _TilePendaftarState extends State<TilePendaftar> {
           _timeEndIntern = _timeEndInternStamp.toDate();
           _timeStartInternStamp = data.documents[0].data['timeStartIntern'];
           _timeStartIntern = _timeStartInternStamp.toDate();
-          _owner = data.documents[0].data['ownerAgency'];
           _mentorID = data.documents[0].data['mentorId'];
           _expiredAtStamp = data.documents[0].data['expiredAt'];
           _expiredAt = _expiredAtStamp.toDate();
@@ -1058,7 +1083,7 @@ class _TilePendaftarState extends State<TilePendaftar> {
           name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
           _namaUser = name["displayName"];
           _collegeId = name["collegeId"];
-          // _statusUser = data.documents[0].data['isActive'];
+          // _statusUser = data.documents[0].data['inIntern'];
         });
 
         var collegeQuery = firestore

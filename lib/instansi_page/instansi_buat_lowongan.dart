@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -14,14 +16,14 @@ final loadingLoad = CircularProgressIndicator(
   strokeWidth: 1.5,
 );
 
-class InstansiBuatLowongan extends StatefulWidget {
-  InstansiBuatLowongan({this.id});
+class AgencyCreateVacancies extends StatefulWidget {
+  AgencyCreateVacancies({this.id});
   final String id;
   @override
-  _InstansiBuatLowonganState createState() => _InstansiBuatLowonganState();
+  _AgencyCreateVacanciesState createState() => _AgencyCreateVacanciesState();
 }
 
-class _InstansiBuatLowonganState extends State<InstansiBuatLowongan> {
+class _AgencyCreateVacanciesState extends State<AgencyCreateVacancies> {
   String _judulLowongan, _jurusanLowongan, _require, _deskripsi, _tmpMentor;
   int _kuota, _expiredAt;
   bool tekan = true;

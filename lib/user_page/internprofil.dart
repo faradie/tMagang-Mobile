@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -20,17 +21,15 @@ MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
       'pendidikan',
       'kompetensi'
     ],
-    birthday: DateTime.now(),
-    gender: MobileAdGender.unknown,
     childDirected: false,
     nonPersonalizedAds: false,
-    designedForFamilies: true);
+);
 
 InterstitialAd _interstitialAd;
 
 InterstitialAd createInterstitialAd() {
   return new InterstitialAd(
-      adUnitId: "ca-app-pub-9631895364890043/9973776335",
+      adUnitId: InterstitialAd.testAdUnitId,
       targetingInfo: targetingInfo,
       listener: (MobileAdEvent event) {
         print("intertiat ad $event");
@@ -60,7 +59,7 @@ class InternProfilState extends State<InternProfil> {
       _about,
       _alamat,
       _userViewId,
-      _isActive;
+      _inIntern;
   List<String> _requirementNya;
 
   Future getDataUser() async {
@@ -81,7 +80,7 @@ class InternProfilState extends State<InternProfil> {
           _linkPhoto = name["photoURL"];
           _about = name["about"];
           _jurusan = name["department"];
-          _isActive = data.documents[0].data['isActive'] == true
+          _inIntern = data.documents[0].data['inIntern'] == true
               ? "Magang"
               : "Tidak Magang";
           _jenisKel = name["gender"] == "male"
@@ -157,7 +156,7 @@ class InternProfilState extends State<InternProfil> {
                               skills: _requirementNya,
                               jurusan: _jurusan,
                               kampus: _collegeName,
-                              status: _isActive,
+                              status: _inIntern,
                             ),
                       ));
                     },
@@ -251,7 +250,7 @@ class InternProfilState extends State<InternProfil> {
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       new Text(
-                          _isActive == null ? "Mengambil data" : _isActive),
+                          _inIntern == null ? "Mengambil data" : _inIntern),
                     ],
                   ),
                   new Column(
@@ -572,7 +571,9 @@ class _EditProfilState extends State<EditProfil> {
         var skl = _controlSkills.text == "Skill belum diatur"
             ? null
             : _controlSkills.text.toLowerCase().split(",");
-        skl.removeWhere((item) => item.length == 0);
+        if(skl != null){
+          skl.removeWhere((item) => item.length == 0);
+        }
         await tx.update(favoritesReference, <String, dynamic>{
           'data': {
             "about": _controlAbout.text,
@@ -606,23 +607,19 @@ class _EditProfilState extends State<EditProfil> {
     super.dispose();
   }
 
-  void isPressed() {
+  void _saveProfile() {
     setState(() {
       tekan = false;
     });
 
     if (image == null) {
-      DocumentReference favoritesReference =
-          Firestore.instance.collection('users').document("${widget.idMhs}");
-      Firestore.instance.runTransaction((Transaction tx) async {
-        DocumentSnapshot postSnapshot = await tx.get(favoritesReference);
-        if (postSnapshot.exists) {
-          var skl = _controlSkills.text == "Skill belum diatur"
+      var skl = _controlSkills.text == "Skill belum diatur"
               ? null
               : _controlSkills.text.toLowerCase().split(",");
-          skl.removeWhere((item) => item.length == 0);
-          await tx.update(favoritesReference, <String, dynamic>{
-            'data': {
+         if(skl != null){
+            skl.removeWhere((item) => item.length == 0);
+         }
+      Map<String, dynamic> datadalam = <String, dynamic>{
               "about": _controlAbout.text,
               "studentIDNumber": _controlNIM.text,
               "skills": skl,
@@ -635,17 +632,24 @@ class _EditProfilState extends State<EditProfil> {
               "collegeId": _collegeID,
               "department": widget.jurusan,
               "address": _controlAlamat.text
-            }
-          });
-        } else {}
-      }).then((hasil) {
-        //perbaiki lagi
+      };
+
+      Map<String, dynamic> dataAwal = <String, dynamic>{
+        "data": datadalam,
+      };
+      Firestore.instance
+          .collection("users")
+          .document("${widget.idMhs}")
+          .updateData(dataAwal)
+          .whenComplete(() {
         Navigator.of(this.context).pop();
         Navigator.of(this.context).pop();
         _showToast("Berhasil Update Profil", Colors.blue);
         createInterstitialAd()
           ..load()
           ..show();
+      }).catchError((e) {
+        print(e);
       });
     } else {
       uploadImage();
@@ -663,7 +667,7 @@ class _EditProfilState extends State<EditProfil> {
   @override
   void initState() {
     FirebaseAdMob.instance
-        .initialize(appId: "ca-app-pub-9631895364890043~3439447130");
+        .initialize(appId: FirebaseAdMob.testAppId);
     _controlName.text = widget.namaUser;
     _controlNIM.text = widget.nimUser == "Kosong" ? "" : widget.nimUser;
     _controlKontak.text = widget.kontak == "Kosong" ? "" : widget.kontak;
@@ -957,7 +961,7 @@ class _EditProfilState extends State<EditProfil> {
                       color: const Color(0xFFff9977),
                       elevation: 4.0,
                       splashColor: Colors.blueGrey,
-                      onPressed: tekan == true ? isPressed : null,
+                      onPressed: tekan == true ? _saveProfile : null,
                       padding: const EdgeInsets.only(),
                       child: new Text(
                         'Simpan'.toUpperCase(),

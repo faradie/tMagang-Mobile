@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -20,17 +21,15 @@ MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
       'pendidikan',
       'kompetensi'
     ],
-    birthday: DateTime.now(),
-    gender: MobileAdGender.unknown,
     childDirected: false,
     nonPersonalizedAds: false,
-    designedForFamilies: true);
+   );
 
 InterstitialAd _interstitialAd;
 
 InterstitialAd createInterstitialAd() {
   return new InterstitialAd(
-      adUnitId: "ca-app-pub-9631895364890043/3877720394",
+      adUnitId: InterstitialAd.testAdUnitId,
       targetingInfo: targetingInfo,
       listener: (MobileAdEvent event) {
         print("intertiat ad $event");

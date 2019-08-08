@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -19,17 +21,15 @@ MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
       'pendidikan',
       'kompetensi'
     ],
-    birthday: DateTime.now(),
-    gender: MobileAdGender.unknown,
     childDirected: false,
     nonPersonalizedAds: false,
-    designedForFamilies: true);
+    );
 
 BannerAd _bannerAd;
 
 BannerAd createBannerAd() {
   return new BannerAd(
-      adUnitId: "ca-app-pub-9631895364890043/1659855789",
+      adUnitId: BannerAd.testAdUnitId,
       targetingInfo: targetingInfo,
       size: AdSize.smartBanner,
       listener: (MobileAdEvent event) {
@@ -43,18 +43,18 @@ final loadingLoad = CircularProgressIndicator(
 );
 
 class MentorDashboard extends StatefulWidget {
-  MentorDashboard({this.auth, this.onSignedOut, this.wew});
+  MentorDashboard({this.auth, this.onSignedOut, this.stats});
   final BaseAuth auth;
   final VoidCallback onSignedOut;
-  final String wew;
+  final String stats;
   _MentorDashboardState createState() => _MentorDashboardState();
 }
 
 class _MentorDashboardState extends State<MentorDashboard> {
   String _statusUser, _idUser, _agencyId;
-  var name;
+  var tmp;
 
-  Future getDataUser() async {
+  Future _getDataUser() async {
     var user = await FirebaseAuth.instance.currentUser();
     var firestore = Firestore.instance;
     var userQuery = firestore
@@ -65,9 +65,9 @@ class _MentorDashboardState extends State<MentorDashboard> {
     userQuery.getDocuments().then((data) {
       if (data.documents.length > 0) {
         setState(() {
-          name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
+          tmp = data.documents[0].data['data'] as Map<dynamic, dynamic>;
 
-          _agencyId = name["agencyId"];
+          _agencyId = tmp["agencyId"];
           _idUser = user.uid;
           _statusUser = data.documents[0].data['role'];
         });
@@ -149,13 +149,12 @@ class _MentorDashboardState extends State<MentorDashboard> {
 
   @override
   void initState() {
-    FirebaseAdMob.instance
-        .initialize(appId: "ca-app-pub-9631895364890043~3439447130");
+    FirebaseAdMob.instance.initialize(appId: FirebaseAdMob.testAppId);
     _bannerAd = createBannerAd()
       ..load()
       ..show();
     super.initState();
-    getDataUser();
+    _getDataUser();
   }
 
   @override
@@ -200,7 +199,7 @@ class _MentorDashboardState extends State<MentorDashboard> {
                   } else if (snapshot.connectionState ==
                           ConnectionState.active ||
                       snapshot.hasData) {
-                    name = snapshot.data['data'] as Map<dynamic, dynamic>;
+                    tmp = snapshot.data['data'] as Map<dynamic, dynamic>;
                     return new UserAccountsDrawerHeader(
                       decoration: BoxDecoration(color: const Color(0xFFe87c55)
                           //     image: DecorationImage(
@@ -209,23 +208,35 @@ class _MentorDashboardState extends State<MentorDashboard> {
                           // )
                           ),
                       accountEmail:
-                          new Text(name["email"] == null ? "" : name["email"]),
-                      accountName: new Text(name["displayName"] == null
+                          new Text(tmp["email"] == null ? "" : tmp["email"]),
+                      accountName: new Text(tmp["displayName"] == null
                           ? ""
-                          : name["displayName"]),
-                      currentAccountPicture: name["photoURL"] == null
+                          : tmp["displayName"]),
+                      currentAccountPicture: tmp["photoURL"] == null
                           ? new CircleAvatar(
                               backgroundColor: Colors.white,
                               child: new Text("T",
                                   style: TextStyle(fontSize: 25.0)))
-                          : name["photoURL"] == ""
+                          : tmp["photoURL"] == ""
                               ? new CircleAvatar(
                                   backgroundColor: Colors.white,
                                   child: new Text("T",
                                       style: TextStyle(fontSize: 25.0)))
                               : new CircleAvatar(
                                   backgroundImage:
-                                      NetworkImage(name["photoURL"])),
+                                      NetworkImage(tmp["photoURL"])),
+                    );
+                  } else {
+                    return new UserAccountsDrawerHeader(
+                      decoration: BoxDecoration(color: const Color(0xFFe87c55)
+                          //     image: DecorationImage(
+                          //   image: ExactAssetImage('img/selamatdatang.png'),
+                          //   fit: BoxFit.cover,
+                          // )
+                          ),
+                      accountEmail: new Text("Mengambil data..."),
+                      accountName: new Text("Mengambil data..."),
+                      currentAccountPicture: new Text("Mengambil data..."),
                     );
                   }
                 }),
@@ -237,7 +248,7 @@ class _MentorDashboardState extends State<MentorDashboard> {
                 Navigator.of(
                   context,
                 ).push(MaterialPageRoute(
-                    builder: (BuildContext context) => new ListMagangMentor(
+                    builder: (BuildContext context) => new Mentoring(
                           idMentor: _idUser,
                         )));
               },
@@ -429,6 +440,20 @@ class _MentorDashboardState extends State<MentorDashboard> {
                                             : snapshot.data["data"];
                                         return new Text(
                                             "${wew['displayName'] == null ? "Mengambil data" : wew['displayName'].toUpperCase()}");
+                                      } else {
+                                        return Center(
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.max,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: <Widget>[
+                                              loadingLoad,
+                                              Text("Loading Data..")
+                                            ],
+                                          ),
+                                        );
                                       }
                                     },
                                   )

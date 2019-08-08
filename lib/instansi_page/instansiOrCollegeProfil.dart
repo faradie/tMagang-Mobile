@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:date_format/date_format.dart';
 import 'package:firebase_admob/firebase_admob.dart';
@@ -21,17 +22,15 @@ MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
       'pendidikan',
       'kompetensi'
     ],
-    birthday: DateTime.now(),
-    gender: MobileAdGender.unknown,
     childDirected: false,
     nonPersonalizedAds: false,
-    designedForFamilies: true);
+    );
 
 InterstitialAd _interstitialAd;
 
 InterstitialAd createInterstitialAd() {
   return new InterstitialAd(
-      adUnitId: "ca-app-pub-9631895364890043/3877720394",
+      adUnitId: InterstitialAd.testAdUnitId,
       targetingInfo: targetingInfo,
       listener: (MobileAdEvent event) {
         print("intertiat ad $event");
@@ -459,7 +458,7 @@ class _EditProfilState extends State<EditProfil> {
   @override
   void initState() {
     FirebaseAdMob.instance
-        .initialize(appId: "ca-app-pub-9631895364890043~3439447130");
+        .initialize(appId: FirebaseAdMob.testAppId);
     _controlName.text = widget.namaUser;
     _controlKontak.text = widget.kontak == "Kosong" ? "" : widget.kontak;
     _controlAlamat.text = widget.alamat == "Kosong" ? "" : widget.alamat;

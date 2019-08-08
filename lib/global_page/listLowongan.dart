@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
 import 'package:firebase_admob/firebase_admob.dart';
@@ -21,17 +23,15 @@ MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
       'pendidikan',
       'kompetensi'
     ],
-    birthday: DateTime.now(),
-    gender: MobileAdGender.unknown,
     childDirected: false,
     nonPersonalizedAds: false,
-    designedForFamilies: true);
+    );
 
 BannerAd _bannerAd;
 
 BannerAd createBannerAd() {
   return new BannerAd(
-      adUnitId: "ca-app-pub-9631895364890043/8958927150",
+      adUnitId: BannerAd.testAdUnitId,
       targetingInfo: targetingInfo,
       size: AdSize.smartBanner,
       listener: (MobileAdEvent event) {
@@ -51,10 +51,16 @@ class ListLowonganGlobalState extends State<ListLowonganGlobal> {
   void initState() {
     super.initState();
     FirebaseAdMob.instance
-        .initialize(appId: "ca-app-pub-9631895364890043~3439447130");
+        .initialize(appId: FirebaseAdMob.testAppId);
     _bannerAd = createBannerAd()
       ..load()
       ..show();
+  }
+
+  @override
+  void dispose() {
+    _bannerAd.dispose();
+    super.dispose();
   }
   @override
   Widget build(BuildContext context) {

@@ -1,10 +1,10 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 DateTime dateNow = DateTime.now();
-IconData _icon;
-MaterialColor _colors;
 
 final loadingLoad = CircularProgressIndicator(
   backgroundColor: Colors.deepOrange,
@@ -103,7 +103,7 @@ class TileMentorState extends State<TileMentor> {
   String _namaMentor;
   var dataNya;
   int totPemagang = 0;
-  Future getLowongan() async {
+  Future _getMentor() async {
     var firestore = Firestore.instance;
     var userQuery = firestore
         .collection('users')
@@ -123,7 +123,7 @@ class TileMentorState extends State<TileMentor> {
   @override
   void initState() {
     super.initState();
-    getLowongan();
+    _getMentor();
   }
 
   @override

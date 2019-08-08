@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/foundation.dart';
@@ -585,6 +587,15 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                           ),
                         ),
                       ],
+                    );
+                  } else {
+                    return Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[loadingLoad, Text("Loading Data..")],
+                      ),
                     );
                   }
                 },

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +12,7 @@ import 'package:tempat_magang/instansi_page/instansi_buat_lowongan.dart';
 import 'package:tempat_magang/instansi_page/manajemenLowonganInstansi.dart';
 import 'package:tempat_magang/instansi_page/manajemenMentor.dart';
 import 'package:tempat_magang/instansi_page/riwayatMagang.dart';
-
+DateTime dateNow = DateTime.now();
 MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
     testDevices: <String>[],
     keywords: <String>[
@@ -22,17 +24,15 @@ MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
       'pendidikan',
       'kompetensi'
     ],
-    birthday: DateTime.now(),
-    gender: MobileAdGender.unknown,
     childDirected: false,
     nonPersonalizedAds: false,
-    designedForFamilies: true);
+    );
 
 BannerAd _bannerAd;
 
 BannerAd createBannerAd() {
   return new BannerAd(
-      adUnitId: "ca-app-pub-9631895364890043/4234048230",
+      adUnitId: BannerAd.testAdUnitId,
       targetingInfo: targetingInfo,
       size: AdSize.smartBanner,
       listener: (MobileAdEvent event) {
@@ -50,10 +50,9 @@ class InstansiDashboard extends StatefulWidget {
 }
 
 class _InstansiDashboardState extends State<InstansiDashboard> {
-  _MySearchDelegate _delegate;
   final List<String> lowonganNya;
   String _namaUser, _statusUser, _idUser;
-  var name;
+  var tmp;
 
   List<String> wew = ['wew', 'wsadas'];
   _InstansiDashboardState()
@@ -74,8 +73,8 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
     userQuery.getDocuments().then((data) {
       if (data.documents.length > 0) {
         setState(() {
-          name = data.documents[0].data['data'] as Map<dynamic, dynamic>;
-          _namaUser = name["displayName"];
+          tmp = data.documents[0].data['data'] as Map<dynamic, dynamic>;
+          _namaUser = tmp["displayName"];
           _idUser = user.uid;
           _statusUser = data.documents[0].data['role'];
         });
@@ -164,13 +163,12 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
   @override
   void initState() {
     FirebaseAdMob.instance
-        .initialize(appId: "ca-app-pub-9631895364890043~3439447130");
+        .initialize(appId: FirebaseAdMob.testAppId);
     _bannerAd = createBannerAd()
       ..load()
       ..show();
     super.initState();
     getDataUser();
-    _delegate = _MySearchDelegate(lowonganNya);
   }
 
   @override
@@ -215,7 +213,7 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
                   } else if (snapshot.connectionState ==
                           ConnectionState.active ||
                       snapshot.hasData) {
-                    name = snapshot.data['data'] as Map<dynamic, dynamic>;
+                    tmp = snapshot.data['data'] as Map<dynamic, dynamic>;
                     return new UserAccountsDrawerHeader(
                       decoration: BoxDecoration(color: const Color(0xFFe87c55)
                           //     image: DecorationImage(
@@ -224,24 +222,26 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
                           // )
                           ),
                       accountEmail:
-                          new Text(name["email"] == null ? "" : name["email"]),
-                      accountName: new Text(name["displayName"] == null
+                          new Text(tmp["email"] == null ? "" : tmp["email"]),
+                      accountName: new Text(tmp["displayName"] == null
                           ? ""
-                          : name["displayName"]),
-                      currentAccountPicture: name["photoURL"] == null
+                          : tmp["displayName"]),
+                      currentAccountPicture: tmp["photoURL"] == null
                           ? new CircleAvatar(
                               backgroundColor: Colors.white,
                               child: new Text("T",
                                   style: TextStyle(fontSize: 25.0)))
-                          : name["photoURL"] == ""
+                          : tmp["photoURL"] == ""
                               ? new CircleAvatar(
                                   backgroundColor: Colors.white,
                                   child: new Text("T",
                                       style: TextStyle(fontSize: 25.0)))
                               : new CircleAvatar(
                                   backgroundImage:
-                                      NetworkImage(name["photoURL"])),
+                                      NetworkImage(tmp["photoURL"])),
                     );
+                  }else{
+                    return Center(child: new Text("Load"));
                   }
                 }),
             new ListTile(
@@ -252,7 +252,7 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
                 Navigator.of(
                   context,
                 ).push(MaterialPageRoute(
-                    builder: (BuildContext context) => new InstansiBuatLowongan(
+                    builder: (BuildContext context) => new AgencyCreateVacancies(
                           id: _idUser,
                         )));
               },
@@ -356,7 +356,7 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
                               context,
                             ).push(MaterialPageRoute(
                                 builder: (BuildContext context) =>
-                                    new InstansiBuatLowongan(
+                                    new AgencyCreateVacancies(
                                       id: _idUser,
                                     )));
                           },
@@ -447,128 +447,6 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
   }
 }
 
-class _MySearchDelegate extends SearchDelegate<String> {
-  final List<String> _words;
-  final List<String> _history;
-
-  _MySearchDelegate(List<String> words)
-      : _words = words,
-        _history = <String>['wew', 'wew'],
-        super();
-
-  @override
-  Widget buildLeading(BuildContext context) {
-    return IconButton(
-      tooltip: 'Kembali',
-      icon: AnimatedIcon(
-        icon: AnimatedIcons.menu_arrow,
-        progress: transitionAnimation,
-      ),
-      onPressed: () {
-        this.close(context, null);
-      },
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Text("kau memilih : "),
-            GestureDetector(
-              onTap: () {
-                this.close(context, this.query);
-              },
-              child: Text(
-                this.query,
-                style: Theme.of(context)
-                    .textTheme
-                    .display1
-                    .copyWith(fontWeight: FontWeight.bold),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    final Iterable<String> suggestions = this.query.isEmpty
-        ? _history
-        : _words.where((word) => word.startsWith(query));
-
-    return _SugestionList(
-      query: this.query,
-      onSelected: (String suggestion) {
-        this.query = suggestion;
-        this._history.insert(0, suggestion);
-        showResults(context);
-      },
-      suggestions: suggestions.toList(),
-    );
-  }
-
-  @override
-  List<Widget> buildActions(BuildContext context) {
-    return <Widget>[
-      query.isEmpty
-          ? IconButton(
-              tooltip: 'Voice Search',
-              icon: const Icon(Icons.mic),
-              onPressed: () {
-                this.query = 'TODO VOICE INPUT';
-              },
-            )
-          : IconButton(
-              tooltip: 'Clear',
-              icon: const Icon(Icons.clear),
-              onPressed: () {
-                query = '';
-                showSuggestions(context);
-              },
-            )
-    ];
-  }
-}
-
-class _SugestionList extends StatelessWidget {
-  const _SugestionList({this.suggestions, this.query, this.onSelected});
-  final List<String> suggestions;
-  final String query;
-  final ValueChanged<String> onSelected;
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme.subhead;
-    return ListView.builder(
-      itemCount: suggestions.length,
-      itemBuilder: (BuildContext context, int i) {
-        final String suggestion = suggestions[i];
-        return ListTile(
-          leading: query.isEmpty ? Icon(Icons.history) : Icon(null),
-          title: RichText(
-            text: TextSpan(
-                text: suggestion.substring(0, query.length),
-                style: textTheme.copyWith(fontWeight: FontWeight.bold),
-                children: <TextSpan>[
-                  TextSpan(
-                      text: suggestion.substring(query.length),
-                      style: textTheme)
-                ]),
-          ),
-          onTap: () {
-            onSelected(suggestion);
-          },
-        );
-      },
-    );
-  }
-}
 
 class ListPage extends StatefulWidget {
   ListPage({this.idUser});
@@ -578,7 +456,7 @@ class ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<ListPage> {
-  DateTime dateNow = DateTime.now();
+  
 
   //composite expiredAt and createdAt
   final loadingLoad = CircularProgressIndicator(
@@ -587,12 +465,13 @@ class _ListPageState extends State<ListPage> {
   );
   @override
   Widget build(BuildContext context) {
-    DateTime dateNow = DateTime.now();
+    
     return Container(
       child: StreamBuilder(
         stream: Firestore.instance
-            .collection('internship')
+            .collection('registerIntern')
             .where('ownerAgency', isEqualTo: widget.idUser)
+            .where('status',isEqualTo: 'accepted')
             .where('timeEndIntern', isGreaterThanOrEqualTo: dateNow)
             .snapshots(),
         builder: (context, snapshot) {

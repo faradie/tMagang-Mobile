@@ -37,19 +37,19 @@ class _RootPageState extends State<RootPage> {
             userId == null ? AuthStatus.notSignedIn : AuthStatus.signedIn;
       });
       if (userId != null) {
-        getUser();
+        _getUser();
       }
     });
   }
 
   void _signedIn() {
     setState(() {
-      getUser();
+      _getUser();
       authStatus = AuthStatus.signedIn;
     });
   }
 
-  void getUser() async {
+  void _getUser() async {
     var user = await FirebaseAuth.instance.currentUser();
     var firestore = Firestore.instance;
     
@@ -92,7 +92,7 @@ class _RootPageState extends State<RootPage> {
         wew: _statusUser,
       );
     } else if (authStatus == AuthStatus.signedIn && _statusUser == "intern") {
-      return new Dashboard(
+      return new InternDashboard(
         auth: widget.auth,
         onSignedOut: _signedOut,
       );
@@ -100,19 +100,19 @@ class _RootPageState extends State<RootPage> {
       return new AdminDashboard(
         auth: widget.auth,
         onSignedOut: _signedOut,
-        wew: _statusUser,
+        stats: _statusUser,
       );
     } else if (authStatus == AuthStatus.signedIn && _statusUser == "college") {
       return new CollegeDashboard(
         auth: widget.auth,
         onSignedOut: _signedOut,
-        wew: _statusUser,
+        stats: _statusUser,
       );
     } else if (authStatus == AuthStatus.signedIn && _statusUser == "mentor") {
       return new MentorDashboard(
         auth: widget.auth,
         onSignedOut: _signedOut,
-        wew: _statusUser,
+        stats: _statusUser,
       );
     } else {
       return new LoginPage(

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/foundation.dart';
@@ -6,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 
+DateTime dateNow = DateTime.now();
 final loadingLoad = CircularProgressIndicator(
   backgroundColor: Colors.deepOrange,
   strokeWidth: 1.5,
@@ -21,13 +24,13 @@ void _showToast(String pesan, Color warna) {
   );
 }
 
-class ListMagangMentor extends StatefulWidget {
-  ListMagangMentor({this.idMentor});
+class Mentoring extends StatefulWidget {
+  Mentoring({this.idMentor});
   final String idMentor;
-  _ListMagangMentorState createState() => _ListMagangMentorState();
+  _MentoringState createState() => _MentoringState();
 }
 
-class _ListMagangMentorState extends State<ListMagangMentor> {
+class _MentoringState extends State<Mentoring> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -53,7 +56,9 @@ class _ListMagangMentorState extends State<ListMagangMentor> {
             new FlatButton(
               child: StreamBuilder(
                 stream: Firestore.instance
-                    .collection('internship')
+                    .collection('registerIntern')
+                    .where('status', isEqualTo: 'accepted')
+                    .where('timeEndIntern', isGreaterThanOrEqualTo: dateNow)
                     .where('mentorId', isEqualTo: widget.idMentor)
                     .snapshots(),
                 builder: (context, snapshot) {
@@ -86,7 +91,9 @@ class _ListMagangMentorState extends State<ListMagangMentor> {
             children: <Widget>[
               StreamBuilder(
                 stream: Firestore.instance
-                    .collection('internship')
+                    .collection('registerIntern')
+                    .where('status', isEqualTo: 'accepted')
+                    .where('timeEndIntern', isGreaterThanOrEqualTo: dateNow)
                     .where("mentorId", isEqualTo: widget.idMentor)
                     .snapshots(),
                 builder: (context, snapshot) {
@@ -134,8 +141,10 @@ class ListMentoringState extends State<ListMentoring> {
   Future getLowongan() async {
     var firestore = Firestore.instance;
     QuerySnapshot qn = await firestore
-        .collection('internship')
-        .where('mentorId', isEqualTo: widget.id)
+        .collection('registerIntern')
+        .where('status', isEqualTo: 'accepted')
+        // .where('timeEndIntern', isGreaterThanOrEqualTo: dateNow)
+        .where("mentorId", isEqualTo: widget.id)
         .getDocuments();
 
     return qn.documents;
@@ -292,10 +301,11 @@ class _DetailMentoringState extends State<DetailMentoring> {
   String _namaUser;
   var name;
 
-  Future _getPemagang() async {
+  Future _getIntern() async {
     var firestore = Firestore.instance;
     QuerySnapshot qn = await firestore
-        .collection('internship')
+        .collection('registerIntern')
+        .where('status', isEqualTo: 'accepted')
         .where('vacanciesId', isEqualTo: widget.idLowongan)
         .getDocuments();
 
@@ -638,6 +648,10 @@ class _DetailMentoringState extends State<DetailMentoring> {
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                               );
+                                            } else {
+                                              return Text(
+                                                'Mengambil data...',
+                                              );
                                             }
                                           }),
                                       SizedBox(height: 10.0),
@@ -668,13 +682,19 @@ class _DetailMentoringState extends State<DetailMentoring> {
                         ),
                       ],
                     );
+                  } else {
+                    return Center(
+                      child: new Text(
+                        'Mengambil data...',
+                      ),
+                    );
                   }
                 },
               ),
               //batas tabs 1 dan 2
               Container(
                 child: new FutureBuilder(
-                  future: _getPemagang(),
+                  future: _getIntern(),
                   builder: (_, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(
@@ -689,6 +709,7 @@ class _DetailMentoringState extends State<DetailMentoring> {
                                 owner: snapshot.data[index].data["ownerAgency"],
                                 idMentor: snapshot.data[index].data["mentorId"],
                                 idLowongan: widget.idLowongan,
+                                collegeId: snapshot.data[index].data["collegeId"],
                                 no: (index + 1).toString(),
                                 idUser: snapshot.data[index].data["userId"],
                                 endIntern:
@@ -826,9 +847,10 @@ class TilePemagang extends StatefulWidget {
       this.no,
       this.idLowongan,
       this.endIntern,
+      this.collegeId,
       this.idMentor,
       this.owner});
-  final String idUser, no, idLowongan, idMentor, owner;
+  final String idUser, no, idLowongan, idMentor, owner, collegeId;
   final Timestamp endIntern;
   _TilePemagangState createState() => _TilePemagangState();
 }
@@ -841,19 +863,13 @@ class _TilePemagangState extends State<TilePemagang> {
   bool tekan = true;
   bool tekanList = true;
   String _namaUser, _kampus;
-  var _ratDisiplin = 0.0;
-  var _ratTanggungJawab = 0.0;
-  var _ratTeamWork = 0.0;
-  var _ratPlanningSkill = 0.0;
-  var _ratLeadership = 0.0;
-  var _ratProbandDecis = 0.0;
-  var _ratKepatuhan = 0.0;
-  var _ratKejujuran = 0.0;
-  var _ratinisiatif = 0.0;
-  var _ratselfMotivation = 0.0;
-  var _ratAnaliticalThink = 0.0;
-  var _ratAchivement = 0.0;
-  var _ratInovatif = 0.0;
+  var _ratIntegritas = 0.0;
+  var _ratKeahlian = 0.0;
+  var _ratKomunikasi = 0.0;
+  var _ratKerjasama = 0.0;
+  var _ratPengembanganDiri = 0.0;
+  var _ratPenggunaanTeknologi = 0.0;
+  var _ratBahasaInggris = 0.0;
 
   void _prosesNilai() {
     setState(() {
@@ -868,19 +884,14 @@ class _TilePemagangState extends State<TilePemagang> {
       "ratedAt": dateNow,
       "ownerAgency": widget.owner,
       "mentorId": widget.idMentor,
-      "disiplin": _ratDisiplin,
-      "tanggungJawab": _ratTanggungJawab,
-      "teamWork": _ratTeamWork,
-      "planningSkills": _ratPlanningSkill,
-      "leadership": _ratLeadership,
-      "problemSolvingDecision": _ratProbandDecis,
-      "kepatuhan": _ratKepatuhan,
-      "kejujuran": _ratKejujuran,
-      "inisiatif": _ratinisiatif,
-      "selfMotifation": _ratselfMotivation,
-      "analithicalThinking": _ratAnaliticalThink,
-      "achievementOrientation": _ratAchivement,
-      "inofatif": _ratInovatif
+      "collegeId": widget.collegeId,
+      "K1": _ratIntegritas,
+      "K2": _ratKeahlian,
+      "K3": _ratKomunikasi,
+      "K4": _ratKerjasama,
+      "K5": _ratPengembanganDiri,
+      "K6": _ratPenggunaanTeknologi,
+      "K7": _ratBahasaInggris
     };
 
     Firestore.instance
@@ -888,24 +899,30 @@ class _TilePemagangState extends State<TilePemagang> {
         .document("$_idPenilaianIntern")
         .setData(data)
         .whenComplete(() {
+          Map<String, dynamic> data2 = <String, dynamic>{
+            "inIntern" : false
+          };
+          Firestore.instance
+              .collection("users")
+              .document("${widget.idUser}")
+              .updateData(data2)
+              .whenComplete(() {
+            
+          }).catchError((e) {
+            print(e);
+          });
       _showToast("Berhasil Menilai", Color(0xFFe87c55));
 
       setState(() {
         tekan = true;
         tekanList = true;
-        this._ratDisiplin = 0.0;
-        this._ratTanggungJawab = 0.0;
-        this._ratTeamWork = 0.0;
-        this._ratPlanningSkill = 0.0;
-        this._ratLeadership = 0.0;
-        this._ratProbandDecis = 0.0;
-        this._ratKepatuhan = 0.0;
-        this._ratKejujuran = 0.0;
-        this._ratinisiatif = 0.0;
-        this._ratselfMotivation = 0.0;
-        this._ratAnaliticalThink = 0.0;
-        this._ratAchivement = 0.0;
-        this._ratInovatif = 0.0;
+        this._ratIntegritas = 0.0;
+        this._ratKeahlian = 0.0;
+        this._ratKomunikasi = 0.0;
+        this._ratKerjasama = 0.0;
+        this._ratPengembanganDiri = 0.0;
+        this._ratPenggunaanTeknologi = 0.0;
+        this._ratBahasaInggris = 0.0;
       });
       Navigator.of(context).pop();
     }).catchError((e) {
@@ -935,7 +952,6 @@ class _TilePemagangState extends State<TilePemagang> {
 
           // _statusUser = data.documents[0].data['isActive'];
         });
-
         var collegeQuery = firestore
             .collection('users')
             .where('uid', isEqualTo: name["collegeId"])
@@ -954,7 +970,7 @@ class _TilePemagangState extends State<TilePemagang> {
     });
   }
 
-  void showAlert(BuildContext context, String nama) async {
+  void showDialogPenilaian(BuildContext context, String nama) async {
     DocumentReference favoritesReference = Firestore.instance
         .collection('reportIntern')
         .document("${widget.idLowongan}_${widget.idUser}");
@@ -962,19 +978,13 @@ class _TilePemagangState extends State<TilePemagang> {
       DocumentSnapshot postSnapshot = await tx.get(favoritesReference);
       if (postSnapshot.exists) {
         await tx.get(favoritesReference).then((doc) {
-          this._ratDisiplin = doc.data["disiplin"];
-          this._ratTanggungJawab = doc.data["tanggungJawab"];
-          this._ratTeamWork = doc.data["teamWork"];
-          this._ratPlanningSkill = doc.data["planningSkills"];
-          this._ratLeadership = doc.data["leadership"];
-          this._ratProbandDecis = doc.data["problemSolvingDecision"];
-          this._ratKepatuhan = doc.data["kepatuhan"];
-          this._ratKejujuran = doc.data["kejujuran"];
-          this._ratinisiatif = doc.data["inisiatif"];
-          this._ratselfMotivation = doc.data["selfMotifation"];
-          this._ratAnaliticalThink = doc.data["analithicalThinking"];
-          this._ratAchivement = doc.data["achievementOrientation"];
-          this._ratInovatif = doc.data["inofatif"];
+          this._ratIntegritas = doc.data["K1"];
+          this._ratKeahlian = doc.data["K2"];
+          this._ratKomunikasi = doc.data["K3"];
+          this._ratKerjasama = doc.data["K4"];
+          this._ratPengembanganDiri = doc.data["K5"];
+          this._ratPenggunaanTeknologi = doc.data["K6"];
+          this._ratBahasaInggris = doc.data["K7"];
         });
       }
     }).whenComplete(() {
@@ -1014,158 +1024,86 @@ class _TilePemagangState extends State<TilePemagang> {
                                 child: new Column(
                                   children: <Widget>[
                                     new Text(
-                                        "1. Bagaimana dengan kedisiplinannya?"),
+                                        "1. Bagaimana dengan Integritasnya?"),
                                     new Container(
                                         child: RatingStarFull(
                                       color: Colors.red,
-                                      rating: _ratDisiplin,
+                                      rating: _ratIntegritas,
                                       starCount: 5,
                                       onRatingChanged: (v) {
-                                        this._ratDisiplin = v;
+                                        this._ratIntegritas = v;
                                       },
                                     )),
                                     new Divider(),
                                     new Text(
-                                        "2. Bagaimana dengan tanggung jawabnya?"),
+                                        "2. Bagaimana dengan keahlian berdasarkan bidang ilmu?"),
                                     new Container(
                                         child: RatingStarFull(
                                       color: Colors.red,
-                                      rating: _ratTanggungJawab,
+                                      rating: _ratKeahlian,
                                       starCount: 5,
                                       onRatingChanged: (v) {
-                                        this._ratTanggungJawab = v;
+                                        this._ratKeahlian = v;
                                       },
                                     )),
                                     new Divider(),
                                     new Text(
-                                        "3. Bagaimana dengan teamwork nya?"),
+                                        "3. Bagaimana dengan Komunikasinya?"),
                                     new Container(
                                         child: RatingStarFull(
                                       color: Colors.red,
-                                      rating: _ratTeamWork,
+                                      rating: _ratKomunikasi,
                                       starCount: 5,
                                       onRatingChanged: (v) {
-                                        this._ratTeamWork = v;
+                                        this._ratKomunikasi = v;
                                       },
                                     )),
                                     new Divider(),
                                     new Text(
-                                        "4. Bagaimana dengan planning skill nya?"),
+                                        "4. Bagaimana dengan Kerjasamanya?"),
                                     new Container(
                                         child: RatingStarFull(
                                       color: Colors.red,
-                                      rating: _ratPlanningSkill,
+                                      rating: _ratKerjasama,
                                       starCount: 5,
                                       onRatingChanged: (v) {
-                                        this._ratPlanningSkill = v;
+                                        this._ratKerjasama = v;
                                       },
                                     )),
                                     new Divider(),
                                     new Text(
-                                        "5. Bagaimana dengan leadership nya?"),
+                                        "5. Bagaimana dengan pengembangan dirinya?"),
                                     new Container(
                                         child: RatingStarFull(
                                       color: Colors.red,
-                                      rating: _ratLeadership,
+                                      rating: _ratPengembanganDiri,
                                       starCount: 5,
                                       onRatingChanged: (v) {
-                                        this._ratLeadership = v;
+                                        this._ratPengembanganDiri = v;
                                       },
                                     )),
                                     new Divider(),
                                     new Text(
-                                        "6. Bagaimana dengan problem solving dan decision taking skills nya?"),
+                                        "6. Bagaimana dengan penggunaan teknologinya?"),
                                     new Container(
                                         child: RatingStarFull(
                                       color: Colors.red,
-                                      rating: _ratProbandDecis,
+                                      rating: _ratPenggunaanTeknologi,
                                       starCount: 5,
                                       onRatingChanged: (v) {
-                                        this._ratProbandDecis = v;
+                                        this._ratPenggunaanTeknologi = v;
                                       },
                                     )),
                                     new Divider(),
                                     new Text(
-                                        "7. Bagaimana dengan kepatuhan nya?"),
+                                        "7. Bagaimana dengan Bahasa Inggrisnya?"),
                                     new Container(
                                         child: RatingStarFull(
                                       color: Colors.red,
-                                      rating: _ratKepatuhan,
+                                      rating: _ratBahasaInggris,
                                       starCount: 5,
                                       onRatingChanged: (v) {
-                                        this._ratKepatuhan = v;
-                                      },
-                                    )),
-                                    new Divider(),
-                                    new Text(
-                                        "8. Bagaimana dengan kejujuran nya?"),
-                                    new Container(
-                                        child: RatingStarFull(
-                                      color: Colors.red,
-                                      rating: _ratKejujuran,
-                                      starCount: 5,
-                                      onRatingChanged: (v) {
-                                        this._ratKejujuran = v;
-                                      },
-                                    )),
-                                    new Divider(),
-                                    new Text(
-                                        "9. Bagaimana dengan rasa inisiatif nya?"),
-                                    new Container(
-                                        child: RatingStarFull(
-                                      color: Colors.red,
-                                      rating: _ratinisiatif,
-                                      starCount: 5,
-                                      onRatingChanged: (v) {
-                                        this._ratinisiatif = v;
-                                      },
-                                    )),
-                                    new Divider(),
-                                    new Text(
-                                        "10. Bagaimana dengan self motivation nya?"),
-                                    new Container(
-                                        child: RatingStarFull(
-                                      color: Colors.red,
-                                      rating: _ratselfMotivation,
-                                      starCount: 5,
-                                      onRatingChanged: (v) {
-                                        this._ratselfMotivation = v;
-                                      },
-                                    )),
-                                    new Divider(),
-                                    new Text(
-                                        "11. Bagaimana dengan analithical thinking nya?"),
-                                    new Container(
-                                        child: RatingStarFull(
-                                      color: Colors.red,
-                                      rating: _ratAnaliticalThink,
-                                      starCount: 5,
-                                      onRatingChanged: (v) {
-                                        this._ratAnaliticalThink = v;
-                                      },
-                                    )),
-                                    new Divider(),
-                                    new Text(
-                                        "12. Bagaimana dengan achievement orientation nya?"),
-                                    new Container(
-                                        child: RatingStarFull(
-                                      color: Colors.red,
-                                      rating: _ratAchivement,
-                                      starCount: 5,
-                                      onRatingChanged: (v) {
-                                        this._ratAchivement = v;
-                                      },
-                                    )),
-                                    new Divider(),
-                                    new Text(
-                                        "13. Bagaimana dengan inovasi nya?"),
-                                    new Container(
-                                        child: RatingStarFull(
-                                      color: Colors.red,
-                                      rating: _ratInovatif,
-                                      starCount: 5,
-                                      onRatingChanged: (v) {
-                                        this._ratInovatif = v;
+                                        this._ratBahasaInggris = v;
                                       },
                                     )),
                                     new Divider(),
@@ -1186,19 +1124,13 @@ class _TilePemagangState extends State<TilePemagang> {
                               splashColor: Colors.blueGrey,
                               onPressed: () {
                                 setState(() {
-                                  this._ratDisiplin = 0.0;
-                                  this._ratTanggungJawab = 0.0;
-                                  this._ratTeamWork = 0.0;
-                                  this._ratPlanningSkill = 0.0;
-                                  this._ratLeadership = 0.0;
-                                  this._ratProbandDecis = 0.0;
-                                  this._ratKepatuhan = 0.0;
-                                  this._ratKejujuran = 0.0;
-                                  this._ratinisiatif = 0.0;
-                                  this._ratselfMotivation = 0.0;
-                                  this._ratAnaliticalThink = 0.0;
-                                  this._ratAchivement = 0.0;
-                                  this._ratInovatif = 0.0;
+                                  this._ratIntegritas = 0.0;
+                                  this._ratKeahlian = 0.0;
+                                  this._ratKomunikasi = 0.0;
+                                  this._ratKerjasama = 0.0;
+                                  this._ratPengembanganDiri = 0.0;
+                                  this._ratPenggunaanTeknologi = 0.0;
+                                  this._ratBahasaInggris = 0.0;
                                   tekanList = true;
                                 });
 
@@ -1258,7 +1190,7 @@ class _TilePemagangState extends State<TilePemagang> {
                       tekanList = false;
                     });
 
-                    showAlert(context, _namaUser);
+                    showDialogPenilaian(context, _namaUser);
                   }
                 } else {}
               },
@@ -1271,23 +1203,6 @@ class _TilePemagangState extends State<TilePemagang> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               subtitle: new Text("Kampus : ${_kampus == null ? "" : _kampus}"),
-              // trailing: penerimaan == false
-              //     ? new Text("")
-              //     : new PopupMenuButton<String>(
-              //         onSelected: (String newValue) {
-              //           _selectVal = newValue;
-              //           if (_selectVal == "Terima") {
-              //             if (penerimaan == false) {
-              //               _showToast("Belum saatnya", Colors.red);
-              //             } else {
-              //               _isPressed();
-              //             }
-              //           } else {
-              //             _hasilTolak();
-              //           }
-              //         },
-              //         itemBuilder: (BuildContext context) => _popUpTerimaItem,
-              //       )
             ),
             new Divider(),
           ],

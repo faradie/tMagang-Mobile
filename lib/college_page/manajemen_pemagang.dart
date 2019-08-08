@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,13 +10,13 @@ final loadingLoad = CircularProgressIndicator(
   strokeWidth: 1.5,
 );
 
-class ManajemenPemagang extends StatefulWidget {
-  ManajemenPemagang({this.idCollege});
+class ManageStudent extends StatefulWidget {
+  ManageStudent({this.idCollege});
   final String idCollege;
-  _ManajemenPemagangState createState() => _ManajemenPemagangState();
+  _ManageStudentState createState() => _ManageStudentState();
 }
 
-class _ManajemenPemagangState extends State<ManajemenPemagang> {
+class _ManageStudentState extends State<ManageStudent> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -63,7 +65,7 @@ class ListMhs extends StatefulWidget {
 class ListMhsState extends State<ListMhs> {
   DateTime dateNow = DateTime.now();
 
-  Future getMagang() async {
+  Future _getMhs() async {
     var firestore = Firestore.instance;
     print("ini widget ${widget.id}");
     QuerySnapshot qn = await firestore
@@ -78,7 +80,7 @@ class ListMhsState extends State<ListMhs> {
   Widget build(BuildContext context) {
     return Container(
       child: FutureBuilder(
-        future: getMagang(),
+        future: _getMhs(),
         builder: (_, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
