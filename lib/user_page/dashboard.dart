@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:tempat_magang/auth.dart';
-import 'package:firebase_admob/firebase_admob.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
@@ -16,33 +15,6 @@ final loadingLoad = CircularProgressIndicator(
   backgroundColor: Colors.deepOrange,
   strokeWidth: 1.5,
 );
-
-MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
-    testDevices: <String>[],
-    keywords: <String>[
-      'magang',
-      'kampus',
-      'industri',
-      'lowongan',
-      'kerja',
-      'pendidikan',
-      'kompetensi'
-    ],
-    childDirected: false,
-    nonPersonalizedAds: false,
-);
-
-BannerAd _bannerAd;
-
-BannerAd createBannerAd() {
-  return new BannerAd(
-      adUnitId: BannerAd.testAdUnitId,
-      targetingInfo: targetingInfo,
-      size: AdSize.smartBanner,
-      listener: (MobileAdEvent event) {
-        print("intern banner ad $event");
-      });
-}
 
 class InternDashboard extends StatefulWidget {
   InternDashboard({this.auth, this.onSignedOut});
@@ -185,12 +157,7 @@ class _InternDashboardState extends State<InternDashboard> {
   @override
   void initState() {
     super.initState();
-    FirebaseAdMob.instance.initialize(appId: FirebaseAdMob.testAppId);
-    _bannerAd = createBannerAd()
-      ..load()
-      ..show();
     _getDataUser();
-
     // _isVisible = true;
     // _hideButtonController = new ScrollController();
     // _hideButtonController.addListener(() {
@@ -213,17 +180,12 @@ class _InternDashboardState extends State<InternDashboard> {
 
   @override
   void dispose() {
-    _bannerAd?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        bottomNavigationBar: Container(
-          height: 50.0,
-          color: Colors.white,
-        ),
         floatingActionButton: _statusUser == null
             ? null
             : _statusUser == false

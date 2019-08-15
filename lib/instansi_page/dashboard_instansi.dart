@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tempat_magang/auth.dart';
@@ -13,32 +12,6 @@ import 'package:tempat_magang/instansi_page/manajemenLowonganInstansi.dart';
 import 'package:tempat_magang/instansi_page/manajemenMentor.dart';
 import 'package:tempat_magang/instansi_page/riwayatMagang.dart';
 DateTime dateNow = DateTime.now();
-MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
-    testDevices: <String>[],
-    keywords: <String>[
-      'magang',
-      'kampus',
-      'industri',
-      'lowongan',
-      'kerja',
-      'pendidikan',
-      'kompetensi'
-    ],
-    childDirected: false,
-    nonPersonalizedAds: false,
-    );
-
-BannerAd _bannerAd;
-
-BannerAd createBannerAd() {
-  return new BannerAd(
-      adUnitId: BannerAd.testAdUnitId,
-      targetingInfo: targetingInfo,
-      size: AdSize.smartBanner,
-      listener: (MobileAdEvent event) {
-        print("Agency banner ad $event");
-      });
-}
 
 class InstansiDashboard extends StatefulWidget {
   InstansiDashboard({this.auth, this.onSignedOut, this.wew});
@@ -162,28 +135,18 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
 
   @override
   void initState() {
-    FirebaseAdMob.instance
-        .initialize(appId: FirebaseAdMob.testAppId);
-    _bannerAd = createBannerAd()
-      ..load()
-      ..show();
     super.initState();
     getDataUser();
   }
 
   @override
   void dispose() {
-    _bannerAd?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        bottomNavigationBar: Container(
-          height: 50.0,
-          color: Colors.white,
-        ),
         drawer: new Drawer(
             child: ListView(
           children: <Widget>[
@@ -266,7 +229,7 @@ class _InstansiDashboardState extends State<InstansiDashboard> {
                   context,
                 ).push(MaterialPageRoute(
                     builder: (BuildContext context) =>
-                        new ManajemenLowonganInstansi(
+                        new ManageVacancies(
                           idAgency: _idUser,
                         )));
               },

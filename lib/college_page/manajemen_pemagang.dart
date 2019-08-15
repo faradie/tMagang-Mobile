@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:tempat_magang/college_page/addStudent.dart';
 import 'package:tempat_magang/user_page/internprofil.dart';
 
 final loadingLoad = CircularProgressIndicator(
@@ -20,11 +21,20 @@ class _ManageStudentState extends State<ManageStudent> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      bottomNavigationBar: Container(
-        height: 50.0,
-        color: Colors.white,
-      ),
       appBar: AppBar(
+        actions: <Widget>[
+          new FlatButton(
+            child: new Icon(Icons.add, color: Colors.white),
+            onPressed: () {
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(
+                  builder: (BuildContext context) => new AddStudent(
+                    idCollege: widget.idCollege,
+                  )));
+            },
+          )
+        ],
         elevation: defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
         backgroundColor: const Color(0xFFe87c55),
         title: new Text("Mahasiswa"),
@@ -129,7 +139,7 @@ class TilePemagang extends StatefulWidget {
 class TilePemagangState extends State<TilePemagang> {
   var name, agency;
   String _namaUser, _nimNya;
-  Future getDatInternship() async {
+  Future _getDatInternship() async {
     var firestore = Firestore.instance;
     var userQuery = firestore
         .collection('users')
@@ -151,7 +161,7 @@ class TilePemagangState extends State<TilePemagang> {
   @override
   void initState() {
     super.initState();
-    getDatInternship();
+    _getDatInternship();
   }
 
   @override

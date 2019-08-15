@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:tempat_magang/instansi_page/add_mentor.dart';
 
 DateTime dateNow = DateTime.now();
 
@@ -21,14 +22,21 @@ class _ManajemenMentorState extends State<ManajemenMentor> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: Container(
-        height: 50.0,
-        color: Colors.white,
-      ),
       appBar: AppBar(
         elevation: defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
         backgroundColor: const Color(0xFFe87c55),
         title: new Text("Mentor"),
+        actions: <Widget>[
+          new FlatButton(
+            child: new Icon(Icons.add, color: Colors.white),
+            onPressed: () {
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(
+                  builder: (BuildContext context) => new AddMentor(idAgency: widget.id,)));
+            },
+          )
+        ],
         leading: InkWell(
           onTap: () {
             Navigator.of(context).pop();

@@ -19,11 +19,7 @@ class _InternshipListState extends State<InternshipList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: Container(
-        height: 50.0,
-        color: Colors.white,
-      ),
-      appBar: AppBar(
+            appBar: AppBar(
         elevation: defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
         backgroundColor: const Color(0xFFe87c55),
         title: new Text("List Magang Aktif"),
@@ -58,7 +54,7 @@ class ListMagang extends StatefulWidget {
 class ListMagangState extends State<ListMagang> {
   DateTime dateNow = DateTime.now();
 
-  Future getMagang() async {
+  Future _getMagang() async {
     var firestore = Firestore.instance;
     QuerySnapshot qn = await firestore
         .collection('registerIntern')
@@ -74,7 +70,7 @@ class ListMagangState extends State<ListMagang> {
   Widget build(BuildContext context) {
     return Container(
       child: FutureBuilder(
-        future: getMagang(),
+        future: _getMagang(),
         builder: (_, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(

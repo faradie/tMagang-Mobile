@@ -34,11 +34,7 @@ class _MentoringState extends State<Mentoring> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        bottomNavigationBar: Container(
-          height: 50.0,
-          color: Colors.white,
-        ),
-        appBar: AppBar(
+                appBar: AppBar(
           elevation:
               defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
           backgroundColor: const Color(0xFFe87c55),
@@ -222,7 +218,7 @@ class TileLowongan extends StatefulWidget {
 }
 
 class TileLowonganState extends State<TileLowongan> {
-  String _namaLowongan, _timeEndIntern;
+  String _namaLowongan, _timeEndIntern, _ownerAgency, _mentorId;
 
   Future getDataUser() async {
     _timeEndIntern = formatDate(widget.timeEndIntern, [
@@ -246,6 +242,8 @@ class TileLowonganState extends State<TileLowongan> {
       if (data.documents.length > 0) {
         setState(() {
           _namaLowongan = data.documents[0].data['title'];
+          _ownerAgency = data.documents[0].data['ownerAgency'];
+          _mentorId = data.documents[0].data['mentorId'];
         });
       }
     });
@@ -271,6 +269,8 @@ class TileLowonganState extends State<TileLowongan> {
                 builder: (BuildContext context) => new DetailMentoring(
                       judul: _namaLowongan,
                       idLowongan: widget.idLowongan,
+                      idMentor: _mentorId,
+                      owner: _ownerAgency,
                     )));
           },
           leading: new Text(
@@ -291,12 +291,99 @@ class TileLowonganState extends State<TileLowongan> {
 }
 
 class DetailMentoring extends StatefulWidget {
-  DetailMentoring({this.judul, this.idLowongan});
-  final String judul, idLowongan;
+  DetailMentoring({this.judul, this.idLowongan, this.idMentor, this.owner});
+  final String judul, idLowongan, owner, idMentor;
   _DetailMentoringState createState() => _DetailMentoringState();
 }
 
 class _DetailMentoringState extends State<DetailMentoring> {
+  var _ratIntegritas = 0.0;
+  var _ratKeahlian = 0.0;
+  var _ratKomunikasi = 0.0;
+  var _ratKerjasama = 0.0;
+  var _ratPengembanganDiri = 0.0;
+  var _ratPenggunaanTeknologi = 0.0;
+  var _ratBahasaInggris = 0.0;
+
+  //for needed
+  List department,require;
+
+  bool neededDone = true;
+
+  bool tekanList = true;
+
+  bool tekan = true;
+  void _prosesKebutuhan() {
+    setState(() {
+      tekan = false;
+    });
+    DateTime dateNow = DateTime.now();
+    Map<String, dynamic> data = <String, dynamic>{
+      "vacanciesId": widget.idLowongan,
+      "ratedAt": dateNow,
+      "ownerAgency": widget.owner,
+      "mentorId": widget.idMentor,
+      "K1": _ratIntegritas,
+      "K2": _ratKeahlian,
+      "K3": _ratKomunikasi,
+      "K4": _ratKerjasama,
+      "K5": _ratPengembanganDiri,
+      "K6": _ratPenggunaanTeknologi,
+      "K7": _ratBahasaInggris,
+      "department" : department,
+      "requirement" : require
+    };
+
+    Firestore.instance
+        .collection("internNeeded")
+        .document("${widget.idLowongan}")
+        .setData(data)
+        .whenComplete(() {
+      _showToast("Berhasil menentukan kebutuhan", Color(0xFFe87c55));
+
+      setState(() {
+        tekan = true;
+        tekanList = true;
+        this._ratIntegritas = 0.0;
+        this._ratKeahlian = 0.0;
+        this._ratKomunikasi = 0.0;
+        this._ratKerjasama = 0.0;
+        this._ratPengembanganDiri = 0.0;
+        this._ratPenggunaanTeknologi = 0.0;
+        this._ratBahasaInggris = 0.0;
+      });
+      Navigator.of(context).pop();
+    }).catchError((e) {
+      print(e.toString());
+    });
+  }
+
+  void check() async {
+    DocumentReference favoritesReference = Firestore.instance
+        .collection('internNeeded')
+        .document("${widget.idLowongan}");
+    Firestore.instance.runTransaction((Transaction tx) async {
+      DocumentSnapshot postSnapshot = await tx.get(favoritesReference);
+      if (postSnapshot.exists) {
+        await tx.get(favoritesReference).then((doc) {
+          setState(() {
+           this.neededDone =  true; 
+          });
+        });
+      }else{
+        setState(() {
+         this.neededDone = false; 
+        });
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    check();
+  }
+
   var rating = 0.0;
   String _namaUser;
   var name;
@@ -319,13 +406,9 @@ class _DetailMentoringState extends State<DetailMentoring> {
       DeviceOrientation.portraitDown,
     ]);
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: new Scaffold(
-          bottomNavigationBar: Container(
-            height: 50.0,
-            color: Colors.white,
-          ),
-          appBar: AppBar(
+                    appBar: AppBar(
             elevation:
                 defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
             leading: InkWell(
@@ -363,6 +446,12 @@ class _DetailMentoringState extends State<DetailMentoring> {
                 Tab(
                   child: new Text(
                     "Pemagang",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Tab(
+                  child: new Text(
+                    "Kebutuhan",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -425,6 +514,12 @@ class _DetailMentoringState extends State<DetailMentoring> {
                       ':',
                       nn,
                     ]);
+
+                    setState(() {
+                     department =  snapshot.data['department'];
+                     require = snapshot.data['requirement'];
+                    });
+
                     return new ListView(
                       children: <Widget>[
                         new Card(
@@ -709,7 +804,8 @@ class _DetailMentoringState extends State<DetailMentoring> {
                                 owner: snapshot.data[index].data["ownerAgency"],
                                 idMentor: snapshot.data[index].data["mentorId"],
                                 idLowongan: widget.idLowongan,
-                                collegeId: snapshot.data[index].data["collegeId"],
+                                collegeId:
+                                    snapshot.data[index].data["collegeId"],
                                 no: (index + 1).toString(),
                                 idUser: snapshot.data[index].data["userId"],
                                 endIntern:
@@ -724,6 +820,175 @@ class _DetailMentoringState extends State<DetailMentoring> {
                     }
                   },
                 ),
+              ),
+              //tabs 3
+              neededDone == false ?
+              Container(
+                width: 300.0,
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    new Text(
+                      "Penentuan".toUpperCase(),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    new Text(
+                      "Kebutuhan",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 16.0),
+                    Container(
+                      child: new ConstrainedBox(
+                        constraints: BoxConstraints(maxHeight: 300.0),
+                        child: new Scrollbar(
+                          child: new SingleChildScrollView(
+                              scrollDirection: Axis.vertical,
+                              reverse: false,
+                              child: new Column(
+                                children: <Widget>[
+                                  new Text("1. Kebutuhan Integritas "),
+                                  new Container(
+                                      child: RatingStarFull(
+                                    color: Colors.red,
+                                    rating: _ratIntegritas,
+                                    starCount: 5,
+                                    onRatingChanged: (v) {
+                                      this._ratIntegritas = v;
+                                    },
+                                  )),
+                                  new Divider(),
+                                  new Text("2. Kebutuhan Keahlian"),
+                                  new Container(
+                                      child: RatingStarFull(
+                                    color: Colors.red,
+                                    rating: _ratKeahlian,
+                                    starCount: 5,
+                                    onRatingChanged: (v) {
+                                      this._ratKeahlian = v;
+                                    },
+                                  )),
+                                  new Divider(),
+                                  new Text("3. Kebutuhan Komunikasi"),
+                                  new Container(
+                                      child: RatingStarFull(
+                                    color: Colors.red,
+                                    rating: _ratKomunikasi,
+                                    starCount: 5,
+                                    onRatingChanged: (v) {
+                                      this._ratKomunikasi = v;
+                                    },
+                                  )),
+                                  new Divider(),
+                                  new Text("4. Kebutuhan Kerjasama"),
+                                  new Container(
+                                      child: RatingStarFull(
+                                    color: Colors.red,
+                                    rating: _ratKerjasama,
+                                    starCount: 5,
+                                    onRatingChanged: (v) {
+                                      this._ratKerjasama = v;
+                                    },
+                                  )),
+                                  new Divider(),
+                                  new Text(
+                                      "5. Kebutuhan dalam Pengembangan Diri"),
+                                  new Container(
+                                      child: RatingStarFull(
+                                    color: Colors.red,
+                                    rating: _ratPengembanganDiri,
+                                    starCount: 5,
+                                    onRatingChanged: (v) {
+                                      this._ratPengembanganDiri = v;
+                                    },
+                                  )),
+                                  new Divider(),
+                                  new Text("6. Kebutuhan Penggunaan Teknologi"),
+                                  new Container(
+                                      child: RatingStarFull(
+                                    color: Colors.red,
+                                    rating: _ratPenggunaanTeknologi,
+                                    starCount: 5,
+                                    onRatingChanged: (v) {
+                                      this._ratPenggunaanTeknologi = v;
+                                    },
+                                  )),
+                                  new Divider(),
+                                  new Text(
+                                      "7. Kebutuhan Penguasaan Bahasa Inggris"),
+                                  new Container(
+                                      child: RatingStarFull(
+                                    color: Colors.red,
+                                    rating: _ratBahasaInggris,
+                                    starCount: 5,
+                                    onRatingChanged: (v) {
+                                      this._ratBahasaInggris = v;
+                                    },
+                                  )),
+                                  new Divider(),
+                                ],
+                              )),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        ButtonTheme(
+                          height: 50.0,
+                          child: new RaisedButton(
+                            color: const Color(0xFFff9977),
+                            elevation: 4.0,
+                            splashColor: Colors.blueGrey,
+                            onPressed: () {
+                              setState(() {
+                                this._ratIntegritas = 0.0;
+                                this._ratKeahlian = 0.0;
+                                this._ratKomunikasi = 0.0;
+                                this._ratKerjasama = 0.0;
+                                this._ratPengembanganDiri = 0.0;
+                                this._ratPenggunaanTeknologi = 0.0;
+                                this._ratBahasaInggris = 0.0;
+                                tekanList = true;
+                              });
+
+                              Navigator.of(context).pop();
+                            },
+                            padding: const EdgeInsets.only(),
+                            child: new Text(
+                              'Batal'.toUpperCase(),
+                              style: TextStyle(
+                                  fontSize: 15.0, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                        ButtonTheme(
+                          height: 50.0,
+                          child: new RaisedButton(
+                            color: const Color(0xFFff9977),
+                            elevation: 4.0,
+                            splashColor: Colors.blueGrey,
+                            onPressed: tekan == true ? _prosesKebutuhan : null,
+                            padding: const EdgeInsets.only(),
+                            child: new Text(
+                              'Nilai'.toUpperCase(),
+                              style: TextStyle(
+                                  fontSize: 15.0, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ):
+              Center(
+                child: new Text("Penentuan telah usai"),
               ),
             ],
           )),
@@ -860,7 +1125,7 @@ class _TilePemagangState extends State<TilePemagang> {
   DateTime dateNow = DateTime.now();
   var name, mapKampus;
   bool penerimaan = false;
-  bool tekan = true;
+
   bool tekanList = true;
   String _namaUser, _kampus;
   var _ratIntegritas = 0.0;
@@ -871,6 +1136,7 @@ class _TilePemagangState extends State<TilePemagang> {
   var _ratPenggunaanTeknologi = 0.0;
   var _ratBahasaInggris = 0.0;
 
+  bool tekan = true;
   void _prosesNilai() {
     setState(() {
       tekan = false;
@@ -885,13 +1151,13 @@ class _TilePemagangState extends State<TilePemagang> {
       "ownerAgency": widget.owner,
       "mentorId": widget.idMentor,
       "collegeId": widget.collegeId,
-      "K1": _ratIntegritas,
-      "K2": _ratKeahlian,
-      "K3": _ratKomunikasi,
-      "K4": _ratKerjasama,
-      "K5": _ratPengembanganDiri,
-      "K6": _ratPenggunaanTeknologi,
-      "K7": _ratBahasaInggris
+      "KP1": _ratIntegritas,
+      "KP2": _ratKeahlian,
+      "KP3": _ratKomunikasi,
+      "KP4": _ratKerjasama,
+      "KP5": _ratPengembanganDiri,
+      "KP6": _ratPenggunaanTeknologi,
+      "KP7": _ratBahasaInggris
     };
 
     Firestore.instance
@@ -899,18 +1165,15 @@ class _TilePemagangState extends State<TilePemagang> {
         .document("$_idPenilaianIntern")
         .setData(data)
         .whenComplete(() {
-          Map<String, dynamic> data2 = <String, dynamic>{
-            "inIntern" : false
-          };
-          Firestore.instance
-              .collection("users")
-              .document("${widget.idUser}")
-              .updateData(data2)
-              .whenComplete(() {
-            
-          }).catchError((e) {
-            print(e);
-          });
+      Map<String, dynamic> data2 = <String, dynamic>{"inIntern": false};
+      Firestore.instance
+          .collection("users")
+          .document("${widget.idUser}")
+          .updateData(data2)
+          .whenComplete(() {})
+          .catchError((e) {
+        print(e);
+      });
       _showToast("Berhasil Menilai", Color(0xFFe87c55));
 
       setState(() {
@@ -978,13 +1241,13 @@ class _TilePemagangState extends State<TilePemagang> {
       DocumentSnapshot postSnapshot = await tx.get(favoritesReference);
       if (postSnapshot.exists) {
         await tx.get(favoritesReference).then((doc) {
-          this._ratIntegritas = doc.data["K1"];
-          this._ratKeahlian = doc.data["K2"];
-          this._ratKomunikasi = doc.data["K3"];
-          this._ratKerjasama = doc.data["K4"];
-          this._ratPengembanganDiri = doc.data["K5"];
-          this._ratPenggunaanTeknologi = doc.data["K6"];
-          this._ratBahasaInggris = doc.data["K7"];
+          this._ratIntegritas = doc.data["KP1"];
+          this._ratKeahlian = doc.data["KP2"];
+          this._ratKomunikasi = doc.data["KP3"];
+          this._ratKerjasama = doc.data["KP4"];
+          this._ratPengembanganDiri = doc.data["KP5"];
+          this._ratPenggunaanTeknologi = doc.data["KP6"];
+          this._ratBahasaInggris = doc.data["KP7"];
         });
       }
     }).whenComplete(() {
@@ -1029,7 +1292,7 @@ class _TilePemagangState extends State<TilePemagang> {
                                         child: RatingStarFull(
                                       color: Colors.red,
                                       rating: _ratIntegritas,
-                                      starCount: 5,
+                                      starCount: 4,
                                       onRatingChanged: (v) {
                                         this._ratIntegritas = v;
                                       },
@@ -1041,7 +1304,7 @@ class _TilePemagangState extends State<TilePemagang> {
                                         child: RatingStarFull(
                                       color: Colors.red,
                                       rating: _ratKeahlian,
-                                      starCount: 5,
+                                      starCount: 4,
                                       onRatingChanged: (v) {
                                         this._ratKeahlian = v;
                                       },
@@ -1053,7 +1316,7 @@ class _TilePemagangState extends State<TilePemagang> {
                                         child: RatingStarFull(
                                       color: Colors.red,
                                       rating: _ratKomunikasi,
-                                      starCount: 5,
+                                      starCount: 4,
                                       onRatingChanged: (v) {
                                         this._ratKomunikasi = v;
                                       },
@@ -1065,7 +1328,7 @@ class _TilePemagangState extends State<TilePemagang> {
                                         child: RatingStarFull(
                                       color: Colors.red,
                                       rating: _ratKerjasama,
-                                      starCount: 5,
+                                      starCount: 4,
                                       onRatingChanged: (v) {
                                         this._ratKerjasama = v;
                                       },
@@ -1077,7 +1340,7 @@ class _TilePemagangState extends State<TilePemagang> {
                                         child: RatingStarFull(
                                       color: Colors.red,
                                       rating: _ratPengembanganDiri,
-                                      starCount: 5,
+                                      starCount: 4,
                                       onRatingChanged: (v) {
                                         this._ratPengembanganDiri = v;
                                       },
@@ -1089,7 +1352,7 @@ class _TilePemagangState extends State<TilePemagang> {
                                         child: RatingStarFull(
                                       color: Colors.red,
                                       rating: _ratPenggunaanTeknologi,
-                                      starCount: 5,
+                                      starCount: 4,
                                       onRatingChanged: (v) {
                                         this._ratPenggunaanTeknologi = v;
                                       },
@@ -1101,7 +1364,7 @@ class _TilePemagangState extends State<TilePemagang> {
                                         child: RatingStarFull(
                                       color: Colors.red,
                                       rating: _ratBahasaInggris,
-                                      starCount: 5,
+                                      starCount: 4,
                                       onRatingChanged: (v) {
                                         this._ratBahasaInggris = v;
                                       },

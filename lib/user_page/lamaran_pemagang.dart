@@ -16,7 +16,7 @@ class InternSubmission extends StatefulWidget {
 class InternSubmissionState extends State<InternSubmission> {
   String _userId;
 
-  Future getDataUser() async {
+  Future _getDataUser() async {
     var user = await FirebaseAuth.instance.currentUser();
     setState(() {
       _userId = user.uid;
@@ -41,17 +41,13 @@ class InternSubmissionState extends State<InternSubmission> {
   @override
   void initState() {
     super.initState();
-    getDataUser();
+    _getDataUser();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        bottomNavigationBar: Container(
-          height: 50.0,
-          color: Colors.white,
-        ),
-        appBar: AppBar(
+                appBar: AppBar(
           elevation:
               defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
           backgroundColor: const Color(0xFFe87c55),
@@ -139,7 +135,7 @@ class TileLowonganState extends State<TileLowongan> {
   //   });
   // }
 
-  Future getDataUser() async {
+  Future _getDataUser() async {
     // var user = await FirebaseAuth.instance.currentUser();
     var firestore = Firestore.instance;
     var userQuery2 =
@@ -169,7 +165,7 @@ class TileLowonganState extends State<TileLowongan> {
   @override
   void initState() {
     super.initState();
-    getDataUser();
+    _getDataUser();
   }
 
   @override

@@ -64,9 +64,12 @@ class ListInternHistory extends StatefulWidget {
 
 class ListInternHistoryState extends State<ListInternHistory> {
   DateTime dateNow = DateTime.now();
+  var firestore = Firestore.instance;
+  String vacanciesId;
+  bool check = false;
 
-  Future getInternHistory() async {
-    var firestore = Firestore.instance;
+  Future _getInternHistory() async {
+    
     QuerySnapshot qn = await firestore
         .collection('reportIntern')
         .where('collegeId', isEqualTo: widget.id)
@@ -76,10 +79,15 @@ class ListInternHistoryState extends State<ListInternHistory> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       child: FutureBuilder(
-        future: getInternHistory(),
+        future: _getInternHistory(),
         builder: (_, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
@@ -97,30 +105,29 @@ class ListInternHistoryState extends State<ListInternHistory> {
               );
             } else {
               return ListView.builder(
-                itemCount: snapshot.data.length,
-                itemBuilder: (_, index) {
-                  List<double> _kInt = List(7);
-                  _kInt[0] = snapshot.data[index].data["K1"];
-                  _kInt[1] = snapshot.data[index].data["K2"];
-                  _kInt[2] = snapshot.data[index].data["K3"];
-                  _kInt[3] = snapshot.data[index].data["K4"];
-                  _kInt[4] = snapshot.data[index].data["K5"];
-                  _kInt[5] = snapshot.data[index].data["K6"];
-                  _kInt[6] = snapshot.data[index].data["K7"];
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (_, index) {
+                    List<double> _kepuasan = List(7);
+                    _kepuasan[0] = snapshot.data[index].data["KP1"];
+                    _kepuasan[1] = snapshot.data[index].data["KP2"];
+                    _kepuasan[2] = snapshot.data[index].data["KP3"];
+                    _kepuasan[3] = snapshot.data[index].data["KP4"];
+                    _kepuasan[4] = snapshot.data[index].data["KP5"];
+                    _kepuasan[5] = snapshot.data[index].data["KP6"];
+                    _kepuasan[6] = snapshot.data[index].data["KP7"];
+                    // print("$wew");
+                    // for (var i = 0; i < 7; i++) {
 
-                  // print("$wew");
-                  // for (var i = 0; i < 7; i++) {
-
-                  //      print("$i inilah $wew");
-                  // }
-                  return new TimePemagang(
-                    userId: snapshot.data[index].data["userId"],
-                    vacanciesId: snapshot.data[index].data["vacanciesId"],
-                    kImportant: _kInt,
-                    no: (index + 1).toString(),
-                  );
-                },
-              );
+                    //      print("$i inilah $wew");
+                    // }
+                    return new TimePemagang(
+                      userId: snapshot.data[index].data["userId"],
+                      vacanciesId: snapshot.data[index].data["vacanciesId"],
+                      kepuasan: _kepuasan,
+                      no: (index + 1).toString(),
+                    );
+                  },
+                );
             }
           }
         },
@@ -130,10 +137,10 @@ class ListInternHistoryState extends State<ListInternHistory> {
 }
 
 class TimePemagang extends StatefulWidget {
-  TimePemagang({this.userId, this.vacanciesId, this.no, this.kImportant});
+  TimePemagang({this.userId, this.vacanciesId, this.no, this.kepuasan});
 
   final String userId, vacanciesId, no;
-  final List<double> kImportant;
+  final List<double> kepuasan;
 
   @override
   TimePemagangState createState() {
@@ -143,9 +150,35 @@ class TimePemagang extends StatefulWidget {
 
 class TimePemagangState extends State<TimePemagang> {
   var name, agency;
-  String _namaUser,_judulLowongan,_nimUser;
-  Future getInternship() async {
-    var firestore = Firestore.instance;
+  String _namaUser, _judulLowongan, _nimUser;
+  var firestore = Firestore.instance;
+  List<double> kImportance = List(7);
+
+  Future _getImportance() async {
+    var vacanciesQuery = firestore
+        .collection('internNeeded')
+        .where('vacanciesId', isEqualTo: widget.vacanciesId)
+        .limit(1);
+    vacanciesQuery.getDocuments().then((data) {
+      if (data.documents.length > 0) {
+        setState(() {
+          kImportance[0] = data.documents[0].data['K1'];
+          kImportance[1] = data.documents[0].data['K2'];
+          kImportance[2] = data.documents[0].data['K3'];
+          kImportance[3] = data.documents[0].data['K4'];
+          kImportance[4] = data.documents[0].data['K5'];
+          kImportance[5] = data.documents[0].data['K6'];
+          kImportance[6] = data.documents[0].data['K7'];
+        });
+      }else{
+        setState(() {
+         kImportance = null; 
+        });
+      }
+    });
+  }
+
+  Future _getPenilaian() async {
     var userQuery = firestore
         .collection('users')
         .where('uid', isEqualTo: widget.userId)
@@ -162,12 +195,13 @@ class TimePemagangState extends State<TimePemagang> {
 
         var vacanciesHistory = firestore
             .collection('vacancies')
-            .where('id', isEqualTo: widget.vacanciesId).limit(1);
+            .where('id', isEqualTo: widget.vacanciesId)
+            .limit(1);
 
         vacanciesHistory.getDocuments().then((collegeData) {
           if (collegeData.documents.length > 0) {
             setState(() {
-             _judulLowongan = collegeData.documents[0].data['title']; 
+              _judulLowongan = collegeData.documents[0].data['title'];
             });
             print("judullll $_judulLowongan");
           }
@@ -179,7 +213,8 @@ class TimePemagangState extends State<TimePemagang> {
   @override
   void initState() {
     super.initState();
-    getInternship();
+    _getImportance();
+    _getPenilaian();
   }
 
   @override
@@ -194,11 +229,12 @@ class TimePemagangState extends State<TimePemagang> {
               context,
             ).push(MaterialPageRoute(
                 builder: (BuildContext context) => new QfDeployment(
-                      judulLowongan: _judulLowongan,
-                      kImportant: widget.kImportant,
-                      namaUser: _namaUser,
-                      nim: _nimUser,
-                    )));
+                    judulLowongan: _judulLowongan,
+                    kepuasan: widget.kepuasan,
+                    kImportant: kImportance,
+                    namaUser: _namaUser,
+                    nim: _nimUser,
+                    idLowongan: widget.vacanciesId)));
           },
           leading: new Text(
             widget.no,
@@ -208,8 +244,8 @@ class TimePemagangState extends State<TimePemagang> {
             _namaUser == null ? "" : _namaUser,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          subtitle:
-              new Text("Magang di : ${_judulLowongan == null ? "" : _judulLowongan}"),
+          subtitle: new Text(
+              "Magang di : ${_judulLowongan == null ? "" : _judulLowongan}"),
           // trailing: new Icon(widget.iconData, color: widget.warna),
         ),
       ],

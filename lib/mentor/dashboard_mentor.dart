@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_admob/firebase_admob.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,33 +8,6 @@ import 'package:tempat_magang/auth.dart';
 import 'package:tempat_magang/global_page/bantuan.dart';
 import 'package:tempat_magang/mentor/listMagangMentor.dart';
 import 'package:tempat_magang/mentor/profilMentor.dart';
-
-MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
-    testDevices: <String>[],
-    keywords: <String>[
-      'magang',
-      'kampus',
-      'industri',
-      'lowongan',
-      'kerja',
-      'pendidikan',
-      'kompetensi'
-    ],
-    childDirected: false,
-    nonPersonalizedAds: false,
-    );
-
-BannerAd _bannerAd;
-
-BannerAd createBannerAd() {
-  return new BannerAd(
-      adUnitId: BannerAd.testAdUnitId,
-      targetingInfo: targetingInfo,
-      size: AdSize.smartBanner,
-      listener: (MobileAdEvent event) {
-        print("Mentor banner ad $event");
-      });
-}
 
 final loadingLoad = CircularProgressIndicator(
   backgroundColor: Colors.deepOrange,
@@ -149,27 +121,18 @@ class _MentorDashboardState extends State<MentorDashboard> {
 
   @override
   void initState() {
-    FirebaseAdMob.instance.initialize(appId: FirebaseAdMob.testAppId);
-    _bannerAd = createBannerAd()
-      ..load()
-      ..show();
     super.initState();
     _getDataUser();
   }
 
   @override
   void dispose() {
-    _bannerAd?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        bottomNavigationBar: Container(
-          height: 50.0,
-          color: Colors.white,
-        ),
         drawer: new Drawer(
             child: ListView(
           children: <Widget>[

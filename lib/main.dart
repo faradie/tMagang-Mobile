@@ -1,11 +1,38 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:tempat_magang/auth.dart';
 import 'package:tempat_magang/global_page/loaders.dart';
 import 'root_page.dart';
+
+MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
+    testDevices: <String>[],
+    keywords: <String>[
+      'magang',
+      'kampus',
+      'industri',
+      'lowongan',
+      'kerja',
+      'pendidikan',
+      'kompetensi'
+    ],
+    childDirected: false,
+    nonPersonalizedAds: false,
+);
+
+BannerAd myBanner = BannerAd(
+  adUnitId: BannerAd.testAdUnitId,
+  size: AdSize.banner,
+  targetingInfo: targetingInfo,
+  listener: (MobileAdEvent event) {
+    print("BannerAd event is $event");
+  },
+);
+
 
 void main() async {
   final Firestore firestore = Firestore();
@@ -27,15 +54,21 @@ class MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    FirebaseAdMob.instance.initialize(appId: FirebaseAdMob.testAppId);
   }
 
   @override
   void dispose() {
     super.dispose();
+    myBanner?.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return new MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Tempat Magang",
@@ -44,13 +77,24 @@ class MyAppState extends State<MyApp> {
         primaryColorDark: Colors.orange[900],
       ),
       home: new SplashNya(),
-      routes: <String, WidgetBuilder>{
-        '/rootNya': (BuildContext context) => new RootPage(
-              auth: new Auth(),
+      builder: (BuildContext context, Widget child) {
+        myBanner
+          ..load()
+          ..show(
+            anchorOffset: 0.0,
+            anchorType: AnchorType.bottom,
+          );
+        var mediaQuery = MediaQuery.of(context);
+        double paddingBottom = 50.0;
+        if (mediaQuery.orientation == Orientation.landscape) {
+          paddingBottom = 0.0;
+        }
+        return new Padding(
+          child: child,
+          padding: new EdgeInsets.only(
+            bottom: paddingBottom
             ),
-        '/detailPost': (BuildContext context) => new RootPage(
-              auth: new Auth(),
-            ),
+        );
       },
     );
   }

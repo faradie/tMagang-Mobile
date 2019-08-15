@@ -6,6 +6,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:tempat_magang/admin_page/data_instansi.dart';
+import 'package:tempat_magang/admin_page/data_kampus.dart';
+import 'package:tempat_magang/admin_page/data_mahasiswa.dart';
+import 'package:tempat_magang/admin_page/data_mentor.dart';
 import 'package:tempat_magang/admin_page/manajemen_lowongan.dart';
 
 import 'package:tempat_magang/auth.dart';
@@ -294,13 +297,39 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   },
                 ),
                 ListTile(
+                  title: Text("Data Mentor"),
+                  leading: new Icon(Icons.code),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(
+                      context,
+                    ).push(MaterialPageRoute(
+                        builder: (BuildContext context) => new MentorData()));
+                  },
+                ),
+                ListTile(
                   title: Text("Data Kampus"),
                   leading: new Icon(Icons.star_border),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(
+                      context,
+                    ).push(MaterialPageRoute(
+                        builder: (BuildContext context) => new CollegeData()));
+                  },
                 ),
                 ListTile(
                   title: Text("Data Pemagang"),
                   leading: new Icon(Icons.code),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(
+                      context,
+                    ).push(MaterialPageRoute(
+                        builder: (BuildContext context) => new MahasiswaData()));
+                  },
                 ),
+                
               ],
             ),
             new ListTile(

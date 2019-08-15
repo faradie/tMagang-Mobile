@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
-import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tempat_magang/user_page/detailLowongan.dart';
@@ -12,32 +11,6 @@ final loadingLoad = CircularProgressIndicator(
   strokeWidth: 1.5,
 );
 
-MobileAdTargetingInfo targetingInfo = new MobileAdTargetingInfo(
-    testDevices: <String>[],
-    keywords: <String>[
-      'magang',
-      'kampus',
-      'industri',
-      'lowongan',
-      'kerja',
-      'pendidikan',
-      'kompetensi'
-    ],
-    childDirected: false,
-    nonPersonalizedAds: false,
-    );
-
-BannerAd _bannerAd;
-
-BannerAd createBannerAd() {
-  return new BannerAd(
-      adUnitId: BannerAd.testAdUnitId,
-      targetingInfo: targetingInfo,
-      size: AdSize.smartBanner,
-      listener: (MobileAdEvent event) {
-        print("intern banner ad $event");
-      });
-}
 
 class ListLowonganGlobal extends StatefulWidget {
   @override
@@ -50,25 +23,15 @@ class ListLowonganGlobalState extends State<ListLowonganGlobal> {
   @override
   void initState() {
     super.initState();
-    FirebaseAdMob.instance
-        .initialize(appId: FirebaseAdMob.testAppId);
-    _bannerAd = createBannerAd()
-      ..load()
-      ..show();
   }
 
   @override
   void dispose() {
-    _bannerAd.dispose();
     super.dispose();
   }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: Container(
-        height: 50.0,
-        color: Colors.white,
-      ),
       body: DefaultTabController(
           length: 2,
           child: NestedScrollView(

@@ -317,11 +317,7 @@ class _DetailLowonganState extends State<DetailLowongan> {
       DeviceOrientation.portraitDown,
     ]);
     return new Scaffold(
-      bottomNavigationBar: Container(
-        height: 50.0,
-        color: Colors.white,
-      ),
-      appBar: AppBar(
+            appBar: AppBar(
         elevation: defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
         leading: InkWell(
           onTap: () {

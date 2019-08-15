@@ -108,11 +108,7 @@ class _ProfilMentorState extends State<ProfilMentor> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        bottomNavigationBar: Container(
-          height: 50.0,
-          color: Colors.white,
-        ),
-        appBar: AppBar(
+                appBar: AppBar(
           elevation:
               defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
           backgroundColor: const Color(0xFFe87c55),
@@ -531,11 +527,7 @@ class _EditProfilMentorState extends State<EditProfilMentor> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        bottomNavigationBar: Container(
-          height: 50.0,
-          color: Colors.white,
-        ),
-        appBar: AppBar(
+                appBar: AppBar(
           elevation:
               defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
           backgroundColor: const Color(0xFFe87c55),

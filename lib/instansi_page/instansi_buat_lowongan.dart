@@ -10,7 +10,6 @@ import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
 
-
 final loadingLoad = CircularProgressIndicator(
   backgroundColor: Colors.deepOrange,
   strokeWidth: 1.5,
@@ -24,10 +23,88 @@ class AgencyCreateVacancies extends StatefulWidget {
 }
 
 class _AgencyCreateVacanciesState extends State<AgencyCreateVacancies> {
-  String _judulLowongan, _jurusanLowongan, _require, _deskripsi, _tmpMentor;
+  String _judulLowongan,
+      _jurusanLowongan,
+      _require,
+      _deskripsi,
+      _tmpMentor,
+      _tmpJurusan,
+      _jurusan;
   int _kuota, _expiredAt;
   bool tekan = true;
   DateTime _tglMulai, _tglAkhir;
+  List<String> selectedList = [];
+
+  static const itemJurusan = <String>[
+    'informatika',
+    'ilmu komputer',
+    'sistem informasi',
+    'kedokteran',
+    'akutansi',
+    'keuangan',
+    'ekonomi',
+    'administrasi',
+    'jurnalistik',
+    'psikologi',
+    'antropologi',
+    'hubungan internasional',
+    'hubungan masyarakat',
+    'statistika',
+    'astronomi',
+    'biokimia',
+    'mikrobiologi',
+    'fisika',
+    'matematika',
+    'geofisika',
+    'biologi',
+    'sastra',
+    'pariwisata',
+    'manajemen logistik',
+    'peternakan',
+    'kehutanan',
+    'agroteknologi',
+    'pertanian',
+    'perikanan',
+    'manajemen bisnis',
+    'desain interior',
+    'tata boga',
+    'desain produk',
+    'dkv',
+    'animasi',
+    'pertambangan',
+    'kelautan',
+    'lingkungan',
+    'metalurgi',
+    'sipil',
+    'arsitektur',
+    'geodesi',
+    'elektro',
+    'mesin',
+    'industri',
+    'perkapalan',
+    'planologi',
+    'penerbangan',
+    'nuklir',
+    'geologi',
+    'otomotif',
+    'bioproses',
+    'grafika',
+    'material',
+    'kimia',
+    'fisika',
+    'geomatika',
+    'perminyakan',
+    'alat berat',
+    'sistem perkapalan',
+    'perpipaan'
+  ];
+
+  final List<DropdownMenuItem<String>> _dropdownJurusan = itemJurusan
+      .map((String value) => DropdownMenuItem<String>(
+            value: value,
+            child: new Text(value.toUpperCase()),
+          ))
+      .toList();
 
   final _controlJudul = new TextEditingController();
   final _controlJurusan = new TextEditingController();
@@ -50,7 +127,7 @@ class _AgencyCreateVacanciesState extends State<AgencyCreateVacancies> {
     return false;
   }
 
-  void _inPressed() {
+  void _createVacancies() {
     if (_setuju == false) {
       _showToast("Gagal buat Lowongan, No SLA", Colors.red);
     } else {
@@ -58,57 +135,61 @@ class _AgencyCreateVacanciesState extends State<AgencyCreateVacancies> {
         if (_tmpMentor == null || _tmpMentor == "kosong") {
           _showToast("Tetapkan mentor terlebih dahulu", Colors.red);
         } else {
-          final difference = _tglAkhir.difference(_tglMulai).inHours;
-          if (difference > 0) {
-            setState(() {
-              tekan = false;
-            });
-
-            var uuid = new Uuid();
-            bool _isActiveIntern = true;
-            String _idNya = uuid.v4();
-            var today = new DateTime.now();
-
-            var col = _controlRequir.text.toLowerCase().split(",");
-            col.removeWhere((item) => item.length == 0);
-
-            var jur = _controlJurusan.text.toLowerCase().split(",");
-            jur.removeWhere((item) => item.length == 0);
-
-            var _validUntil = today.add(new Duration(days: _expiredAt - 1));
-            Map<String, dynamic> data = <String, dynamic>{
-              "SLA": _setuju,
-              "title": _controlJudul.text,
-              "department": jur,
-              "quota": int.parse(_controlKuota.text),
-              "id": _idNya,
-              "createdAt": new DateTime.now(),
-              "timeStartIntern": _tglMulai,
-              "timeEndIntern": _tglAkhir,
-              "isActiveIntern": _isActiveIntern,
-              "ownerAgency": widget.id,
-              "description": _controlDeskrip.text,
-              "requirement": col,
-              "expiredAt": _validUntil,
-              "mentorId": _tmpMentor
-            };
-
-            Firestore.instance
-                .collection("vacancies")
-                .document("$_idNya")
-                .setData(data)
-                .whenComplete(() {
-              _showToast("Berhasil buat Lowongan", Colors.greenAccent);
-              print("ini data lowongan $data");
-              setState(() {
-                tekan = true;
-              });
-              Navigator.of(context).pop();
-            }).catchError((e) {
-              print(e);
-            });
+          if (selectedList.length == 0) {
+            _showToast("Pilih jurusan terlebih dahulu", Colors.red);
           } else {
-            _showToast("Periode magang tidak sesuai", Colors.red);
+            final difference = _tglAkhir.difference(_tglMulai).inHours;
+            if (difference > 0) {
+              setState(() {
+                tekan = false;
+              });
+
+              var uuid = new Uuid();
+              bool _isActiveIntern = true;
+              String _idNya = uuid.v4();
+              var today = new DateTime.now();
+
+              var col = _controlRequir.text.toLowerCase().split(",");
+              col.removeWhere((item) => item.length == 0);
+
+              // var jur = _controlJurusan.text.toLowerCase().split(",");
+              // jur.removeWhere((item) => item.length == 0);
+
+              var _validUntil = today.add(new Duration(days: _expiredAt - 1));
+              Map<String, dynamic> data = <String, dynamic>{
+                "title": _controlJudul.text,
+                "department": selectedList,
+                "SLA": _setuju,
+                "quota": int.parse(_controlKuota.text),
+                "id": _idNya,
+                "createdAt": new DateTime.now(),
+                "timeStartIntern": _tglMulai,
+                "timeEndIntern": _tglAkhir,
+                "isActiveIntern": _isActiveIntern,
+                "ownerAgency": widget.id,
+                "description": _controlDeskrip.text,
+                "requirement": col,
+                "expiredAt": _validUntil,
+                "mentorId": _tmpMentor
+              };
+
+              Firestore.instance
+                  .collection("vacancies")
+                  .document("$_idNya")
+                  .setData(data)
+                  .whenComplete(() {
+                _showToast("Berhasil buat Lowongan", Colors.greenAccent);
+                print("ini data lowongan $data");
+                setState(() {
+                  tekan = true;
+                });
+                Navigator.of(context).pop();
+              }).catchError((e) {
+                print(e);
+              });
+            } else {
+              _showToast("Periode magang tidak sesuai", Colors.red);
+            }
           }
         }
       }
@@ -463,11 +544,7 @@ class _AgencyCreateVacanciesState extends State<AgencyCreateVacancies> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        bottomNavigationBar: Container(
-          height: 50.0,
-          color: Colors.white,
-        ),
-        // resizeToAvoidBottomPadding: false,
+                // resizeToAvoidBottomPadding: false,
         appBar: AppBar(
           elevation:
               defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
@@ -502,18 +579,41 @@ class _AgencyCreateVacanciesState extends State<AgencyCreateVacancies> {
               new Divider(),
               SizedBox(height: 16.0),
               new Text(
-                "Jurusan dipisahkan dengan tanda koma ( , ) :",
+                _jurusan == null ? "Silahkan pilih jurusan" : _jurusan.toUpperCase(),
                 style: TextStyle(color: Colors.grey),
               ),
-              new TextFormField(
-                controller: _controlJurusan,
-                onSaved: (value) => _jurusanLowongan = value,
-                validator: (value) =>
-                    value.isEmpty ? 'Isikan Jurusan dahulu' : null,
-                keyboardType: TextInputType.text,
-                decoration: new InputDecoration(
-                    labelText: 'Jurusan dari posisi dibutuhkan',
-                    icon: new Icon(Icons.account_balance_wallet)),
+              _jurusan == null
+                  ? Container()
+                  : new RaisedButton(
+                      color: const Color(0xFFff9977),
+                      child: new Text("Ulangi"),
+                      onPressed: () {
+                        setState(() {
+                          _jurusan = null;
+                          selectedList.clear();
+                        });
+                      },
+                    ),
+              Container(
+                margin:
+                    const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
+                child: new Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    new Text("Jurusan : "),
+                    new DropdownButton<String>(
+                      value: _tmpJurusan,
+                      onChanged: (String nilaiBaru) {
+                        setState(() {
+                          _tmpJurusan = nilaiBaru;
+                          selectedList.add(nilaiBaru);
+                          _jurusan = selectedList.toString();
+                        });
+                      },
+                      items: this._dropdownJurusan,
+                    ),
+                  ],
+                ),
               ),
               new TextFormField(
                 controller: _controlKuota,
@@ -605,7 +705,7 @@ class _AgencyCreateVacanciesState extends State<AgencyCreateVacancies> {
               new Divider(),
               SizedBox(height: 16.0),
               new Text("Periode :"),
-              
+
               DateTimePickerFormField(
                 controller: _controlTglMulai,
                 inputType: inputType,
@@ -621,8 +721,9 @@ class _AgencyCreateVacanciesState extends State<AgencyCreateVacancies> {
                 format: formats[inputType],
                 editable: editable,
                 decoration: InputDecoration(
-                    labelText: 'Tanggal Berakhir', hasFloatingPlaceholder: false),
-                onChanged: (akhr) => setState(() => _tglAkhir  = akhr),
+                    labelText: 'Tanggal Berakhir',
+                    hasFloatingPlaceholder: false),
+                onChanged: (akhr) => setState(() => _tglAkhir = akhr),
               ),
               SizedBox(height: 16.0),
               new Divider(),
@@ -676,7 +777,7 @@ class _AgencyCreateVacanciesState extends State<AgencyCreateVacancies> {
                   color: const Color(0xFFff9977),
                   elevation: 4.0,
                   splashColor: Colors.blueGrey,
-                  onPressed: tekan == true ? _inPressed : null,
+                  onPressed: tekan == true ? _createVacancies : null,
                   padding: const EdgeInsets.only(),
                   child: new Text(
                     'Terbitkan'.toUpperCase(),

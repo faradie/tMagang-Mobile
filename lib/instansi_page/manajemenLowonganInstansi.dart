@@ -14,14 +14,14 @@ final loadingLoad = CircularProgressIndicator(
   strokeWidth: 1.5,
 );
 
-class ManajemenLowonganInstansi extends StatefulWidget {
-  ManajemenLowonganInstansi({this.idAgency});
+class ManageVacancies extends StatefulWidget {
+  ManageVacancies({this.idAgency});
   final String idAgency;
-  _ManajemenLowonganInstansiState createState() =>
-      _ManajemenLowonganInstansiState();
+  _ManageVacanciesState createState() =>
+      _ManageVacanciesState();
 }
 
-class _ManajemenLowonganInstansiState extends State<ManajemenLowonganInstansi> {
+class _ManageVacanciesState extends State<ManageVacancies> {
   DateTime dateNow = DateTime.now();
   @override
   void initState() {
@@ -31,11 +31,7 @@ class _ManajemenLowonganInstansiState extends State<ManajemenLowonganInstansi> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        bottomNavigationBar: Container(
-          height: 50.0,
-          color: Colors.white,
-        ),
-        appBar: AppBar(
+                appBar: AppBar(
           elevation:
               defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
           backgroundColor: const Color(0xFFe87c55),
@@ -133,7 +129,7 @@ class _ManajemenLowonganInstansiState extends State<ManajemenLowonganInstansi> {
                 },
               ),
               new Expanded(
-                child: ListLowongan(
+                child: VacanciesList(
                   id: widget.idAgency,
                 ),
               ),
@@ -143,16 +139,16 @@ class _ManajemenLowonganInstansiState extends State<ManajemenLowonganInstansi> {
   }
 }
 
-class ListLowongan extends StatefulWidget {
-  ListLowongan({this.id});
+class VacanciesList extends StatefulWidget {
+  VacanciesList({this.id});
   final String id;
   @override
-  ListLowonganState createState() {
-    return new ListLowonganState();
+  VacanciesListState createState() {
+    return new VacanciesListState();
   }
 }
 
-class ListLowonganState extends State<ListLowongan> {
+class VacanciesListState extends State<VacanciesList> {
   DateTime dateNow = DateTime.now();
   IconData _icon;
   MaterialColor _colors;
@@ -212,6 +208,13 @@ class ListLowonganState extends State<ListLowongan> {
                     no: (index + 1).toString(),
                     judul: snapshot.data[index].data["title"],
                     created: snapshot.data[index].data["createdAt"],
+                    akhirNya: snapshot.data[index].data["timeEndIntern"],
+                    startNya: snapshot.data[index].data["timeStartIntern"],
+                    deskripNya: snapshot.data[index].data["description"],
+                    jurusanNya: snapshot.data[index].data["department"],
+                    kuotaNya: snapshot.data[index].data["quota"].toString(),
+                    requireNya: snapshot.data[index].data["requirement"],
+                    idOwner: snapshot.data[index].data["ownerAgency"],
                     iconData: _icon,
                     warna: _colors,
                   );
@@ -226,14 +229,11 @@ class ListLowonganState extends State<ListLowongan> {
 }
 
 class TileLowongan extends StatefulWidget {
-  TileLowongan(
-      {this.judul,
-      this.created,
-      this.idLowongan,
-      this.iconData,
-      this.no,
-      this.warna});
-  final String judul, no, idLowongan;
+  TileLowongan({this.created,this.idLowongan,this.idOwner,this.requireNya,this.deskripNya,this.jurusanNya,this.kuotaNya,this.startNya,this.akhirNya, this.judul,this.iconData,this.no,this.warna});
+  final String idLowongan,kuotaNya,deskripNya,idOwner;
+  final Timestamp startNya,akhirNya;
+  final List jurusanNya,requireNya;
+  final String judul, no;
   final Timestamp created;
   final IconData iconData;
   final MaterialColor warna;
@@ -257,9 +257,16 @@ class TileLowonganState extends State<TileLowongan> {
             Navigator.of(
               context,
             ).push(MaterialPageRoute(
-                builder: (BuildContext context) => new DetailLowonganInstansi(
-                      judul: widget.judul,
+                builder: (BuildContext context) => new VacanciesDetail(
                       idLowongan: widget.idLowongan,
+                      akhirNya: widget.akhirNya,
+                      deskripNya: widget.deskripNya,
+                      judulLowonganNya: widget.judul,
+                      jurusanNya: widget.jurusanNya,
+                      kuotaNya: widget.kuotaNya,
+                      requireNya: widget.requireNya,
+                      startNya: widget.startNya,
+                      idOwner: widget.idOwner,
                     )));
           },
           leading: new Text(
@@ -279,14 +286,15 @@ class TileLowonganState extends State<TileLowongan> {
   }
 }
 
-class DetailLowonganInstansi extends StatefulWidget {
-  DetailLowonganInstansi({this.judul, this.idLowongan});
-
-  final String judul, idLowongan;
-  _DetailLowonganInstansiState createState() => _DetailLowonganInstansiState();
+class VacanciesDetail extends StatefulWidget {
+  VacanciesDetail({this.idLowongan,this.requireNya,this.deskripNya,this.idOwner,this.jurusanNya,this.kuotaNya,this.startNya,this.akhirNya, this.judulLowonganNya});
+  final String idLowongan, judulLowonganNya,kuotaNya,deskripNya,idOwner;
+  final Timestamp startNya,akhirNya;
+  final List jurusanNya,requireNya;
+  _VacanciesDetailState createState() => _VacanciesDetailState();
 }
 
-class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
+class _VacanciesDetailState extends State<VacanciesDetail> {
   String _namaUser;
   var name;
 
@@ -310,11 +318,7 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
     return DefaultTabController(
       length: 3,
       child: new Scaffold(
-          bottomNavigationBar: Container(
-            height: 50.0,
-            color: Colors.white,
-          ),
-          appBar: AppBar(
+                  appBar: AppBar(
             elevation:
                 defaultTargetPlatform == TargetPlatform.android ? 5.0 : 0.0,
             leading: InkWell(
@@ -334,6 +338,14 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                   Navigator.of(context).push(new MaterialPageRoute(
                     builder: (BuildContext context) => new EditLowongan(
                       idLowongan: widget.idLowongan,
+                      akhirNya: widget.akhirNya,
+                      deskripNya: widget.deskripNya,
+                      judulLowonganNya: widget.judulLowonganNya,
+                      jurusanNya: widget.jurusanNya,
+                      kuotaNya: widget.kuotaNya,
+                      requireNya: widget.requireNya,
+                      startNya: widget.startNya,
+                      idOwner: widget.idOwner,
                     ),
                   ));
                 },
@@ -436,7 +448,7 @@ class _DetailLowonganInstansiState extends State<DetailLowonganInstansi> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: <Widget>[
-                                        new Text("${widget.judul}",
+                                        new Text("${widget.judulLowonganNya}",
                                             style: new TextStyle(
                                                 fontSize: 15.0,
                                                 fontWeight: FontWeight.bold,
